@@ -274,7 +274,7 @@
 <header class="mast">
   <div class="kicker">
     <span>InfoTrack · Engineering Reference</span>
-    <span>v1.5 · May 2026 · Per-level tradeoff sheets</span>
+    <span>v1.6 · May 2026 · Evidence section + tradeoff sheets</span>
   </div>
   <h1>How much scaffolding <em>do you actually need?</em></h1>
   <p class="lede">A decision reference for AI-assisted development workflows. Eight levels, from "just type into Claude Code" to "audit-ready AI-DLC." Pick the lightest one that survives <em>the piece of work in front of you</em>. Heavier is not better — heavier is heavier.</p>
@@ -419,6 +419,35 @@
   <div style="padding:14px 22px;border-top:1px solid var(--rule);font-family:'Lora',serif;font-style:italic;font-size:14.5px;color:var(--ink-2);background:var(--paper-2);line-height:1.55">
     <strong style="font-style:normal;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);margin-right:8px">Heuristic →</strong>
     If the question is "<em>how do I implement X</em>" → AI. If the question is "<em>should we do X, and what does X even mean</em>" → human. The blast-radius dial in the calculator below is the formalised version of this gut-check.
+  </div>
+</section>
+
+<!-- EVIDENCE: ground the thesis in research, not vibes -->
+<section style="margin:0 0 36px;border:1.5px solid var(--ink);background:var(--paper)">
+  <div style="padding:14px 22px;background:var(--ink);color:var(--paper);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <span>📚 Where the evidence sits · May 2026</span>
+    <span style="opacity:.7">Not vibes — field studies + research</span>
+  </div>
+  <div style="padding:20px 24px">
+    <p style="margin:0 0 14px;font-family:'Fraunces',serif;font-weight:600;font-size:21px;line-height:1.35;letter-spacing:-.01em;font-variation-settings:'opsz' 36">
+      We're <em>not</em> at the stage where 10 agents can run autonomously for a day and produce production-grade software.
+    </p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:var(--ink-2)">
+      The overhead-and-reliability arguments above aren't opinion — they line up with independent field studies, critical reviews of current frameworks, and the multi-agent research literature. Sources you can actually go and check:
+    </p>
+
+    <ul style="margin:0;padding-left:20px;font-size:14.5px;line-height:1.65;color:var(--ink)">
+      <li style="margin-bottom:8px"><strong>Productivity field studies.</strong> The <em>METR (2025) study</em> of experienced open-source developers measured roughly a 19% <em>slowdown</em> when using AI tools — while participants reported they felt faster. Perceived speed and measured throughput diverged sharply. Confidence is not capability.</li>
+      <li style="margin-bottom:8px"><strong>Independent reviews of current SDD / agent frameworks.</strong> Real-project tests of Spec Kit, Kiro, and Tessl (Scott Logic and others, early 2026) reported significant slowdown on small or exploratory work, with no measurable quality improvement. Marmelab's <em>"Spec-Driven Development: The Waterfall Strikes Back"</em> framed heavy upfront specification as a return of patterns Agile was built to retire.</li>
+      <li style="margin-bottom:8px"><strong>Industry guidance.</strong> The <em>ThoughtWorks Technology Radar</em> currently places Spec-Driven Development in the "Assess" ring (not "Adopt"), with an explicit caution about bias toward heavy upfront specification and big-bang releases.</li>
+      <li style="margin-bottom:8px"><strong>Multi-agent SDLC research.</strong> Field deployments and academic write-ups of <em>MetaGPT, ChatDev, AutoGen, BMAD</em> consistently surface the same failure modes: context drift between agents, information loss across handoffs, hallucination compounding through role boundaries. Debugging the protocol becomes the work.</li>
+      <li><strong>Capability benchmarks.</strong> Claude Opus 4.7 and GPT-5.5-Codex are dramatically more agentic than 2024 models — but SWE-bench Verified ceilings (~87% for the leaders) still leave a long tail of confident-but-wrong outputs that need human gating. Long-horizon autonomous runs continue to show non-trivial abandonment rates. The benchmarks reward capability, not unsupervised reliability.</li>
+    </ul>
+
+    <div style="margin-top:18px;padding:14px 18px;background:var(--hi);border-left:3px solid var(--c4);font-family:'Lora',serif;font-style:italic;font-size:15.5px;line-height:1.55;color:var(--ink)">
+      <strong style="font-style:normal;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);margin-right:8px">So what →</strong>
+      The economics may flip in 12–24 months — they haven't yet. <strong>Adopt the durable layer now</strong> (ADRs, AC, contracts, risk floors). <strong>Skip the experimental orchestration layer</strong> (multi-agent SDLC, heavy spec-gen pipelines) until it has earned its overhead with your team, on your codebase, measured — not marketed.
+    </div>
   </div>
 </section>
 
@@ -1112,7 +1141,7 @@
 <footer>
   <span>Reference · AI Scaffolding Levels · InfoTrack Engineering</span>
   <span class="sig">"Pick the lightest level that survives your project. Heavier is heavier, not better."</span>
-  <span>May 2026 · v1.5</span>
+  <span>May 2026 · v1.6</span>
 </footer>
 
 </div>
