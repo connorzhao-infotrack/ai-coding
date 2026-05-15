@@ -249,6 +249,35 @@
     .tradeoffs > h4{border-bottom:none;padding-bottom:0}
   }
 
+  /* COLLAPSIBLE level cards */
+  .level .head{cursor:pointer;user-select:none;position:relative;transition:background .15s}
+  .level .head:hover{background:var(--hi)}
+  .level .head:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .head-chevron{
+    margin-left:auto;padding-left:12px;
+    font-family:"JetBrains Mono",monospace;font-size:18px;color:var(--ink-2);
+    transition:transform .2s;line-height:1;align-self:center;
+  }
+  .level.collapsed .head-chevron{transform:rotate(-90deg)}
+  .level.collapsed .collapsible{display:none}
+  .level.collapsed .head{border-bottom:none;padding-bottom:0;margin-bottom:0}
+  .level.collapsed .body{padding-bottom:18px}
+
+  /* GLOSSARY as collapsible details */
+  details.glossary{margin:-12px 0 28px}
+  details.glossary > summary{
+    list-style:none;cursor:pointer;
+    padding:11px 16px;border:1px solid var(--rule);background:var(--paper-2);
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--ink-2);font-weight:700;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+  }
+  details.glossary > summary::-webkit-details-marker{display:none}
+  details.glossary > summary:hover{background:var(--hi);color:var(--ink)}
+  details.glossary > summary::after{content:"▾";font-size:14px;transition:transform .2s}
+  details.glossary[open] > summary::after{transform:rotate(180deg)}
+  details.glossary > summary .gl-label{flex:1}
+
   #l0 .gutter{background:var(--c0)} #l0{--lev:var(--c0)}
   #l1 .gutter{background:var(--c1)} #l1{--lev:var(--c1)}
   #l2 .gutter{background:var(--c2)} #l2{--lev:var(--c2)}
@@ -274,7 +303,7 @@
 <header class="mast">
   <div class="kicker">
     <span>InfoTrack · Engineering Reference</span>
-    <span>v1.6 · May 2026 · Evidence section + tradeoff sheets</span>
+    <span>v1.7 · May 2026 · Collapsible levels · L5–L7 hidden by default</span>
   </div>
   <h1>How much scaffolding <em>do you actually need?</em></h1>
   <p class="lede">A decision reference for AI-assisted development workflows. Eight levels, from "just type into Claude Code" to "audit-ready AI-DLC." Pick the lightest one that survives <em>the piece of work in front of you</em>. Heavier is not better — heavier is heavier.</p>
@@ -523,18 +552,20 @@
   <span class="lg-item"><span class="lg-box gate"></span>✋ human gate</span>
 </aside>
 
-<!-- GLOSSARY — what the abbreviations mean -->
-<aside style="margin:-12px 0 28px;padding:14px 18px;border:1px solid var(--rule);background:var(--paper);display:grid;grid-template-columns:repeat(4,1fr);gap:14px 22px;font-size:13.5px;line-height:1.45">
-  <div style="grid-column:1/-1;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);font-weight:700;margin-bottom:-4px">Abbreviations used below</div>
-  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">ADLC</strong> <span style="color:var(--ink-2)">AI Development Life Cycle. AWS-coined term for AI-augmented SDLC.</span></div>
-  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">SDD</strong> <span style="color:var(--ink-2)">Spec-Driven Development. Write the spec first, generate code from it.</span></div>
-  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">ADR</strong> <span style="color:var(--ink-2)">Architecture Decision Record. One markdown file per major choice (date, context, decision, alternatives).</span></div>
-  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">AC</strong> <span style="color:var(--ink-2)">Acceptance Criteria. The checklist that proves a ticket is "done."</span></div>
-  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">EARS</strong> <span style="color:var(--ink-2)">Easy Approach to Requirements Syntax. A structured AC format: <em>"When X, the system shall Y."</em></span></div>
-  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">PRD</strong> <span style="color:var(--ink-2)">Product Requirements Document. What we're building and why.</span></div>
-  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">SDLC</strong> <span style="color:var(--ink-2)">Software Development Life Cycle. The traditional plan → build → test → ship loop.</span></div>
-  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">BMAD</strong> <span style="color:var(--ink-2)">Breakthrough Method for Agile AI-Driven Development. Multi-agent framework with PM/architect/dev/QA personas.</span></div>
-</aside>
+<!-- GLOSSARY — collapsible -->
+<details class="glossary">
+  <summary><span class="gl-label">📖 Abbreviations used below · ADLC · SDD · ADR · AC · EARS · PRD · SDLC · BMAD</span></summary>
+  <div style="padding:14px 18px;border:1px solid var(--rule);border-top:0;background:var(--paper);display:grid;grid-template-columns:repeat(4,1fr);gap:14px 22px;font-size:13.5px;line-height:1.45">
+    <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">ADLC</strong> <span style="color:var(--ink-2)">AI Development Life Cycle. AWS-coined term for AI-augmented SDLC.</span></div>
+    <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">SDD</strong> <span style="color:var(--ink-2)">Spec-Driven Development. Write the spec first, generate code from it.</span></div>
+    <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">ADR</strong> <span style="color:var(--ink-2)">Architecture Decision Record. One markdown file per major choice (date, context, decision, alternatives).</span></div>
+    <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">AC</strong> <span style="color:var(--ink-2)">Acceptance Criteria. The checklist that proves a ticket is "done."</span></div>
+    <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">EARS</strong> <span style="color:var(--ink-2)">Easy Approach to Requirements Syntax. A structured AC format: <em>"When X, the system shall Y."</em></span></div>
+    <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">PRD</strong> <span style="color:var(--ink-2)">Product Requirements Document. What we're building and why.</span></div>
+    <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">SDLC</strong> <span style="color:var(--ink-2)">Software Development Life Cycle. The traditional plan → build → test → ship loop.</span></div>
+    <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">BMAD</strong> <span style="color:var(--ink-2)">Breakthrough Method for Agile AI-Driven Development. Multi-agent framework with PM/architect/dev/QA personas.</span></div>
+  </div>
+</details>
 
 <style>
   abbr[title]{text-decoration:underline dotted var(--rule);text-underline-offset:3px;cursor:help;text-decoration-thickness:1px}
@@ -1140,7 +1171,7 @@
 <footer>
   <span>Reference · AI Scaffolding Levels · InfoTrack Engineering</span>
   <span class="sig">"Pick the lightest level that survives your project. Heavier is heavier, not better."</span>
-  <span>May 2026 · v1.6</span>
+  <span>May 2026 · v1.7</span>
 </footer>
 
 </div>
@@ -1220,9 +1251,63 @@
     pickWhy.textContent = why;
 
     document.querySelectorAll('.level').forEach((el, i) => {
-      el.classList.toggle('match', i === level);
+      const isMatch = i === level;
+      el.classList.toggle('match', isMatch);
+      if (isMatch && el.classList.contains('collapsed')) {
+        el.classList.remove('collapsed');
+        const head = el.querySelector('.head');
+        if (head) head.setAttribute('aria-expanded', 'true');
+      }
     });
   }
+
+  // Make level cards collapsible
+  document.querySelectorAll('.level').forEach((level, i) => {
+    const body = level.querySelector('.body');
+    if (!body) return;
+    const head = body.querySelector('.head');
+    if (!head) return;
+
+    // Add chevron to head
+    const chevron = document.createElement('span');
+    chevron.className = 'head-chevron';
+    chevron.textContent = '▾';
+    chevron.setAttribute('aria-hidden', 'true');
+    head.appendChild(chevron);
+
+    // Wrap everything after head in .collapsible
+    const wrap = document.createElement('div');
+    wrap.className = 'collapsible';
+    let node = head.nextSibling;
+    while (node) {
+      const after = node.nextSibling;
+      wrap.appendChild(node);
+      node = after;
+    }
+    body.appendChild(wrap);
+
+    // Accessibility + click handler
+    head.setAttribute('role', 'button');
+    head.setAttribute('tabindex', '0');
+    head.setAttribute('aria-expanded', 'true');
+    const toggle = () => {
+      level.classList.toggle('collapsed');
+      head.setAttribute('aria-expanded', !level.classList.contains('collapsed'));
+    };
+    head.addEventListener('click', toggle);
+    head.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle();
+      }
+    });
+
+    // Default collapsed: L5, L6, L7 (advanced / niche)
+    if (i >= 5) {
+      level.classList.add('collapsed');
+      head.setAttribute('aria-expanded', 'false');
+    }
+  });
 
   ppl.addEventListener('input', update);
   days.addEventListener('input', update);
