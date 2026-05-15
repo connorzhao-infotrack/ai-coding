@@ -1,0 +1,1136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AI Scaffolding Levels — A Decision Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700;9..144,900&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper:#f3ead7;
+    --paper-2:#ece1c5;
+    --ink:#1c1a16;
+    --ink-2:#3b352c;
+    --rule:#cdb992;
+    --hi:#fff7e3;
+
+    --c0:#5e7a55;
+    --c1:#3f7461;
+    --c2:#1f6b76;
+    --c3:#1c4e80;
+    --c4:#a06b1f;
+    --c5:#933b1a;
+    --c6:#7a2222;
+    --c7:#1a1a1a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:"Lora",Georgia,serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+
+  body{
+    background-image:
+      radial-gradient(rgba(60,40,10,.035) 1px, transparent 1px),
+      radial-gradient(rgba(60,40,10,.025) 1px, transparent 1px);
+    background-size: 3px 3px, 7px 7px;
+    background-position: 0 0, 1px 2px;
+  }
+
+  .wrap{max-width:1180px;margin:0 auto;padding:48px 28px 96px}
+
+  header.mast{border-top:6px double var(--ink);border-bottom:1px solid var(--ink);padding:18px 0 22px;margin-bottom:28px}
+  .kicker{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  h1{font-family:"Fraunces",serif;font-optical-sizing:auto;font-variation-settings:"opsz" 144;font-weight:900;font-size:clamp(40px,7vw,84px);line-height:.95;letter-spacing:-.02em;margin:14px 0 6px}
+  h1 em{font-style:italic;font-weight:500;font-variation-settings:"opsz" 144;color:var(--ink-2)}
+  .lede{font-family:"Lora",serif;font-style:italic;font-size:19px;color:var(--ink-2);max-width:780px;margin:6px 0 0}
+
+  .calc{
+    margin:32px 0 28px;
+    border:1.5px solid var(--ink);
+    background:var(--paper-2);
+    padding:22px 24px 24px;
+    display:grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr;
+    gap:20px;
+    align-items:end;
+    position:relative;
+  }
+  .calc .risk-group{display:flex;gap:6px}
+  .calc .risk-group button{
+    flex:1;background:var(--paper);border:1.5px solid var(--ink);
+    padding:10px 6px;font-family:"JetBrains Mono",monospace;font-size:11px;
+    font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);
+    cursor:pointer;
+  }
+  .calc .risk-group button:hover{background:var(--hi)}
+  .calc .risk-group button.on{background:var(--ink);color:var(--paper)}
+  .calc .risk-hint{
+    grid-column:1/-1;font-family:"Lora",serif;font-style:italic;font-size:13.5px;
+    color:var(--ink-2);padding:6px 2px 0;min-height:22px;line-height:1.4;
+  }
+  .calc .risk-hint strong{font-family:"JetBrains Mono",monospace;font-style:normal;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);margin-right:6px}
+  .calc::before{content:"";position:absolute;inset:-6px;border:1px solid var(--ink);pointer-events:none}
+  .calc h2{margin:0;font-family:"Fraunces",serif;font-weight:700;font-size:22px;letter-spacing:-.01em;font-variation-settings:"opsz" 36}
+  .calc label{display:block;font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);margin-bottom:6px}
+  .calc input[type=number]{
+    width:100%;background:var(--paper);border:1.5px solid var(--ink);
+    padding:10px 14px;font-family:"Fraunces",serif;font-size:28px;color:var(--ink);
+    font-variation-settings:"opsz" 36;font-weight:600;
+  }
+  .calc input[type=number]:focus{outline:none;background:var(--hi)}
+  .calc .out{
+    padding:12px 16px;border:1.5px solid var(--ink);background:var(--paper);
+    min-height:74px;display:flex;flex-direction:column;justify-content:center;
+  }
+  .calc .out .label{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2)}
+  .calc .out .pick{font-family:"Fraunces",serif;font-weight:700;font-size:22px;margin-top:4px;font-variation-settings:"opsz" 36}
+  .calc .out .pick .num{font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--ink-2);margin-right:8px}
+  @media (max-width:760px){.calc{grid-template-columns:1fr 1fr}.calc .out{grid-column:1/-1}.calc .risk-cell{grid-column:1/-1}}
+
+  /* LEGEND — explains diagram conventions once */
+  .legend{
+    display:flex;flex-wrap:wrap;align-items:center;gap:18px;
+    margin:0 0 28px;padding:12px 16px;
+    border:1px solid var(--rule);background:var(--paper-2);
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  }
+  .legend strong{color:var(--ink);font-weight:700}
+  .legend .lg-item{display:flex;align-items:center;gap:8px;color:var(--ink-2)}
+  .legend .lg-box{display:inline-block;width:32px;height:18px;border:1.5px solid var(--ink);background:var(--paper)}
+  .legend .lg-box.ai{background:var(--ink)}
+  .legend .lg-box.gate{background:var(--hi);border-style:dashed}
+
+  .toc{
+    margin:0 0 48px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+    padding:14px 0;display:grid;grid-template-columns:repeat(8,1fr);gap:8px;
+  }
+  .toc a{
+    text-decoration:none;color:var(--ink);font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:.08em;display:flex;align-items:center;gap:6px;padding:4px 0;
+  }
+  .toc a .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .toc a:hover{background:var(--hi)}
+  @media (max-width:760px){.toc{grid-template-columns:repeat(4,1fr)}}
+
+  .level{
+    margin:0 0 36px;border:1.5px solid var(--ink);background:var(--paper);
+    display:grid;grid-template-columns:120px 1fr;position:relative;overflow:hidden;
+    transition:background .25s ease, transform .25s ease, box-shadow .25s ease;
+  }
+  .level.match{
+    background:var(--hi);
+    box-shadow:0 0 0 6px var(--paper),0 0 0 7px var(--ink);
+    transform:translateZ(0);
+  }
+  .level.match::after{
+    content:"⟵ MATCH FOR YOUR INPUT";
+    position:absolute;top:14px;right:18px;
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.18em;
+    background:var(--ink);color:var(--paper);padding:5px 9px;
+  }
+  .level .gutter{
+    background:var(--lev,var(--c0));color:#fff;padding:18px 14px;
+    display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .level .gutter .num{
+    font-family:"Fraunces",serif;font-weight:900;font-size:62px;line-height:1;
+    font-variation-settings:"opsz" 144;letter-spacing:-.04em;
+  }
+  .level .gutter .meta{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.92}
+  .level .body{padding:22px 26px 24px}
+
+  .head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:baseline;border-bottom:1px solid var(--rule);padding-bottom:12px;margin-bottom:14px}
+  .head .name{font-family:"Fraunces",serif;font-weight:700;font-size:30px;line-height:1.1;font-variation-settings:"opsz" 60;letter-spacing:-.01em}
+  .head .name .emoji{margin-right:8px;font-family:"Apple Color Emoji","Segoe UI Emoji",sans-serif}
+  .pills{display:flex;flex-wrap:wrap;gap:6px}
+  .pill{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--paper-2);border:1px solid var(--rule);padding:5px 9px}
+  .pill.here{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .pill.next{background:#fff;border:1.5px dashed var(--ink)}
+
+  /* FLOW DIAGRAM — same primitives, scales from L0 → L7 */
+  .flow{
+    margin:0 0 22px;
+    padding:18px 18px 20px;
+    background:var(--paper-2);
+    border:1px solid var(--rule);
+  }
+  .flow > h4{
+    margin:0 0 14px;
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--ink-2);font-weight:700;
+  }
+  .flow .col{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .flow .row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px}
+  .flow .box{
+    font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:600;letter-spacing:.04em;
+    padding:9px 14px;border:1.5px solid var(--lev);background:var(--paper);color:var(--ink);
+    border-radius:2px;text-align:center;min-width:90px;line-height:1.3;
+  }
+  .flow .box.ai{background:var(--lev);color:#fff}
+  .flow .box.gate{background:var(--hi);border:1.5px dashed var(--ink)}
+  .flow .box.gate::before{content:"✋ "}
+  .flow .box.note{
+    font-style:italic;font-family:"Lora",serif;font-weight:400;font-size:12.5px;
+    text-transform:none;letter-spacing:0;border:1px dashed var(--rule);
+    background:transparent;color:var(--ink-2);padding:6px 12px;
+  }
+  .flow .arr{font-family:"JetBrains Mono",monospace;color:var(--ink-2);font-size:18px;font-weight:700;line-height:1}
+  .flow .arr.fan{font-size:14px;letter-spacing:1.2em;padding-left:1.2em}
+  .flow .lanes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;width:100%;max-width:640px}
+  .flow .lane{display:flex;flex-direction:column;align-items:center;gap:8px}
+  @media (max-width:600px){.flow .lanes{grid-template-columns:1fr}}
+
+  /* phase blocks for L7 */
+  .flow .phase{
+    width:100%;max-width:640px;
+    border:1.5px solid var(--lev);background:var(--paper);
+    padding:12px 16px;
+  }
+  .flow .phase .ph-name{
+    font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700;
+    letter-spacing:.18em;color:var(--lev);margin:0 0 6px;
+  }
+  .flow .phase .ph-body{font-family:"Lora",serif;font-size:14px;color:var(--ink)}
+  .flow .audit{
+    margin-top:10px;padding:10px 14px;width:100%;max-width:640px;
+    border:1.5px solid var(--ink);background:var(--paper-2);
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--ink);text-align:center;
+  }
+
+  .grid{display:grid;grid-template-columns: 1fr 1fr;gap:18px 26px}
+  @media (max-width:760px){.grid{grid-template-columns:1fr}}
+
+  .field{padding:6px 0 0}
+  .field h4{margin:0 0 6px;font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);font-weight:700}
+  .field p{margin:0;font-size:15.5px;color:var(--ink)}
+  .field.full{grid-column:1/-1}
+  .field code{font-family:"JetBrains Mono",monospace;font-size:13px;background:var(--paper-2);padding:1px 5px;border-radius:2px}
+
+  .elk{
+    background:var(--paper-2);border-left:4px solid var(--lev,var(--c0));
+    padding:16px 20px;margin-top:6px;
+  }
+  .elk p{margin:0;font-family:"Lora",serif;font-style:italic;font-size:16px;line-height:1.6;color:var(--ink)}
+
+  .skip{
+    border-top:1px dashed var(--rule);margin-top:14px;padding-top:12px;
+    font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--ink-2)
+  }
+  .skip strong{color:var(--ink);text-transform:uppercase;letter-spacing:.16em;font-size:10.5px;margin-right:8px}
+
+  .write ul{margin:0;padding-left:18px}
+  .write li{margin:3px 0;font-size:14.5px}
+
+  #l0 .gutter{background:var(--c0)} #l0{--lev:var(--c0)}
+  #l1 .gutter{background:var(--c1)} #l1{--lev:var(--c1)}
+  #l2 .gutter{background:var(--c2)} #l2{--lev:var(--c2)}
+  #l3 .gutter{background:var(--c3)} #l3{--lev:var(--c3)}
+  #l4 .gutter{background:var(--c4)} #l4{--lev:var(--c4)}
+  #l5 .gutter{background:var(--c5)} #l5{--lev:var(--c5)}
+  #l6 .gutter{background:var(--c6)} #l6{--lev:var(--c6)}
+  #l7 .gutter{background:var(--c7)} #l7{--lev:var(--c7)}
+
+  footer{margin-top:64px;border-top:6px double var(--ink);padding-top:18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+  footer .sig{font-style:italic;text-transform:none;letter-spacing:0;font-family:"Lora",serif;color:var(--ink-2)}
+
+  @media print{
+    body{background:#fff}
+    .calc{display:none}
+    .level{break-inside:avoid;page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="mast">
+  <div class="kicker">
+    <span>InfoTrack · Engineering Reference</span>
+    <span>v1.4 · May 2026 · Timeline + risk-floor + per-ticket scoping</span>
+  </div>
+  <h1>How much scaffolding <em>do you actually need?</em></h1>
+  <p class="lede">A decision reference for AI-assisted development workflows. Eight levels, from "just type into Claude Code" to "audit-ready AI-DLC." Pick the lightest one that survives <em>the piece of work in front of you</em>. Heavier is not better — heavier is heavier.</p>
+</header>
+
+<!-- TIMELINE: where AI coding actually is in May 2026, and where it's going -->
+<section style="margin:0 0 36px">
+  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2);margin-bottom:10px">🪚 The carpentry view · How AI assists humans, then → now → next</div>
+  <h2 style="margin:0 0 8px;font-family:'Fraunces',serif;font-weight:800;font-size:38px;line-height:1.05;letter-spacing:-.015em;font-variation-settings:'opsz' 96">We're not there yet. Most of this scaffolding is <em>temporary.</em></h2>
+  <p style="margin:0 0 22px;font-family:'Lora',serif;font-style:italic;font-size:17px;color:var(--ink-2);max-width:880px;line-height:1.55">
+    Building software with AI in 2026 is like working with an apprentice carpenter — good hands, follows blueprints, needs supervision. Most of the heavy scaffolding in this doc exists because the apprentice isn't a foreman yet. As the base models improve, much of it will quietly fade. The question is which parts.
+  </p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px">
+
+    <!-- PAST -->
+    <article style="border:1.5px solid var(--ink);background:var(--paper);padding:20px 22px;display:flex;flex-direction:column">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);font-weight:700">Past · ≤2024</div>
+      <h3 style="margin:6px 0 4px;font-family:'Fraunces',serif;font-weight:700;font-size:24px;letter-spacing:-.01em;font-variation-settings:'opsz' 48">🔧 The Power Drill</h3>
+      <p style="margin:0 0 12px;font-family:'Lora',serif;font-style:italic;font-size:13.5px;color:var(--ink-2);line-height:1.5">A power tool for one specific job. You measure, plan, cut, assemble — the drill just helps with the hole. Useful, but it doesn't know what you're building.</p>
+      <div style="border-top:1px dashed var(--rule);padding-top:12px;margin-top:auto">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-bottom:4px">AI was</div>
+        <p style="margin:0 0 10px;font-size:14.5px;line-height:1.45">Autocomplete. Line completion. Snippet search. Copilot in its first form.</p>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--c0);margin-bottom:4px">Best for</div>
+        <p style="margin:0 0 10px;font-size:14.5px;line-height:1.45">Finishing a syntax pattern you'd already started. Boilerplate. Generating a regex.</p>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--c5);margin-bottom:4px">Not yet</div>
+        <p style="margin:0;font-size:14.5px;line-height:1.45">Anything beyond the line you were typing.</p>
+      </div>
+    </article>
+
+    <!-- NOW -->
+    <article style="border:2px solid var(--ink);background:var(--hi);padding:20px 22px;display:flex;flex-direction:column;position:relative">
+      <span style="position:absolute;top:-11px;left:18px;background:var(--ink);color:var(--paper);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;padding:3px 9px;text-transform:uppercase">You are here</span>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);font-weight:700">Now · May 2026</div>
+      <h3 style="margin:6px 0 4px;font-family:'Fraunces',serif;font-weight:700;font-size:24px;letter-spacing:-.01em;font-variation-settings:'opsz' 48">🪚 The Apprentice Carpenter</h3>
+      <p style="margin:0 0 12px;font-family:'Lora',serif;font-style:italic;font-size:13.5px;color:var(--ink-2);line-height:1.5">Genuinely useful hands. Cuts straight, joints clean, follows the blueprint — but doesn't yet know <em>why</em> you picked oak over pine. You're the lead carpenter: you decide what gets built, check the joints, catch when the grain runs wrong.</p>
+      <div style="border-top:1px dashed var(--rule);padding-top:12px;margin-top:auto">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-bottom:4px">AI is</div>
+        <p style="margin:0 0 10px;font-size:14.5px;line-height:1.45">Pair programmer. Capable junior. Opus 4.7 · GPT-5.5-Codex · agentic, multi-step, persistent context.</p>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--c0);margin-bottom:4px">Best for</div>
+        <p style="margin:0 0 10px;font-size:14.5px;line-height:1.45">Scoped tickets with clear AC. Refactors. Code-gen from a plan. Test writing. Debug with a stack trace. Greenfield boilerplate.</p>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--c5);margin-bottom:4px">Not yet</div>
+        <p style="margin:0;font-size:14.5px;line-height:1.45">Long-horizon judgment. Ambiguity resolution. "This looks wrong but I can't say why" intuition. Anything regulated or irreversible without a human gate. <strong>This is why L0–L4 exist.</strong></p>
+      </div>
+    </article>
+
+    <!-- FUTURE -->
+    <article style="border:1.5px dashed var(--ink);background:var(--paper);padding:20px 22px;display:flex;flex-direction:column">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);font-weight:700">Near future · 12–24 months</div>
+      <h3 style="margin:6px 0 4px;font-family:'Fraunces',serif;font-weight:700;font-size:24px;letter-spacing:-.01em;font-variation-settings:'opsz' 48">👷 The Foreman</h3>
+      <p style="margin:0 0 12px;font-family:'Lora',serif;font-style:italic;font-size:13.5px;color:var(--ink-2);line-height:1.5">You're the architect now. The foreman runs the build, manages the crew, comes back to you for big decisions — vendor choices, structural changes, "the client wants a balcony, will it hold?" You brief once, check at milestones, decide on the trade-offs they bring you.</p>
+      <div style="border-top:1px dashed var(--rule);padding-top:12px;margin-top:auto">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-bottom:4px">AI will be</div>
+        <p style="margin:0 0 10px;font-size:14.5px;line-height:1.45">Senior peer. Owns features end-to-end. Asks the right clarifying questions <em>before</em> coding.</p>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--c0);margin-bottom:4px">Best for</div>
+        <p style="margin:0 0 10px;font-size:14.5px;line-height:1.45">Multi-day autonomous work. Whole-feature ownership. Operating a backlog with light human review.</p>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--c5);margin-bottom:4px">Still not</div>
+        <p style="margin:0;font-size:14.5px;line-height:1.45">Replacing human judgment on irreversible calls. Regulated sign-offs. Ethical / commercial / "is this the right thing to build" decisions. Auditors still want a human name.</p>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- WHAT FADES vs WHAT SURVIVES -->
+  <div style="margin-top:26px;border:1.5px solid var(--ink);background:var(--paper-2);padding:0">
+    <div style="padding:14px 22px;background:var(--ink);color:var(--paper);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <span>The honest split · Not all scaffolding is the same</span>
+      <span style="opacity:.7">Adopt what's durable. Skip what's a crutch.</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--rule)">
+      <div style="background:var(--paper);padding:20px 22px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--c5);font-weight:700;margin-bottom:8px">📉 Will fade · AI-crutch scaffolding</div>
+        <p style="margin:0 0 10px;font-size:14.5px;line-height:1.55;color:var(--ink)">Exists only to compensate for current model limits — memory, focus, planning, instruction-following. Each generation eats one of these.</p>
+        <ul style="margin:0;padding-left:18px;font-size:14px;line-height:1.6;color:var(--ink)">
+          <li>Verbose <code style="font-family:'JetBrains Mono',monospace;background:var(--paper-2);padding:1px 5px">AGENTS.md</code> reminders ("don't use jQuery again")</li>
+          <li>Plan Mode as an <em>explicit</em> step (will be implicit)</li>
+          <li>Multi-agent handoff protocols (L6) — context drift, hallucination compounding</li>
+          <li>Drift-detection scripts that re-check the spec on every PR</li>
+          <li>"Definition of Ready" gates that exist mostly so the AI doesn't go off-script</li>
+        </ul>
+        <p style="margin:12px 0 0;font-style:italic;font-size:13.5px;color:var(--ink-2);line-height:1.5">Adopting these now is fine — but don't fall in love. The framework you pick today probably won't survive 18 months.</p>
+      </div>
+      <div style="background:var(--paper);padding:20px 22px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--c1);font-weight:700;margin-bottom:8px">📈 Will survive · Human-coordination scaffolding</div>
+        <p style="margin:0 0 10px;font-size:14.5px;line-height:1.55;color:var(--ink)">Encodes what <em>humans</em> agreed to. A perfect AI doesn't tell future-you why you picked Telnyx — only the written record does. Pre-dates LLMs, post-dates them.</p>
+        <ul style="margin:0;padding-left:18px;font-size:14px;line-height:1.6;color:var(--ink)">
+          <li><abbr title="Architecture Decision Record">ADRs</abbr> — versioned reasons for each major choice</li>
+          <li><abbr title="Acceptance Criteria">AC</abbr> discipline — testable "done" definitions per ticket</li>
+          <li>API contracts, JSON schemas, event lists — they're systems-talking-to-systems agreements, not AI scaffolding. Foreman-AI may <em>generate</em> them, but the artifact still exists because the consumer (another team, another service, a regulator) needs a stable interface to bind against</li>
+          <li>Risk floors for high-blast-radius work (regulated, irreversible)</li>
+          <li>Audit trails — required <em>regardless</em> of how good the AI gets</li>
+        </ul>
+        <p style="margin:12px 0 0;font-style:italic;font-size:13.5px;color:var(--ink-2);line-height:1.5">This is the layer worth investing in now. Practice for humans, not training wheels for AI. Skip it for two years and the muscle atrophies — when the better model arrives you still don't have the habits.</p>
+      </div>
+    </div>
+    <div style="padding:14px 22px;border-top:1px solid var(--rule);font-family:'Lora',serif;font-style:italic;font-size:15.5px;color:var(--ink);background:var(--hi);line-height:1.55">
+      <strong style="font-style:normal;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);margin-right:8px">Bottom line →</strong>
+      Don't over-engineer for today's bottlenecks — much of L5–L7 will look quaint by 2027. But don't skip the durable layer either. Pick the lightest level that survives <em>this</em> work, knowing the calculator below already accounts for both axes: blast radius forces a floor (governance never goes away), while coordination overhead is what fades as the apprentice becomes the foreman.
+    </div>
+  </div>
+</section>
+
+<!-- PRACTICAL: what to hand off, what to keep, today -->
+<section style="margin:0 0 36px;border:1.5px solid var(--ink);background:var(--paper)">
+  <div style="padding:14px 22px;background:var(--paper-2);border-bottom:1px solid var(--ink);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <span>🎯 Practical · What to actually hand off to AI in May 2026</span>
+    <span style="opacity:.7">Apprentice-carpenter rules · revisit in 6 months</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--rule)">
+    <div style="background:var(--paper);padding:20px 22px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--c1);font-weight:700;margin-bottom:10px">✅ Hand off to AI today</div>
+      <ul style="margin:0;padding-left:18px;font-size:14.5px;line-height:1.6;color:var(--ink)">
+        <li><strong>Scoped tickets with clear AC</strong> — "build endpoint X that returns Y given Z"</li>
+        <li><strong>Refactors with a defined target</strong> — extract method, rename, split a file, migrate to a newer API</li>
+        <li><strong>Test writing</strong> — given the code, generate unit + integration tests</li>
+        <li><strong>Debugging with a stack trace</strong> — paste the error, get the fix candidate</li>
+        <li><strong>Greenfield boilerplate</strong> — project setup, DTOs, controllers, OpenAPI schemas, migrations</li>
+        <li><strong>Code-gen from a written plan</strong> — once humans approved the plan</li>
+        <li><strong>Documentation drafts</strong> — README, ADR first cuts, API examples, code comments where genuinely useful</li>
+        <li><strong>Search and exploration</strong> — "where is X defined", "what calls Y", "explain this regex"</li>
+        <li><strong>Cross-language translation</strong> — port a Python script to C#, a SQL query to LINQ</li>
+      </ul>
+    </div>
+    <div style="background:var(--paper);padding:20px 22px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--c5);font-weight:700;margin-bottom:10px">✋ Keep human-led (for now)</div>
+      <ul style="margin:0;padding-left:18px;font-size:14.5px;line-height:1.6;color:var(--ink)">
+        <li><strong>Choosing vendors or architectures</strong> — Telnyx vs ACS, REST vs gRPC, monolith vs split. AI can compare; humans decide.</li>
+        <li><strong>Ambiguous requirements</strong> — "make the search better" needs a human to define <em>better</em> before AI helps</li>
+        <li><strong>"This looks wrong but I can't say why"</strong> intuition — code review, design smell, gut-check on a PR</li>
+        <li><strong>Regulated or irreversible decisions</strong> — schema migrations on prod data, auth changes, pricing logic, anything with a compliance shadow</li>
+        <li><strong>Cross-team coordination calls</strong> — "is the SettleIT team okay with this contract change?" — AI can draft the message, not make the call</li>
+        <li><strong>Live debugging of subtle / intermittent bugs</strong> — race conditions, memory leaks, "works locally, breaks in prod"</li>
+        <li><strong>Final PR review on high-blast-radius code</strong> — AI can do a first pass; a human still signs off</li>
+        <li><strong>Strategy and prioritisation</strong> — "is this the right feature to build" — not a model question</li>
+        <li><strong>Apologising to a customer</strong> — incident comms, tone, judgment. AI drafts; human owns.</li>
+      </ul>
+    </div>
+  </div>
+  <div style="padding:14px 22px;border-top:1px solid var(--rule);font-family:'Lora',serif;font-style:italic;font-size:14.5px;color:var(--ink-2);background:var(--paper-2);line-height:1.55">
+    <strong style="font-style:normal;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);margin-right:8px">Heuristic →</strong>
+    If the question is "<em>how do I implement X</em>" → AI. If the question is "<em>should we do X, and what does X even mean</em>" → human. The blast-radius dial in the calculator below is the formalised version of this gut-check.
+  </div>
+</section>
+
+<!-- CLARIFY: scope of the levels -->
+<section style="margin:0 0 32px;border:2px solid var(--ink);background:var(--hi);padding:22px 26px;position:relative">
+  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2);margin-bottom:8px">⚠️ Read this first · How to scope a level</div>
+  <h2 style="margin:0 0 12px;font-family:'Fraunces',serif;font-weight:700;font-size:26px;letter-spacing:-.01em;font-variation-settings:'opsz' 48">Levels describe <em>a unit of work</em> — which can be a ticket or a whole project.</h2>
+  <p style="margin:0 0 14px;font-size:16px;line-height:1.6">
+    The lower levels (L0–L2) are <strong>ticket-scoped</strong>: one developer, hours to a couple of weeks. The higher levels (L3–L7) are <strong>project/epic-scoped</strong>: multi-ticket efforts that need shared artifacts to keep people aligned. <strong>You mix them.</strong> A Level-3 project (like AI-Caller) sets a <em>baseline</em> — its <code style="font-family:'JetBrains Mono',monospace;background:var(--paper-2);padding:1px 5px">AGENTS.md</code>, <code style="font-family:'JetBrains Mono',monospace;background:var(--paper-2);padding:1px 5px">plan.md</code>, and ticket conventions all exist. Tickets <em>inside</em> the project pick their own level based on their own complexity, durability, and blast radius — which is usually <em>below</em> the project baseline, but occasionally above it for cross-cutting decisions.
+  </p>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px">
+    <div style="border:1.5px solid var(--ink);background:var(--paper);padding:14px 16px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--c0);font-weight:700;margin-bottom:6px">🆓 L0 ticket inside an L3 project</div>
+      <div style="font-size:14.5px;line-height:1.5">Fix a typo in a log message. Bump a NuGet version. Rename a private variable. <em>Just vibe it.</em> AGENTS.md still loads automatically — no plan, ADR, or AC needed for 10 lines.</div>
+    </div>
+    <div style="border:1.5px solid var(--ink);background:var(--paper);padding:14px 16px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--c2);font-weight:700;margin-bottom:6px">🗒️ L2 ticket inside an L3 project</div>
+      <div style="font-size:14.5px;line-height:1.5">A small new endpoint touching one service. Use Plan Mode, get plan approved, implement. No new ADR needed because no new architectural decision is being made.</div>
+    </div>
+    <div style="border:1.5px solid var(--ink);background:var(--paper);padding:14px 16px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--c4);font-weight:700;margin-bottom:6px">🏗️ L4 ticket inside an L3 project</div>
+      <div style="font-size:14.5px;line-height:1.5">Picking the telephony provider (SETTLEIT-10127). A 1-day spike, but cross-cutting and hard to reverse — <em>blast radius</em> alone pushes it to L4. ADR + EARS AC required even though the project sits at L3.</div>
+    </div>
+  </div>
+
+  <div style="margin-top:18px;padding-top:14px;border-top:1px dashed var(--rule);font-family:'Lora',serif;font-style:italic;font-size:15px;color:var(--ink-2);line-height:1.6">
+    <strong style="font-style:normal;color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase">Three dials →</strong>
+    Pick the level by asking three questions about <em>this work</em>: (1) <strong>Coordination</strong> — how many people are involved? (2) <strong>Durability</strong> — will this outlive the current team or sprint? (3) <strong>Blast radius</strong> — how bad if it goes wrong? Each dial pushes the level up independently. The calculator below uses all three.
+  </div>
+</section>
+
+<section class="calc" aria-label="Pick your level">
+  <div>
+    <h2>Tell me about <em>this piece of work</em></h2>
+    <p style="margin:6px 0 0;font-size:14px;color:var(--ink-2)">Two inputs — for the ticket or feature in front of you, not the whole codebase. The matching level highlights below.</p>
+  </div>
+  <div>
+    <label for="ppl">People touching this work</label>
+    <input id="ppl" type="number" min="1" max="50" value="3" />
+  </div>
+  <div>
+    <label for="days">Dev-days for this work</label>
+    <input id="days" type="number" min="1" max="2000" value="60" />
+  </div>
+  <div class="risk-cell">
+    <label>Blast radius if it goes wrong</label>
+    <div class="risk-group" id="risk-group" role="radiogroup" aria-label="Blast radius">
+      <button type="button" data-risk="low"
+        title="Contained to one file or feature. Easy to revert. No one else affected if it ships broken.&#10;&#10;Examples: typo in a log message · CSS tweak · rename a private variable · bump a dev dependency · update internal docs.">Low</button>
+      <button type="button" data-risk="med" class="on"
+        title="Touches one service or a couple of files. Reversible with a rollback. Noticed by teammates but not customers if it breaks briefly.&#10;&#10;Examples: new endpoint on existing service · refactor a module · add a feature flag · change a non-critical job schedule · new internal CLI tool.">Med</button>
+      <button type="button" data-risk="high"
+        title="Cross-cutting, hard to reverse, or customer/regulator-facing. A broken ship costs money, trust, or a 2am page.&#10;&#10;Examples: auth or payments code · schema migration · pricing logic · contract with another team · anything in a regulated path (compliance, settlement, data sovereignty) · choosing a vendor that other tickets depend on.">High</button>
+    </div>
+    <div class="risk-hint" id="risk-hint"><strong>Med →</strong>One service, reversible with rollback. New endpoint, refactor, feature flag, internal tool.</div>
+  </div>
+  <div class="out" id="out" style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1.5fr;gap:18px">
+    <div>
+      <div class="label">Recommended level</div>
+      <div class="pick"><span class="num" id="pick-num">—</span><span id="pick-name">—</span></div>
+    </div>
+    <div>
+      <div class="label">Why this level</div>
+      <div id="pick-why" style="font-size:14.5px;margin-top:4px;font-family:'Lora',serif;font-style:italic;color:var(--ink-2)">Type your numbers above.</div>
+    </div>
+  </div>
+</section>
+
+<aside class="legend">
+  <strong>How to read the diagrams ↓</strong>
+  <span class="lg-item"><span class="lg-box"></span>data / artifact</span>
+  <span class="lg-item"><span class="lg-box ai"></span>AI step</span>
+  <span class="lg-item"><span class="lg-box gate"></span>✋ human gate</span>
+</aside>
+
+<!-- GLOSSARY — what the abbreviations mean -->
+<aside style="margin:-12px 0 28px;padding:14px 18px;border:1px solid var(--rule);background:var(--paper);display:grid;grid-template-columns:repeat(4,1fr);gap:14px 22px;font-size:13.5px;line-height:1.45">
+  <div style="grid-column:1/-1;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);font-weight:700;margin-bottom:-4px">Abbreviations used below</div>
+  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">ADLC</strong> <span style="color:var(--ink-2)">AI Development Life Cycle. AWS-coined term for AI-augmented SDLC.</span></div>
+  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">SDD</strong> <span style="color:var(--ink-2)">Spec-Driven Development. Write the spec first, generate code from it.</span></div>
+  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">ADR</strong> <span style="color:var(--ink-2)">Architecture Decision Record. One markdown file per major choice (date, context, decision, alternatives).</span></div>
+  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">AC</strong> <span style="color:var(--ink-2)">Acceptance Criteria. The checklist that proves a ticket is "done."</span></div>
+  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">EARS</strong> <span style="color:var(--ink-2)">Easy Approach to Requirements Syntax. A structured AC format: <em>"When X, the system shall Y."</em></span></div>
+  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">PRD</strong> <span style="color:var(--ink-2)">Product Requirements Document. What we're building and why.</span></div>
+  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">SDLC</strong> <span style="color:var(--ink-2)">Software Development Life Cycle. The traditional plan → build → test → ship loop.</span></div>
+  <div><strong style="font-family:'JetBrains Mono',monospace;font-size:12.5px">BMAD</strong> <span style="color:var(--ink-2)">Breakthrough Method for Agile AI-Driven Development. Multi-agent framework with PM/architect/dev/QA personas.</span></div>
+</aside>
+
+<style>
+  abbr[title]{text-decoration:underline dotted var(--rule);text-underline-offset:3px;cursor:help;text-decoration-thickness:1px}
+</style>
+
+<nav class="toc" aria-label="Levels">
+  <a href="#l0"><span class="dot" style="background:var(--c0)"></span>0 · Just Vibe</a>
+  <a href="#l1"><span class="dot" style="background:var(--c1)"></span>1 · AGENTS.md</a>
+  <a href="#l2"><span class="dot" style="background:var(--c2)"></span>2 · Plan Mode</a>
+  <a href="#l3"><span class="dot" style="background:var(--c3)"></span>3 · plan.md + tickets</a>
+  <a href="#l4"><span class="dot" style="background:var(--c4)"></span>4 · SDD Lite</a>
+  <a href="#l5"><span class="dot" style="background:var(--c5)"></span>5 · Full Spec Kit</a>
+  <a href="#l6"><span class="dot" style="background:var(--c6)"></span>6 · BMAD multi-agent</a>
+  <a href="#l7"><span class="dot" style="background:var(--c7)"></span>7 · Full AI-DLC</a>
+</nav>
+
+<!-- LEVEL 0 -->
+<article class="level" id="l0">
+  <div class="gutter">
+    <div class="num">00</div>
+    <div class="meta">Throw-away<br/>Solo · &lt;2 days</div>
+  </div>
+  <div class="body">
+    <div class="head">
+      <div class="name"><span class="emoji">🆓</span>Just Vibe</div>
+      <div class="pills">
+        <span class="pill">1 person</span>
+        <span class="pill">&lt; 2 dev-days</span>
+      </div>
+    </div>
+
+    <div class="flow">
+      <h4>How it flows</h4>
+      <div class="row">
+        <div class="box">PROMPT</div>
+        <span class="arr">→</span>
+        <div class="box ai">AI</div>
+        <span class="arr">→</span>
+        <div class="box">CODE</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <h4>Concrete example</h4>
+        <p>Renaming 200 files. Quick CSV cleanup. A throwaway PowerShell script. Pasting an error into Claude and shipping the fix.</p>
+      </div>
+      <div class="field write">
+        <h4>What you write</h4>
+        <ul>
+          <li><em>Nothing.</em> Just prompt the agent and use what comes back.</li>
+        </ul>
+      </div>
+      <div class="field full">
+        <h4>Explain like you're 15</h4>
+        <div class="elk">
+          <p>Tell the AI what you want, take what it gives you. No plan. Like asking a smart friend to help with one quick homework question — you trust them, you check it once, you move on.</p>
+        </div>
+      </div>
+      <div class="skip full"><strong>Skip if</strong>anyone else has to read, run, or maintain the output.</div>
+    </div>
+  </div>
+</article>
+
+<!-- LEVEL 1 -->
+<article class="level" id="l1">
+  <div class="gutter">
+    <div class="num">01</div>
+    <div class="meta">Persistent context<br/>1–2 people · 2–15 days</div>
+  </div>
+  <div class="body">
+    <div class="head">
+      <div class="name"><span class="emoji">📝</span>AGENTS.md / CLAUDE.md</div>
+      <div class="pills">
+        <span class="pill">1–2 people</span>
+        <span class="pill">2–15 dev-days</span>
+      </div>
+    </div>
+
+    <div class="flow">
+      <h4>How it flows</h4>
+      <div class="col">
+        <div class="box note">AGENTS.md auto-loaded every session</div>
+        <span class="arr">↓</span>
+        <div class="row">
+          <div class="box">PROMPT</div>
+          <span class="arr">→</span>
+          <div class="box ai">AI</div>
+          <span class="arr">→</span>
+          <div class="box">CODE</div>
+          <span class="arr">→</span>
+          <div class="box gate">REVIEW</div>
+          <span class="arr">→</span>
+          <div class="box">SHIP</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <h4>Concrete example</h4>
+        <p>Personal side project. A solo internal tool. A prototype you'll show your manager. The "Settlement Email Forwarder" script — one file, you'll touch it weekly, you forget conventions between sessions.</p>
+      </div>
+      <div class="field write">
+        <h4>What you write</h4>
+        <ul>
+          <li>One markdown file at repo root: <code>AGENTS.md</code> (or <code>CLAUDE.md</code>)</li>
+          <li>1–2 pages. Project goal, stack, "don't do X", style rules.</li>
+          <li>Auto-loaded by Claude Code and Codex every session.</li>
+        </ul>
+      </div>
+      <div class="field full">
+        <h4>Explain like you're 15</h4>
+        <div class="elk">
+          <p>Pin a one-page "rules of the house" note on the fridge. Every time the AI starts work, it reads the note first. Same rules every time — no need to re-explain "don't use jQuery" or "the database is read-only" on every session.</p>
+        </div>
+      </div>
+      <div class="skip full"><strong>Skip if</strong>you're shipping in &lt;1 day or working solo on something only you'll ever touch.</div>
+    </div>
+  </div>
+</article>
+
+<!-- LEVEL 2 -->
+<article class="level" id="l2">
+  <div class="gutter">
+    <div class="num">02</div>
+    <div class="meta">Plan-first habit<br/>1–2 people · 5–30 days</div>
+  </div>
+  <div class="body">
+    <div class="head">
+      <div class="name"><span class="emoji">🗒️</span>Plan Mode + AGENTS.md</div>
+      <div class="pills">
+        <span class="pill">1–2 people</span>
+        <span class="pill">5–30 dev-days</span>
+      </div>
+    </div>
+
+    <div class="flow">
+      <h4>How it flows</h4>
+      <div class="col">
+        <div class="box note">AGENTS.md auto-loaded every session</div>
+        <span class="arr">↓</span>
+        <div class="row">
+          <div class="box">PROMPT</div>
+          <span class="arr">→</span>
+          <div class="box ai">AI: PLAN</div>
+          <span class="arr">→</span>
+          <div class="box gate">HUMAN OK?</div>
+          <span class="arr">→</span>
+          <div class="box ai">AI: CODE</div>
+          <span class="arr">→</span>
+          <div class="box gate">PR REVIEW</div>
+          <span class="arr">→</span>
+          <div class="box">SHIP</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <h4>Concrete example</h4>
+        <p>A small new feature in SettleIT. A new microservice. Redesigning one page. Anything where you'd naturally sketch on a whiteboard before opening the IDE.</p>
+      </div>
+      <div class="field write">
+        <h4>What you write</h4>
+        <ul>
+          <li>Level 1 + use <code>Shift + Tab</code> Plan Mode in Claude Code (or <code>/plan</code> in Codex) before every non-trivial change.</li>
+          <li>Save the plan as a comment on the Jira ticket OR a <code>.plan.md</code> next to the changed code.</li>
+          <li>Reject the plan, edit it, re-prompt. <em>Then</em> implement.</li>
+        </ul>
+      </div>
+      <div class="field full">
+        <h4>Explain like you're 15</h4>
+        <div class="elk">
+          <p>Before the AI cooks, it has to write the recipe and show you first. You read the recipe, fix what's wrong, then it cooks. The pot has no surprises because the surprises got fixed in the recipe stage when they were cheap to fix.</p>
+        </div>
+      </div>
+      <div class="skip full"><strong>Skip if</strong>the work is one obvious change (rename a thing, bump a version, fix a typo).</div>
+    </div>
+  </div>
+</article>
+
+<!-- LEVEL 3 -->
+<article class="level" id="l3">
+  <div class="gutter">
+    <div class="num">03</div>
+    <div class="meta">Shared blueprint<br/>2–4 people · 20–90 days</div>
+  </div>
+  <div class="body">
+    <div class="head">
+      <div class="name"><span class="emoji">📋</span>plan.md + Jira tickets</div>
+      <div class="pills">
+        <span class="pill here">You are here · AI-Caller</span>
+        <span class="pill">2–4 people</span>
+        <span class="pill">20–90 dev-days</span>
+      </div>
+    </div>
+
+    <div class="flow">
+      <h4>How it flows</h4>
+      <div class="col">
+        <div class="row">
+          <div class="box">PLAN.MD</div>
+          <span class="arr">+</span>
+          <div class="box">CONTRIBUTING.md</div>
+        </div>
+        <span class="arr fan">↓ ↓ ↓</span>
+        <div class="lanes">
+          <div class="lane">
+            <div class="box">Ticket A</div>
+            <span class="arr">↓</span>
+            <div class="box ai">AI</div>
+            <span class="arr">↓</span>
+            <div class="box gate">PR review</div>
+          </div>
+          <div class="lane">
+            <div class="box">Ticket B</div>
+            <span class="arr">↓</span>
+            <div class="box ai">AI</div>
+            <span class="arr">↓</span>
+            <div class="box gate">PR review</div>
+          </div>
+          <div class="lane">
+            <div class="box">Ticket C</div>
+            <span class="arr">↓</span>
+            <div class="box ai">AI</div>
+            <span class="arr">↓</span>
+            <div class="box gate">PR review</div>
+          </div>
+        </div>
+        <span class="arr fan">↓ ↓ ↓</span>
+        <div class="box">MERGE → SHIP</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <h4>Concrete example</h4>
+        <p><strong>AI-Caller (SETTLEIT-9878)</strong>. Multiple devs, one shared vision document, decomposed into ~12 sub-tickets. Telnyx vs ACS decisions, two AI modes, integration contract with SettleIT. The 5-order milestone.</p>
+      </div>
+      <div class="field write">
+        <h4>What you write</h4>
+        <ul>
+          <li>Level 2 + a canonical <code>plan.md</code> in the repo as source of truth.</li>
+          <li>Sub-tickets in Jira, each linked to a plan.md section.</li>
+          <li><code>CONTRIBUTING.md</code> explaining how to pick up a ticket (read plan first, run mock-up, then code).</li>
+        </ul>
+      </div>
+      <div class="field full">
+        <h4>Explain like you're 15</h4>
+        <div class="elk">
+          <p>Building a treehouse with friends. One big blueprint pinned on the wall — everyone has agreed on it. Each kid takes a piece (the door, the ladder, the roof). You meet at the trunk daily to compare what you've built. The blueprint is the truth; arguments are settled by pointing at it.</p>
+        </div>
+      </div>
+      <div class="skip full"><strong>Watch out for</strong>tickets without acceptance criteria; decisions that live only in someone's head; mock-up code drifting from plan.md; "we'll figure it out when we get there" still on the ticket when work starts.</div>
+    </div>
+  </div>
+</article>
+
+<!-- LEVEL 4 -->
+<article class="level" id="l4">
+  <div class="gutter">
+    <div class="num">04</div>
+    <div class="meta">Versioned decisions<br/>2–6 people · 50–180 days</div>
+  </div>
+  <div class="body">
+    <div class="head">
+      <div class="name"><span class="emoji">🏗️</span>SDD Lite — ADRs · EARS AC · Contracts</div>
+      <div class="pills">
+        <span class="pill next">Recommended next step for AI-Caller</span>
+        <span class="pill">2–6 people</span>
+        <span class="pill">50–180 dev-days</span>
+      </div>
+    </div>
+
+    <div class="flow">
+      <h4>How it flows</h4>
+      <div class="col">
+        <div class="row">
+          <div class="box">PLAN.MD</div>
+          <span class="arr">+</span>
+          <div class="box">ADRs</div>
+          <span class="arr">+</span>
+          <div class="box">CONTRACTS</div>
+        </div>
+        <span class="arr">↓</span>
+        <div class="box">Ticket with EARS AC</div>
+        <span class="arr">↓</span>
+        <div class="box gate">Definition of Ready</div>
+        <span class="arr">↓</span>
+        <div class="box ai">AI: Plan → Code</div>
+        <span class="arr">↓</span>
+        <div class="box gate">PR review vs AC</div>
+        <span class="arr">↓</span>
+        <div class="box">MERGE</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <h4>Concrete example</h4>
+        <p>Multi-vendor product with locked-in choices (Telnyx + Gemini Live). Customer-facing service with API contracts that other teams will integrate against. Anything regulated-adjacent: legal review, finance, conveyancing.</p>
+      </div>
+      <div class="field write">
+        <h4>What you write (on top of L3)</h4>
+        <ul>
+          <li><code>docs/decisions/*.md</code> — one ADR per major choice. Date, context, decision, alternatives, supersedes.</li>
+          <li><code>docs/contracts/*</code> — OpenAPI YAML, JSON schemas, SignalR event list. Code references these.</li>
+          <li>EARS-format AC on every ticket. <em>"When X, the system shall Y, with Z accuracy on the reference set."</em></li>
+          <li>A "Definition of Ready" gate before <code>Under Assessment → In Progress</code>.</li>
+        </ul>
+      </div>
+      <div class="field full">
+        <h4>Explain like you're 15</h4>
+        <div class="elk">
+          <p>Still building the treehouse — but now you keep a logbook. Every big decision (which wood, which nails) gets a page with the date and who decided. Every part has a checklist that proves it's done — not "looks done", but actually checked off. If a new kid joins next week, the logbook tells them everything in 10 minutes instead of two weeks of shadowing.</p>
+        </div>
+      </div>
+      <div class="skip full"><strong>Skip if</strong>&lt; 2 weeks of work; no external dependencies (no APIs, no vendors); no chance another team will inherit it.</div>
+    </div>
+  </div>
+</article>
+
+<!-- LEVEL 5 -->
+<article class="level" id="l5">
+  <div class="gutter">
+    <div class="num">05</div>
+    <div class="meta">Spec is the source<br/>4–10 people · 100–400 days</div>
+  </div>
+  <div class="body">
+    <div class="head">
+      <div class="name"><span class="emoji">📐</span>Full Spec Kit / OpenSpec</div>
+      <div class="pills">
+        <span class="pill">4–10 people</span>
+        <span class="pill">100–400 dev-days</span>
+        <span class="pill">Multi-team handoff</span>
+      </div>
+    </div>
+
+    <div class="flow">
+      <h4>How it flows</h4>
+      <div class="col">
+        <div class="box">CONSTITUTION</div>
+        <span class="arr">↓</span>
+        <div class="row">
+          <div class="box ai">/specify</div>
+          <span class="arr">→</span>
+          <div class="box">spec.md</div>
+        </div>
+        <span class="arr">↓</span>
+        <div class="row">
+          <div class="box ai">/plan</div>
+          <span class="arr">→</span>
+          <div class="box">plan.md</div>
+        </div>
+        <span class="arr">↓</span>
+        <div class="row">
+          <div class="box ai">/tasks</div>
+          <span class="arr">→</span>
+          <div class="box">tasks.md</div>
+        </div>
+        <span class="arr">↓</span>
+        <div class="row">
+          <div class="box ai">/implement</div>
+          <span class="arr">→</span>
+          <div class="box">code</div>
+        </div>
+        <span class="arr">↓</span>
+        <div class="box gate">Drift check (code vs spec)</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <h4>Concrete example</h4>
+        <p>A new product line. A second team picking up the codebase. SettleIT itself would be at this level if it were rewritten greenfield. Where the spec needs to outlive the team that wrote it.</p>
+      </div>
+      <div class="field write">
+        <h4>What you write (on top of L4)</h4>
+        <ul>
+          <li>Install <code>GitHub Spec Kit</code> CLI (or OpenSpec). Use <code>/specify</code> → <code>/plan</code> → <code>/tasks</code> → <code>/implement</code>.</li>
+          <li>A written <strong>constitution</strong> — immutable principles every ticket inherits.</li>
+          <li>Drift detection: spec → code traceability checked on every PR.</li>
+        </ul>
+      </div>
+      <div class="field full">
+        <h4>Explain like you're 15</h4>
+        <div class="elk">
+          <p>The blueprint <em>is</em> the machine now. Change the blueprint, the machine rebuilds itself. The actual wood-and-nails is just what falls out of the blueprint — if you lost all the wood tomorrow, the blueprint would tell you exactly how to rebuild. Code is the output, not the input.</p>
+        </div>
+      </div>
+      <div class="skip full"><strong>Skip if</strong>your team is &lt;4 people, or the codebase won't outlive the team. Also skip if your work is mostly exploratory / research / R&amp;D — over-spec'ing kills experimentation.</div>
+    </div>
+  </div>
+</article>
+
+<!-- LEVEL 6 -->
+<article class="level" id="l6">
+  <div class="gutter">
+    <div class="num">06</div>
+    <div class="meta">AI org chart<br/>5–15 people · 200+ days</div>
+  </div>
+  <div class="body">
+    <div class="head">
+      <div class="name"><span class="emoji">🤖</span>BMAD — Multi-agent SDLC</div>
+      <div class="pills">
+        <span class="pill" style="background:#fff5d6;border-color:var(--c5);color:var(--c5)">⚠️ Experimental in 2026</span>
+        <span class="pill">5–15 people</span>
+        <span class="pill">200+ dev-days</span>
+      </div>
+    </div>
+
+    <div class="flow">
+      <h4>How it flows</h4>
+      <div class="col">
+        <div class="box">INTENT</div>
+        <span class="arr">↓</span>
+        <div class="row">
+          <div class="box ai">🧑‍💼 PM agent</div>
+          <span class="arr">→</span>
+          <div class="box">PRD.md</div>
+        </div>
+        <span class="arr">↓</span>
+        <div class="row">
+          <div class="box ai">🏛️ Architect</div>
+          <span class="arr">→</span>
+          <div class="box">Arch.md</div>
+        </div>
+        <span class="arr">↓</span>
+        <div class="row">
+          <div class="box ai">👩‍💻 Dev agent</div>
+          <span class="arr">→</span>
+          <div class="box">Code</div>
+        </div>
+        <span class="arr">↓</span>
+        <div class="row">
+          <div class="box ai">🧪 QA agent</div>
+          <span class="arr">→</span>
+          <div class="box">Tests</div>
+        </div>
+        <span class="arr">↓</span>
+        <div class="box gate">Human arbitration</div>
+        <span class="arr">↓</span>
+        <div class="box">SHIP</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field full" style="background:#fff5d6;border-left:4px solid var(--c5);padding:12px 16px;margin-bottom:10px">
+        <h4 style="color:var(--c5)">⚠️ Reality check, May 2026</h4>
+        <p style="font-size:14.5px;line-height:1.55">Multi-agent SDLC frameworks (BMAD, MetaGPT, ChatDev) are still experimental. In practice teams hit <strong>context drift between agents</strong>, <strong>hallucination compounding</strong> across handoffs, and spend more time debugging the AI-PM↔AI-Dev protocol than writing code. <strong>Most large teams do better with L5 (Spec Kit) plus good humans</strong> than with agent-arbitration chains. Adopt only if you have a specific reason — e.g. genuinely async distributed teams where file-based handoffs save more than they cost — not because the team is big.</p>
+      </div>
+      <div class="field">
+        <h4>Concrete example</h4>
+        <p>A greenfield platform with genuinely distinct disciplines (PM, architect, frontend, backend, QA) collaborating async across timezones. Or a research environment exploring agentic SDLC itself.</p>
+      </div>
+      <div class="field write">
+        <h4>What you write (on top of L5)</h4>
+        <ul>
+          <li>12+ agent persona files (PM, architect, dev, QA, SM, UX…).</li>
+          <li>Handoff protocols — agent A reads agent B's output document; explicit role boundaries.</li>
+          <li>Cross-platform config working across Claude Code, Codex, Cursor.</li>
+        </ul>
+      </div>
+      <div class="field full">
+        <h4>Explain like you're 15</h4>
+        <div class="elk">
+          <p>Build a pretend AI company. One AI is the manager. One's the designer. One codes. One tests. They pass work to each other in order, each one reading what the last one wrote. You just <em>manage the AI company</em>; you don't do the actual job. Your skill is hiring, firing, and arbitrating between AI employees.</p>
+        </div>
+      </div>
+      <div class="skip full"><strong>Skip if</strong>your team doesn't actually have multiple distinct disciplines, or the disciplines collaborate well already without role-gating.</div>
+    </div>
+  </div>
+</article>
+
+<!-- LEVEL 7 -->
+<article class="level" id="l7">
+  <div class="gutter">
+    <div class="num">07</div>
+    <div class="meta">Auditable governance<br/>10+ people · 300+ days</div>
+  </div>
+  <div class="body">
+    <div class="head">
+      <div class="name"><span class="emoji">🏛️</span>Full AI-DLC / Kiro</div>
+      <div class="pills">
+        <span class="pill" style="background:#fff5d6;border-color:var(--c5);color:var(--c5)">⚠️ Only if genuinely regulated</span>
+        <span class="pill">10+ people</span>
+        <span class="pill">300+ dev-days</span>
+      </div>
+    </div>
+
+    <div class="flow">
+      <h4>How it flows</h4>
+      <div class="col">
+        <div class="phase">
+          <div class="ph-name">PHASE 1 · INCEPTION</div>
+          <div class="ph-body">intent → requirements → stories &nbsp;·&nbsp; ✋✋✋ stage-gate sign-offs</div>
+        </div>
+        <span class="arr">↓</span>
+        <div class="phase">
+          <div class="ph-name">PHASE 2 · CONSTRUCTION</div>
+          <div class="ph-body">design → code → tests &nbsp;·&nbsp; ✋✋✋ stage-gate sign-offs</div>
+        </div>
+        <span class="arr">↓</span>
+        <div class="phase">
+          <div class="ph-name">PHASE 3 · OPERATIONS</div>
+          <div class="ph-body">deploy → monitor → incident &nbsp;·&nbsp; ✋✋✋ stage-gate sign-offs</div>
+        </div>
+        <div class="audit">↓ &nbsp; AUDIT.MD &nbsp; · &nbsp; every gate, every actor, every timestamp</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field full" style="background:#fff5d6;border-left:4px solid var(--c5);padding:12px 16px;margin-bottom:10px">
+        <h4 style="color:var(--c5)">⚠️ Reality check, May 2026</h4>
+        <p style="font-size:14.5px;line-height:1.55">Most teams who <em>think</em> they need L7 don't. "We work with banks" ≠ "we're regulated like a bank." Before adopting 10–26 checkpoints per bolt and an <code>audit.md</code> appended at every stage, ask Legal/Compliance to point at the specific regulation that requires it. If the answer is "good engineering practice" or "stakeholders feel better" — you want L4 or L5, not this. L7 ceremony on non-regulated work crushes velocity for no defensible reason.</p>
+      </div>
+      <div class="field">
+        <h4>Concrete example</h4>
+        <p>Banking compliance systems. Government records. Healthcare PHI handling. Anything where, in 3 years, an auditor will pull up a feature and ask <em>"prove every decision and every review."</em> Trust &amp; Safety pipelines for AI itself.</p>
+      </div>
+      <div class="field write">
+        <h4>What you write (on top of L6)</h4>
+        <ul>
+          <li><code>audit.md</code> appended at every stage with timestamp + actor.</li>
+          <li>10–26 explicit human checkpoints per "bolt" (unit of work).</li>
+          <li>EARS notation on <em>everything</em>. Traceability matrix. Supersedes / depended-by graph.</li>
+          <li>Stage-gate sign-offs that block progress without recorded approval.</li>
+        </ul>
+      </div>
+      <div class="field full">
+        <h4>Explain like you're 15</h4>
+        <div class="elk">
+          <p>Building a hospital, not a treehouse. Every nail is logged. Every plan signed by three different grown-ups. Every change is traceable to a written reason. When the inspector arrives and asks "why was this done?", you don't say "I remember…" — you instantly pull a folder with the full paper trail.</p>
+        </div>
+      </div>
+      <div class="skip full"><strong>Skip if</strong>you're not actually regulated. (Most teams who think they are, aren't — check with Legal before adopting this.)</div>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <span>Reference · AI Scaffolding Levels · InfoTrack Engineering</span>
+  <span class="sig">"Pick the lightest level that survives your project. Heavier is heavier, not better."</span>
+  <span>May 2026 · v1.4</span>
+</footer>
+
+</div>
+
+<script>
+  const ppl = document.getElementById('ppl');
+  const days = document.getElementById('days');
+  const pickNum = document.getElementById('pick-num');
+  const pickName = document.getElementById('pick-name');
+  const pickWhy = document.getElementById('pick-why');
+
+  const NAMES = [
+    "Just Vibe",
+    "AGENTS.md / CLAUDE.md",
+    "Plan Mode + AGENTS.md",
+    "plan.md + Jira tickets",
+    "SDD Lite (ADRs · EARS · Contracts)",
+    "Full Spec Kit / OpenSpec",
+    "BMAD multi-agent SDLC",
+    "Full AI-DLC / Kiro"
+  ];
+
+  let risk = "med";
+
+  function pickLevel(p, d, r){
+    let byPpl = 0;
+    if (p <= 1) byPpl = 0;
+    else if (p === 2) byPpl = 2;
+    else if (p <= 4) byPpl = 3;
+    else if (p <= 6) byPpl = 4;
+    else if (p <= 10) byPpl = 5;
+    else if (p <= 15) byPpl = 6;
+    else byPpl = 7;
+
+    let byDays = 0;
+    if (d < 2) byDays = 0;
+    else if (d <= 15) byDays = 1;
+    else if (d <= 30) byDays = 2;
+    else if (d <= 90) byDays = 3;
+    else if (d <= 180) byDays = 4;
+    else if (d <= 400) byDays = 5;
+    else if (d <= 800) byDays = 6;
+    else byDays = 7;
+
+    // Solo cap: 1 person never needs L5+ (no coordination cost).
+    // Long solo work still benefits from durable artifacts but caps at L4.
+    if (p <= 1) byDays = Math.min(byDays, 4);
+    if (p === 2) byDays = Math.min(byDays, 5);
+
+    let raw = Math.max(byPpl, byDays);
+
+    // Blast-radius floor: a 1-day change to critical infra still needs governance.
+    const floor = r === "high" ? 4 : r === "med" ? 2 : 0;
+    const level = Math.max(raw, floor);
+
+    let why = "";
+    if (level > raw) {
+      why = `High blast radius floors this at Level ${floor} regardless of size — hard-to-reverse changes need ADRs and explicit AC.`;
+      if (r === "med") why = `Medium blast radius floors this at Level ${floor} — at minimum, plan-first before coding.`;
+    } else if (byPpl === byDays) {
+      why = `Team size and duration both point at Level ${level}.`;
+    } else if (byPpl > byDays) {
+      why = `Team of ${p} pushes you to Level ${byPpl} — coordination overhead dominates.`;
+    } else {
+      why = `Duration (${d} dev-days) pushes you to Level ${byDays} even with a small team — long-lived work needs durable artifacts.`;
+    }
+    return { level, why };
+  }
+
+  function update(){
+    const p = parseInt(ppl.value, 10) || 1;
+    const d = parseInt(days.value, 10) || 1;
+    const { level, why } = pickLevel(p, d, risk);
+
+    pickNum.textContent = String(level).padStart(2, "0");
+    pickName.textContent = NAMES[level];
+    pickWhy.textContent = why;
+
+    document.querySelectorAll('.level').forEach((el, i) => {
+      el.classList.toggle('match', i === level);
+    });
+  }
+
+  ppl.addEventListener('input', update);
+  days.addEventListener('input', update);
+
+  const RISK_HINTS = {
+    low:  "<strong>Low →</strong>Contained, easy revert, no one else cares. Typo in a log, CSS tweak, rename a private variable, bump a dev dep.",
+    med:  "<strong>Med →</strong>One service, reversible with rollback. New endpoint, refactor, feature flag, internal tool.",
+    high: "<strong>High →</strong>Cross-cutting, hard to reverse, customer or regulator facing. Auth, payments, schema migrations, pricing logic, vendor choices that other tickets depend on."
+  };
+  const riskHint = document.getElementById('risk-hint');
+  function showRiskHint(r){ riskHint.innerHTML = RISK_HINTS[r]; }
+
+  document.querySelectorAll('#risk-group button').forEach(btn => {
+    btn.addEventListener('mouseenter', () => showRiskHint(btn.dataset.risk));
+    btn.addEventListener('focus',      () => showRiskHint(btn.dataset.risk));
+    btn.addEventListener('mouseleave', () => showRiskHint(risk));
+    btn.addEventListener('blur',       () => showRiskHint(risk));
+    btn.addEventListener('click', () => {
+      risk = btn.dataset.risk;
+      document.querySelectorAll('#risk-group button').forEach(b => b.classList.toggle('on', b === btn));
+      showRiskHint(risk);
+      update();
+    });
+  });
+
+  update();
+</script>
+
+</body>
+</html>
