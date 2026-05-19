@@ -1,0 +1,1051 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>In-the-loop vs Send-off — Which AI workflow fits today?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700;9..144,900&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper:#f3ead7;
+    --paper-2:#ece1c5;
+    --ink:#1c1a16;
+    --ink-2:#3b352c;
+    --rule:#cdb992;
+    --hi:#fff7e3;
+
+    --c0:#5e7a55;
+    --c1:#3f7461;   /* In-the-loop · green = grounded/safe */
+    --c2:#1f6b76;
+    --c3:#1c4e80;
+    --c4:#a06b1f;   /* Send-off · amber = tempting/forward */
+    --c5:#933b1a;
+    --c6:#7a2222;
+    --c7:#1a1a1a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:"Lora",Georgia,serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+
+  body{
+    background-image:
+      radial-gradient(rgba(60,40,10,.035) 1px, transparent 1px),
+      radial-gradient(rgba(60,40,10,.025) 1px, transparent 1px);
+    background-size: 3px 3px, 7px 7px;
+    background-position: 0 0, 1px 2px;
+  }
+
+  .wrap{max-width:1100px;margin:0 auto;padding:48px 28px 96px}
+
+  header.mast{border-top:6px double var(--ink);border-bottom:1px solid var(--ink);padding:18px 0 22px;margin-bottom:14px}
+  .kicker{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .kicker a{color:inherit;border-bottom:1px solid var(--ink-2);text-decoration:none;padding-bottom:1px}
+  .kicker a:hover{color:var(--ink);border-color:var(--ink)}
+  h1{font-family:"Fraunces",serif;font-optical-sizing:auto;font-variation-settings:"opsz" 144;font-weight:900;font-size:clamp(40px,7vw,80px);line-height:.95;letter-spacing:-.02em;margin:14px 0 6px}
+  h1 em{font-style:italic;font-weight:500;font-variation-settings:"opsz" 144;color:var(--ink-2)}
+  .lede{font-family:"Lora",serif;font-style:italic;font-size:19px;color:var(--ink-2);max-width:820px;margin:6px 0 0}
+
+  .seealso{
+    margin:18px 0 36px;padding:11px 16px;
+    border:1px dashed var(--rule);background:var(--paper);
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-2);
+    display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  }
+  .seealso strong{color:var(--ink)}
+  .seealso a{color:var(--ink);text-decoration:none;border-bottom:1.5px solid var(--ink);padding-bottom:1px}
+
+  /* APPROACHES — side by side cards */
+  .approaches{
+    display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:0 0 36px;
+  }
+  @media (max-width:760px){.approaches{grid-template-columns:1fr}}
+  .approach{
+    border:1.5px solid var(--ink);background:var(--paper);
+    padding:22px 26px 24px;display:flex;flex-direction:column;
+    position:relative;
+  }
+  .approach.a1{border-top:6px solid var(--c1)}
+  .approach.a2{border-top:6px solid var(--c4)}
+  .a-kicker{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);font-weight:700;margin-bottom:6px}
+  .approach h2{
+    margin:0 0 4px;font-family:"Fraunces",serif;font-weight:800;font-size:30px;
+    letter-spacing:-.01em;font-variation-settings:"opsz" 60;line-height:1.1;
+  }
+  .approach h2 .emoji{margin-right:8px;font-family:"Apple Color Emoji","Segoe UI Emoji",sans-serif}
+  .a-tag{margin:0 0 14px;font-family:"Lora",serif;font-style:italic;font-size:15.5px;color:var(--ink-2);line-height:1.5}
+  .a-feel{
+    margin:0 0 14px;padding:10px 14px;
+    background:var(--paper-2);border-left:3px solid var(--lev);font-size:14px;line-height:1.55;
+  }
+  .approach.a1{--lev:var(--c1)}
+  .approach.a2{--lev:var(--c4)}
+  .a-feel strong{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:4px;color:var(--lev);font-weight:700}
+
+  /* mini flow */
+  .miniflow{
+    margin:6px 0 14px;padding:14px 14px 16px;
+    background:var(--paper-2);border:1px solid var(--rule);
+  }
+  .miniflow h4{margin:0 0 10px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);font-weight:700}
+  .mf-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:7px}
+  .mf-box{
+    font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.04em;
+    padding:7px 11px;border:1.5px solid var(--lev);background:var(--paper);color:var(--ink);
+    text-align:center;line-height:1.25;
+  }
+  .mf-box.ai{background:var(--lev);color:#fff}
+  .mf-box.gate{background:var(--hi);border:1.5px dashed var(--ink)}
+  .mf-box.gate::before{content:"✋ "}
+  .mf-arr{font-family:"JetBrains Mono",monospace;color:var(--ink-2);font-size:14px;font-weight:700;line-height:1}
+  .mf-loop{
+    margin-top:6px;font-family:"Lora",serif;font-style:italic;font-size:12.5px;
+    color:var(--ink-2);text-align:center;
+  }
+
+  .a-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+  .a-pill{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--paper-2);border:1px solid var(--rule);padding:5px 9px}
+
+  /* SECTION HEADERS */
+  h2.sec{
+    margin:48px 0 6px;font-family:"Fraunces",serif;font-weight:800;font-size:34px;
+    line-height:1.1;letter-spacing:-.015em;font-variation-settings:"opsz" 96;
+  }
+  h2.sec em{font-style:italic;font-weight:500;color:var(--ink-2)}
+  .sec-kicker{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2);margin-top:4px}
+  .sec-lede{font-family:"Lora",serif;font-style:italic;font-size:16px;color:var(--ink-2);margin:6px 0 22px;max-width:820px;line-height:1.55}
+
+  /* TRADE-OFF TABLE */
+  .trade{
+    margin:0 0 36px;border:1.5px solid var(--ink);background:var(--paper);
+    display:grid;grid-template-columns:1.4fr 1fr 1fr;
+  }
+  .trade > div{padding:14px 18px;border-bottom:1px solid var(--rule);font-size:14.5px;line-height:1.5}
+  .trade > div:nth-child(-n+3){
+    background:var(--ink);color:var(--paper);
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    border-bottom-color:var(--ink);font-weight:700;
+  }
+  .trade .label{
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ink-2);font-weight:700;background:var(--paper-2);
+  }
+  .trade > div:nth-last-child(-n+3){border-bottom:none}
+  .trade .win{font-weight:600}
+  .trade .win.a1{color:var(--c1)}
+  .trade .win.a2{color:var(--c4)}
+  @media (max-width:680px){
+    .trade{grid-template-columns:1fr}
+    .trade > div{border-bottom:1px solid var(--rule)}
+  }
+
+  /* NUMBERS PANEL */
+  .numbers{
+    margin:0 0 36px;border:1.5px solid var(--ink);background:var(--paper);padding:0;
+  }
+  .numbers .head{
+    padding:14px 22px;background:var(--ink);color:var(--paper);
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+  .numbers .body{padding:20px 24px}
+  .numbers .stat{
+    display:grid;grid-template-columns:120px 1fr;gap:14px 22px;
+    padding:14px 0;border-bottom:1px dashed var(--rule);
+  }
+  .numbers .stat:last-child{border-bottom:0}
+  .numbers .stat .n{
+    font-family:"Fraunces",serif;font-weight:700;font-size:38px;line-height:1;
+    font-variation-settings:"opsz" 96;letter-spacing:-.01em;color:var(--ink);
+  }
+  .numbers .stat .n .unit{font-size:18px;color:var(--ink-2);margin-left:4px}
+  .numbers .stat .lbl{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-top:6px}
+  .numbers .stat .desc{font-size:14.5px;line-height:1.55}
+  .numbers .stat .src{margin-top:6px;font-style:italic;font-size:13px;color:var(--ink-2);line-height:1.45}
+
+  /* SLIDER + CHART */
+  .slider-sec{
+    margin:0 0 36px;border:2px solid var(--ink);background:var(--paper);
+    padding:0;position:relative;
+  }
+  .slider-sec::before{content:"";position:absolute;inset:-6px;border:1px solid var(--ink);pointer-events:none}
+  .slider-head{
+    padding:14px 22px;background:var(--paper-2);border-bottom:1.5px solid var(--ink);
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+  .slider-body{padding:22px 26px 26px;display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  @media (max-width:760px){.slider-body{grid-template-columns:1fr}}
+  .slider-left h3{margin:0 0 4px;font-family:"Fraunces",serif;font-size:22px;font-weight:700;letter-spacing:-.005em;font-variation-settings:"opsz" 36}
+  .slider-left p{margin:0 0 18px;font-family:"Lora",serif;font-style:italic;font-size:14.5px;color:var(--ink-2);line-height:1.55}
+
+  .slider-input{margin:0 0 20px}
+  .slider-input label{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);font-weight:700;margin-bottom:8px}
+  .slider-input label .v{color:var(--ink);font-size:14px;letter-spacing:.02em;text-transform:none;font-weight:700}
+  .slider-input input[type=range]{
+    width:100%;-webkit-appearance:none;appearance:none;height:6px;
+    background:var(--paper-2);border:1px solid var(--rule);
+    outline:none;cursor:pointer;
+  }
+  .slider-input input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:24px;height:24px;
+    background:var(--ink);border:2px solid var(--ink);cursor:pointer;
+    border-radius:50%;
+  }
+  .slider-input input[type=range]::-moz-range-thumb{
+    width:22px;height:22px;background:var(--ink);border:2px solid var(--ink);
+    cursor:pointer;border-radius:50%;
+  }
+
+  .bars{margin-top:8px}
+  .bar-row{margin:0 0 14px}
+  .bar-row .bar-label{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);font-weight:700;margin-bottom:6px}
+  .bar-row .bar-label .min{font-family:"Fraunces",serif;font-size:18px;font-weight:700;letter-spacing:-.005em;text-transform:none;font-variation-settings:"opsz" 36;color:var(--ink)}
+  .bar-track{height:24px;background:var(--paper-2);border:1px solid var(--rule);position:relative;overflow:hidden}
+  .bar-fill{height:100%;transition:width .25s ease}
+  .bar-fill.a1{background:var(--c1)}
+  .bar-fill.a2{background:var(--c4)}
+  .bar-row.win-row{font-family:"Lora",serif;font-style:italic;font-size:14.5px;color:var(--ink);line-height:1.5;padding:10px 14px;background:var(--hi);border-left:3px solid var(--ink);margin-top:8px}
+  .bar-row.win-row strong{font-style:normal;font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-right:6px}
+
+  .chart-wrap{display:flex;flex-direction:column;align-items:stretch;gap:8px}
+  .chart-wrap .ch-title{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);font-weight:700}
+  svg.chart{width:100%;height:240px;border:1px solid var(--rule);background:var(--paper-2);display:block}
+  .chart-legend{display:flex;gap:18px;flex-wrap:wrap;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-2)}
+  .chart-legend .lg{display:flex;align-items:center;gap:6px}
+  .chart-legend .lg .sw{width:18px;height:3px;display:inline-block}
+
+  /* WHEN-IT-WORKS lists */
+  .panel{
+    margin:0 0 36px;border:1.5px solid var(--ink);background:var(--paper);
+    display:grid;grid-template-columns:1fr 1fr;gap:0;
+  }
+  @media (max-width:760px){.panel{grid-template-columns:1fr}}
+  .panel-head{
+    grid-column:1/-1;padding:14px 22px;background:var(--ink);color:var(--paper);
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+  .panel .col{padding:20px 24px;border-right:1px solid var(--rule)}
+  .panel .col:last-child{border-right:none}
+  @media (max-width:760px){.panel .col{border-right:none;border-bottom:1px solid var(--rule)}}
+  .panel .col h4{margin:0 0 12px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+  .panel .col h4.a1{color:var(--c1)}
+  .panel .col h4.a2{color:var(--c4)}
+  .panel .col ul{margin:0;padding-left:18px}
+  .panel .col li{margin:6px 0;font-size:14.5px;line-height:1.55}
+  .panel.three{grid-template-columns:1fr 1fr 1fr}
+  @media (max-width:760px){.panel.three{grid-template-columns:1fr}}
+  .panel .col p{margin:0;font-size:14.5px;line-height:1.55}
+
+  /* SIDE-BY-SIDE TIMELINE COMPARISON */
+  .tl-compare{margin:0 0 36px;border:1.5px solid var(--ink);background:var(--paper)}
+  .tl-head{
+    padding:14px 22px;background:var(--paper-2);border-bottom:1.5px solid var(--ink);
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;color:var(--ink);
+  }
+  .tl-body{padding:22px 24px}
+  .tl-axis{
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-2);margin-bottom:14px;
+    padding-bottom:8px;border-bottom:1px dashed var(--rule);
+  }
+  .tl-axis strong{color:var(--ink);font-weight:700}
+  .tl-lane{margin:0 0 22px;padding:0 0 22px;border-bottom:1px dashed var(--rule)}
+  .tl-lane:last-child{border-bottom:none;padding-bottom:0;margin-bottom:0}
+  .tl-lane.a1{--lev:var(--c1)}
+  .tl-lane.a2{--lev:var(--c4)}
+  .tl-label{
+    font-family:"Fraunces",serif;font-weight:700;font-size:22px;margin:0 0 12px;
+    font-variation-settings:"opsz" 36;letter-spacing:-.005em;
+    color:var(--lev);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  }
+  .tl-label .tl-tag{
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-2);font-weight:700;
+  }
+  .tl-track{
+    display:flex;flex-wrap:wrap;align-items:center;gap:6px;
+    padding:6px 0 8px;
+  }
+  .tl-step{
+    font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.04em;
+    padding:8px 11px;border:1.5px solid var(--lev);background:var(--paper);color:var(--ink);
+    text-align:center;line-height:1.25;
+  }
+  .tl-step.ai{background:var(--lev);color:#fff}
+  .tl-step.gate{background:var(--hi);border:1.5px dashed var(--ink)}
+  .tl-step.gate::before{content:"✋ "}
+  .tl-step.ovh{
+    background:#ffe6cc;border:1.5px solid #c5570e;color:#6b2f00;
+    font-weight:700;
+  }
+  .tl-step.gain{
+    background:#dfeed4;border:1.5px dashed #5e7a55;color:#2c4a20;
+    font-style:italic;font-weight:600;
+  }
+  .tl-arr{
+    font-family:"JetBrains Mono",monospace;color:var(--ink-2);
+    font-size:14px;font-weight:700;line-height:1;
+  }
+  .tl-arr.loop{color:var(--lev);font-size:18px}
+  .tl-note{
+    margin-top:8px;font-family:"Lora",serif;font-style:italic;font-size:13.5px;
+    color:var(--ink-2);line-height:1.5;
+  }
+  .tl-meta{
+    margin-top:10px;display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;
+  }
+  .tl-pill{
+    font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700;
+    letter-spacing:.04em;padding:6px 11px;background:var(--paper-2);
+    border:1px solid var(--rule);color:var(--ink);
+  }
+  .tl-pill.ovh{background:#ffe6cc;border-color:#c5570e;color:#6b2f00}
+  .tl-pill.gain{background:#dfeed4;border-color:#5e7a55;color:#2c4a20}
+  .tl-legend{
+    margin-top:14px;padding:10px 14px;background:var(--paper-2);border:1px solid var(--rule);
+    display:flex;flex-wrap:wrap;gap:16px;align-items:center;
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-2);
+    letter-spacing:.06em;
+  }
+  .tl-legend > span{display:flex;align-items:center;gap:6px}
+  .tl-legend .sw{display:inline-block;width:22px;height:14px;border:1.5px solid var(--ink);background:var(--paper)}
+  .tl-legend .sw.ai{background:var(--ink)}
+  .tl-legend .sw.gate{background:var(--hi);border-style:dashed}
+  .tl-legend .sw.ovh{background:#ffe6cc;border-color:#c5570e}
+  .tl-legend .sw.gain{background:#dfeed4;border-color:#5e7a55;border-style:dashed}
+
+  /* GLOSSARY · collapsible · same pattern as the sibling page */
+  details.glossary{margin:0 0 28px}
+  details.glossary > summary{
+    list-style:none;cursor:pointer;
+    padding:11px 16px;border:1px solid var(--rule);background:var(--paper-2);
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--ink-2);font-weight:700;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+  }
+  details.glossary > summary::-webkit-details-marker{display:none}
+  details.glossary > summary:hover{background:var(--hi);color:var(--ink)}
+  details.glossary > summary::after{content:"▾";font-size:14px;transition:transform .2s}
+  details.glossary[open] > summary::after{transform:rotate(180deg)}
+  details.glossary > summary .gl-label{flex:1}
+  .gl-grid{
+    padding:16px 18px;border:1px solid var(--rule);border-top:0;background:var(--paper);
+    display:grid;grid-template-columns:repeat(3,1fr);gap:14px 22px;
+    font-size:13.5px;line-height:1.5;
+  }
+  @media (max-width:760px){.gl-grid{grid-template-columns:1fr 1fr}}
+  @media (max-width:480px){.gl-grid{grid-template-columns:1fr}}
+  .gl-grid > div strong{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--ink)}
+  .gl-grid > div span{color:var(--ink-2)}
+
+  /* dotted underline for inline abbreviations */
+  abbr[title]{text-decoration:underline dotted var(--rule);text-underline-offset:3px;cursor:help;text-decoration-thickness:1px}
+  .tl-step[title]{cursor:help}
+
+  .panel-foot{
+    grid-column:1/-1;padding:14px 22px;border-top:1px solid var(--rule);
+    background:var(--hi);font-family:"Lora",serif;font-style:italic;font-size:14.5px;
+    line-height:1.55;color:var(--ink);
+  }
+  .panel-foot strong{font-style:normal;font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);margin-right:6px}
+
+  /* THRESHOLD CALLOUT */
+  .threshold{
+    margin:0 0 36px;border:1.5px solid var(--ink);background:var(--paper);
+    padding:24px 28px;
+  }
+  .threshold h3{margin:0 0 10px;font-family:"Fraunces",serif;font-size:24px;font-weight:700;letter-spacing:-.005em;font-variation-settings:"opsz" 48}
+  .threshold p{margin:0 0 14px;font-size:15px;line-height:1.6}
+  .threshold ol{margin:14px 0 0;padding-left:22px}
+  .threshold li{margin:8px 0;font-size:14.5px;line-height:1.55}
+  .threshold li strong{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink);letter-spacing:.04em}
+
+  /* BOTTOM LINE */
+  .bottom{
+    margin:48px 0 0;padding:22px 26px;
+    border:2px solid var(--ink);background:var(--paper-2);
+  }
+  .bottom h3{margin:0 0 12px;font-family:"Fraunces",serif;font-size:28px;font-weight:800;letter-spacing:-.01em;font-variation-settings:"opsz" 60}
+  .bottom h3 em{font-style:italic;font-weight:500;color:var(--ink-2)}
+  .bottom p{margin:0 0 12px;font-size:15.5px;line-height:1.6}
+  .bottom .see{
+    margin-top:14px;padding:11px 14px;border:1px dashed var(--ink);background:var(--paper);
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  }
+  .bottom .see a{color:var(--ink);text-decoration:none;border-bottom:1.5px solid var(--ink);padding-bottom:1px}
+
+  footer{margin-top:64px;border-top:6px double var(--ink);padding-top:18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+  footer .sig{font-style:italic;text-transform:none;letter-spacing:0;font-family:"Lora",serif;color:var(--ink-2)}
+
+  @media print{
+    body{background:#fff}
+    .slider-sec{break-inside:avoid;page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="mast">
+  <div class="kicker">
+    <span>📎 Sibling reference · <a href="index.html">↶ How much scaffolding do you actually need?</a></span>
+    <span>v1.0 · May 2026</span>
+  </div>
+  <h1>In-the-loop <em>vs</em> Send-off</h1>
+  <p class="lede">Two ways to work with AI on existing code. At May-2026 capability, one wins decisively for brownfield production work — but the other already wins for greenfield POCs and isolated tickets. Here's where each fits today, with a slider you can drag to see when the math flips.</p>
+</header>
+
+<aside class="seealso">
+  <span>📐 This is about <strong>which interaction mode</strong> you use day-to-day · the sibling doc is about <strong>how much process scaffolding</strong> the work needs · both axes compose</span>
+  <a href="index.html">Scaffolding levels →</a>
+</aside>
+
+<!-- GLOSSARY · expand to see what the shorthand means -->
+<details class="glossary">
+  <summary><span class="gl-label">📖 Shorthand used below · context-switch · PR · AC · POC · brownfield · greenfield · one-shot rate · agent · IDE</span></summary>
+  <div class="gl-grid">
+    <div><strong>Context-switch</strong> <span>The mental cost of leaving one task, doing something else, and reloading the original task in your head. ~23 min typical to fully refocus. The load-bearing cost of Send-off.</span></div>
+    <div><strong>CONTEXT-OUT</strong> <span>You walk away from the work — start something else while AI is busy in the background. (Free going out — the tax is on the way back.)</span></div>
+    <div><strong>CONTEXT-BACK</strong> <span>You return to the task — pay the mental reload tax before you can usefully review what AI did.</span></div>
+    <div><strong>PR</strong> <span>Pull request. A proposed code change that needs review before merging into the main branch.</span></div>
+    <div><strong>AC</strong> <span>Acceptance criteria. The testable checklist that proves a ticket is "done."</span></div>
+    <div><strong>POC</strong> <span>Proof of concept. A throwaway prototype that tests an idea — not used by real users in production.</span></div>
+    <div><strong>Brownfield</strong> <span>Existing codebase with conventions, history, and integration surprises. Harder for AI than greenfield because hidden constraints matter.</span></div>
+    <div><strong>Greenfield</strong> <span>New code from scratch — no existing conventions to violate, no legacy integration surprises.</span></div>
+    <div><strong>One-shot rate</strong> <span>How often AI gets a ticket right on the first try, without needing to reprompt or correct.</span></div>
+    <div><strong>Agent</strong> <span>An AI process that runs autonomously — picks up a ticket from a queue, writes code, raises a PR, all without human input mid-task.</span></div>
+    <div><strong>IDE</strong> <span>Integrated development environment — your code editor (VS Code, Cursor, JetBrains, etc.).</span></div>
+    <div><strong>CI</strong> <span>Continuous integration. Automated build + test pipeline that runs on every PR.</span></div>
+  </div>
+</details>
+
+<!-- THE TWO APPROACHES -->
+<section class="approaches">
+
+  <article class="approach a1">
+    <div class="a-kicker">Approach 1 · Default for brownfield production today</div>
+    <h2><span class="emoji">🧑‍💻</span>In-the-loop</h2>
+    <p class="a-tag">You stay in the IDE. AI is the pair, not the doer. Plan, prompt, watch the code stream in, react, reprompt — all in one continuous flow.</p>
+
+    <div class="miniflow">
+      <h4>How it flows</h4>
+      <div class="mf-row">
+        <span class="mf-box">PLAN</span>
+        <span class="mf-arr">→</span>
+        <span class="mf-box ai">AI codes</span>
+        <span class="mf-arr">→</span>
+        <span class="mf-box gate">YOU READ</span>
+        <span class="mf-arr">→</span>
+        <span class="mf-box gate">REPROMPT</span>
+        <span class="mf-arr">→</span>
+        <span class="mf-box">LOCAL TEST</span>
+        <span class="mf-arr">→</span>
+        <span class="mf-box">PR</span>
+      </div>
+      <div class="mf-loop">↺ ~2 prompt cycles average · low cost per cycle (you never lost context)</div>
+    </div>
+
+    <div class="a-feel">
+      <strong>What it feels like</strong>
+      Fast feedback. AI gets something wrong, you correct it within 30 seconds. Tests run locally on the changed code. You never lost the mental model of the task.
+    </div>
+
+    <div class="a-tags">
+      <span class="a-pill">Tight feedback loop</span>
+      <span class="a-pill">Low context-switch cost</span>
+      <span class="a-pill">Serial throughput</span>
+      <span class="a-pill">Brownfield-friendly</span>
+    </div>
+  </article>
+
+  <article class="approach a2">
+    <div class="a-kicker">Approach 2 · Ahead of its time for production · ready for POCs</div>
+    <h2><span class="emoji">📤</span>Send-off</h2>
+    <p class="a-tag">Plan goes in a ticket. GitHub Action (or remote agent) picks it up. AI builds a PR while you're doing something else. You come back to a finished PR — or, &gt;50% of the time, one that needs more rounds.</p>
+
+    <div class="miniflow">
+      <h4>How it flows</h4>
+      <div class="mf-row">
+        <span class="mf-box">PLAN in ticket</span>
+        <span class="mf-arr">→</span>
+        <span class="mf-box ai">Agent picks up</span>
+        <span class="mf-arr">→</span>
+        <span class="mf-box ai">Agent codes</span>
+        <span class="mf-arr">→</span>
+        <span class="mf-box">PR raised</span>
+        <span class="mf-arr">→</span>
+        <span class="mf-box gate">YOU REVIEW</span>
+        <span class="mf-arr">→</span>
+        <span class="mf-box gate">REPROMPT or PULL DOWN</span>
+      </div>
+      <div class="mf-loop">↺ ~2 prompt cycles average · <em>each cycle pays a full context-switch tax</em></div>
+    </div>
+
+    <div class="a-feel">
+      <strong>What it feels like</strong>
+      You queued a ticket, switched to something else, ~30 min later get pinged that a PR is ready. You context-switch back, read the diff, find it half-right, leave a comment, switch away again. Pull down, run tests, find what AI missed.
+    </div>
+
+    <div class="a-tags">
+      <span class="a-pill">High parallelism ceiling</span>
+      <span class="a-pill">Heavy context-switch cost</span>
+      <span class="a-pill">Async-friendly</span>
+      <span class="a-pill">⚠️ Brownfield-fragile today</span>
+    </div>
+  </article>
+
+</section>
+
+<!-- SIDE-BY-SIDE TIMELINE COMPARISON -->
+<div class="sec-kicker">🕐 Side-by-side · same ticket, both timelines</div>
+<h2 class="sec">Where the overhead <em>actually lives</em></h2>
+<p class="sec-lede">Tracing the same brownfield ticket through both workflows at today's ~50% one-shot rate. Same horizontal time axis. The amber boxes are overhead unique to Send-off. The green box is the parallelism gain. You can see at a glance where the tax is paid and what you get for it.</p>
+
+<div class="tl-compare">
+  <div class="tl-head">
+    <span>🎟️ Walkthrough · one ticket · 2 prompt cycles needed (typical at 50% one-shot)</span>
+    <span style="opacity:.7">→ time</span>
+  </div>
+  <div class="tl-body">
+
+    <div class="tl-axis">⏱ <strong>Time →</strong> &nbsp;&nbsp;both lanes run left to right · same scale</div>
+
+    <!-- LANE 1: In-the-loop -->
+    <div class="tl-lane a1">
+      <div class="tl-label">🧑‍💻 In-the-loop <span class="tl-tag">stays in IDE the whole way</span></div>
+      <div class="tl-track">
+        <span class="tl-step">PLAN</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step">Prompt</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step ai">AI codes</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step gate">READ result</span>
+        <span class="tl-arr loop">↺</span>
+        <span class="tl-step">Reprompt</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step ai">AI redoes</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step gate">READ result</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step">TEST locally</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step">PR</span>
+      </div>
+      <div class="tl-note">Tight loop. AI gets something wrong, you correct it within seconds. Test runs on the changed code in front of you. Never lost context.</div>
+      <div class="tl-meta">
+        <span class="tl-pill">0 context-switches</span>
+        <span class="tl-pill">~5 min/iteration</span>
+        <span class="tl-pill" style="background:var(--ink);color:var(--paper);border-color:var(--ink)">≈ 65 min wall-clock</span>
+      </div>
+    </div>
+
+    <!-- LANE 2: Send-off -->
+    <div class="tl-lane a2">
+      <div class="tl-label">📤 Send-off <span class="tl-tag">queue · walk away · come back · review</span></div>
+      <div class="tl-track">
+        <span class="tl-step">PLAN in ticket</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step">Queue agent</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step ovh" title="Context-switch OUT — you walk away to work on something else while AI is busy. Pays no tax going out, but the return trip will.">⚡ CONTEXT-OUT</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step ai">Agent codes (async)</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step ovh" title="Context-switch BACK — you return to the task. Pay the mental reload tax (~23 min typical) before you can usefully review what AI did.">⚡ CONTEXT-BACK</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step gate">REVIEW PR</span>
+        <span class="tl-arr loop">↺</span>
+        <span class="tl-step ovh" title="Context-switch OUT — you walk away to work on something else while AI is busy. Pays no tax going out, but the return trip will.">⚡ CONTEXT-OUT</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step ai">Agent redoes</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step ovh" title="Context-switch BACK — you return to the task. Pay the mental reload tax (~23 min typical) before you can usefully review what AI did.">⚡ CONTEXT-BACK</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step gate">REVIEW PR</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step ovh" title="Pull down — fetch the PR branch locally so you can run it on your machine. Send-off can't skip this for production work because AI testing quality (~50%) isn't good enough to merge without a local check.">PULL DOWN</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step">TEST locally</span>
+        <span class="tl-arr">→</span>
+        <span class="tl-step">MERGE</span>
+      </div>
+      <div class="tl-track" style="margin-top:4px;padding-top:4px;border-top:1px dashed var(--rule)">
+        <span class="tl-step gain">⚡ During each CTX-OUT, 4 other queued tickets are progressing in parallel · this is the gain</span>
+      </div>
+      <div class="tl-note">More steps, more friction per ticket — but the "out" gaps are productive if you have other tickets queued. The overhead is real; the parallelism is real; they trade off against each other.</div>
+      <div class="tl-meta">
+        <span class="tl-pill ovh">3 context-switches · ~23 min each</span>
+        <span class="tl-pill ovh">+ pull-down round-trip</span>
+        <span class="tl-pill gain">+ ~5 tickets in parallel</span>
+        <span class="tl-pill" style="background:var(--ink);color:var(--paper);border-color:var(--ink)">≈ 85 min per ticket · ~5 in flight</span>
+      </div>
+    </div>
+
+    <div class="tl-legend">
+      <strong style="color:var(--ink);letter-spacing:.14em">Legend ↓</strong>
+      <span><span class="sw"></span>step</span>
+      <span><span class="sw ai"></span>AI step</span>
+      <span><span class="sw gate"></span>✋ human gate</span>
+      <span><span class="sw ovh"></span>⚡ overhead unique to Send-off</span>
+      <span><span class="sw gain"></span>⚡ parallelism gain</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- TRADE-OFF TABLE -->
+<div class="sec-kicker">📊 At a glance</div>
+<h2 class="sec">The honest <em>trade-offs</em></h2>
+<p class="sec-lede">Two columns, one row per axis. Both approaches are real options — just optimised for different conditions.</p>
+
+<div class="trade">
+  <div></div>
+  <div>🧑‍💻 In-the-loop</div>
+  <div>📤 Send-off</div>
+
+  <div class="label">Feedback loop</div>
+  <div class="win a1">Tight — seconds to spot a wrong direction</div>
+  <div>Loose — minutes to hours between cycles</div>
+
+  <div class="label">Context-switch cost per iteration</div>
+  <div class="win a1">~5–10 min (you're still in the task)</div>
+  <div>~20–25 min (full mental reload + pull-down)</div>
+
+  <div class="label">Parallelism ceiling</div>
+  <div>1–2 tickets at a time (you're the bottleneck)</div>
+  <div class="win a2">5+ tickets in flight (agents work async)</div>
+
+  <div class="label">Cost when AI gets it wrong</div>
+  <div class="win a1">Cheap — see it immediately, redirect in place</div>
+  <div>Expensive — wasted CI run, wasted PR, wasted review minutes</div>
+
+  <div class="label">Local testing — when does it happen?</div>
+  <div class="win a1">Continuously, on the changed code in front of you</div>
+  <div>After PR — you usually pull down anyway, doubling the loop</div>
+
+  <div class="label">Where it's used today</div>
+  <div>Cursor · Claude Code · Copilot Chat · Aider · Cline · IDE pair flows</div>
+  <div>Devin · Cursor Agents · Codex Cloud · GitHub Copilot Workspace · custom GitHub Actions</div>
+
+  <div class="label">Best for</div>
+  <div class="win a1">Brownfield production work · ambiguous tickets · anything with subtle integration risk</div>
+  <div class="win a2">POCs · greenfield prototypes · isolated bug fixes · doc/lint/type fixes · "throw away if wrong"</div>
+</div>
+
+<!-- NUMBERS -->
+<div class="sec-kicker">📐 What's actually true in May 2026</div>
+<h2 class="sec">The <em>numbers</em></h2>
+<p class="sec-lede">Estimates — calibrate to your team. The directional gap between bounded benchmarks and real brownfield work is the load-bearing finding here.</p>
+
+<div class="numbers">
+  <div class="head">
+    <span>🧪 Capability snapshot · what to expect from agentic AI</span>
+    <span style="opacity:.7">Rough estimates · sources cited</span>
+  </div>
+  <div class="body">
+
+    <div class="stat">
+      <div>
+        <div class="n">~87<span class="unit">%</span></div>
+        <div class="lbl">Benchmark ceiling</div>
+      </div>
+      <div>
+        <div class="desc"><strong>SWE-bench Verified</strong> — Claude Opus 4.7 sits near the top; GPT-5.5-Codex hits ~83% on Terminal-Bench 2.0. <em>This is the upper bound on bounded, single-repo tasks with well-defined issues.</em></div>
+        <div class="src">Source: published Anthropic and OpenAI model cards · verifiable on public leaderboards.</div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div>
+        <div class="n">~50<span class="unit">%</span></div>
+        <div class="lbl">Real-world brownfield</div>
+      </div>
+      <div>
+        <div class="desc"><strong>Async-agent PR merge rates on existing codebases</strong> — public reports from teams running Devin, Cursor Agents, and custom Action flows consistently land in the 30–60% range for non-trivial brownfield work. Existing code's hidden constraints, conventions, and integration surprises don't show up in benchmarks.</div>
+        <div class="src">Source: team experience reports · independent reviews of agent platforms · gap with SWE-bench is the headline.</div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div>
+        <div class="n">~23<span class="unit">min</span></div>
+        <div class="lbl">Context-switch cost</div>
+      </div>
+      <div>
+        <div class="desc"><strong>Mental recovery time after a workplace interruption</strong> — the durable finding from Gloria Mark's interruption research (UC Irvine). Send-off pays this cost on every iteration cycle; In-the-loop doesn't, because you never left.</div>
+        <div class="src">Source: Mark et al., human–computer interaction research · pre-dates LLMs and still applies.</div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div>
+        <div class="n">~50<span class="unit">%</span></div>
+        <div class="lbl">AI testing quality</div>
+      </div>
+      <div>
+        <div class="desc"><strong>How much testing capability AI replaces vs a human</strong> — AI writes tests against stated AC well, but misses subtle integration bugs, race conditions, real-world data weirdness, and "this looks wrong but I can't say why" smells. Local human testing is still load-bearing for production work.</div>
+        <div class="src">Source: rough estimate based on field experience · expect this number to climb fastest of the four.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SLIDER -->
+<div class="sec-kicker">🎚️ Try the math yourself</div>
+<h2 class="sec">Where's <em>your</em> threshold?</h2>
+<p class="sec-lede">Drag the slider. The math compares wall-clock minutes per ticket at your estimated AI one-shot rate. The two curves cross around 80% — that's where Send-off's per-ticket overhead stops dominating, and its parallelism ceiling starts winning.</p>
+
+<section class="slider-sec">
+  <div class="slider-head">
+    <span>📈 Effective minutes per ticket · assuming ~2-day ticket size</span>
+    <span style="opacity:.7">Drag to recalculate</span>
+  </div>
+  <div class="slider-body">
+
+    <div class="slider-left">
+      <h3>Your inputs</h3>
+      <p>Defaults match the May-2026 capability snapshot above. Override if your team's experience differs.</p>
+
+      <div class="slider-input">
+        <label for="rate"><span>AI one-shot rate</span><span class="v"><span id="rate-v">50</span>%</span></label>
+        <input id="rate" type="range" min="25" max="99" value="50" />
+      </div>
+
+      <div class="slider-input">
+        <label for="loop-cost"><span>In-loop iteration cost</span><span class="v"><span id="loop-v">8</span> min</span></label>
+        <input id="loop-cost" type="range" min="3" max="15" value="8" />
+      </div>
+
+      <div class="slider-input">
+        <label for="async-cost"><span>Send-off iteration cost</span><span class="v"><span id="async-v">25</span> min</span></label>
+        <input id="async-cost" type="range" min="15" max="40" value="25" />
+      </div>
+
+      <div class="bars">
+        <div class="bar-row">
+          <div class="bar-label"><span style="color:var(--c1)">🧑‍💻 In-the-loop</span><span class="min" id="a1-min">— min</span></div>
+          <div class="bar-track"><div class="bar-fill a1" id="a1-bar" style="width:0%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span style="color:var(--c4)">📤 Send-off</span><span class="min" id="a2-min">— min</span></div>
+          <div class="bar-track"><div class="bar-fill a2" id="a2-bar" style="width:0%"></div></div>
+        </div>
+        <div class="bar-row win-row" id="winner">
+          <strong>Verdict →</strong><span id="winner-text">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <div class="ch-title">Effective minutes per ticket vs AI one-shot rate</div>
+      <svg class="chart" id="chart" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="chart-legend">
+        <span class="lg"><span class="sw" style="background:var(--c1)"></span>In-the-loop</span>
+        <span class="lg"><span class="sw" style="background:var(--c4)"></span>Send-off</span>
+        <span class="lg"><span class="sw" style="background:var(--ink);height:2px;border-top:1px dashed var(--ink)"></span>your rate</span>
+      </div>
+      <p style="margin:6px 0 0;font-family:'Lora',serif;font-style:italic;font-size:12.5px;color:var(--ink-2);line-height:1.5">Model assumes ~30 min plan + ~30 min final test, and that expected iterations ≈ 1 / one-shot rate. Parallelism gains from Send-off are not in this chart — they show up as a throughput multiplier above the chart's per-ticket view.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- CAVEATS: what the slider doesn't model -->
+<div class="sec-kicker">⚠️ Reality check on the math</div>
+<h2 class="sec">What the slider <em>doesn't</em> show</h2>
+<p class="sec-lede">The chart is useful for direction-setting, not precision. Three real-world effects it doesn't capture — all of them shift the picture toward In-the-loop more than the math suggests.</p>
+
+<div class="panel three">
+  <div class="panel-head">
+    <span>🚧 Hidden constraints the model ignores</span>
+    <span style="opacity:.7">Read before quoting the chart at people</span>
+  </div>
+
+  <div class="col">
+    <h4>🚦 Review bandwidth is the real ceiling</h4>
+    <p>As one-shot rate climbs, the bottleneck shifts from "AI getting it right" to "human reviewing fast enough." Five parallel agents only help if you can review 5 PRs/hour without quality drop. Past a certain rate the slider says Send-off wins — but throughput hits a wall at <em>how many PRs one person can seriously review per day.</em></p>
+  </div>
+
+  <div class="col">
+    <h4>🟡 The vigilance inversion · "lemons problem"</h4>
+    <p>Counter-intuitively, 90% one-shot may be <em>more</em> dangerous than 50%. When most PRs look fine, reviewers relax — and the bad 10% slips through. At 50% you're vigilant; at 90% you're complacent. Multiple teams report this exact pattern with async agents in early 2026 — the bugs that ship aren't the obvious failures, they're the confident-looking subtle ones.</p>
+  </div>
+
+  <div class="col">
+    <h4>🔀 Most teams use both · not either/or</h4>
+    <p>The decision is per-ticket, not per-team. The same engineer might Send-off five backlog tickets (lint, types, docs, simple refactors) on Friday, then sit In-the-loop Monday for the payment-flow change. The page reads as a binary worldview — in practice it's a <em>routing decision</em> per piece of work.</p>
+  </div>
+
+  <div class="panel-foot">
+    <strong>One thing that isn't a constraint →</strong>Token cost. Send-off uses more tokens per ticket (full exploration each cycle, often parallel) — but at a few cents to a few dollars per ticket, it's still trivial next to a developer hour. <em>Cost isn't the dial; review bandwidth and vigilance are.</em>
+  </div>
+</div>
+
+<!-- WHEN SEND-OFF WORKS TODAY -->
+<div class="sec-kicker">✅ Even today</div>
+<h2 class="sec">When <em>Send-off</em> already wins</h2>
+<p class="sec-lede">Approach 2 isn't a "wait until 2027" tool. At current capability, there's a real lane where its parallelism and async nature beat In-the-loop — the lane where being wrong is cheap.</p>
+
+<div class="panel">
+  <div class="panel-head">
+    <span>🎯 The "send it" matrix · pick the right tool for the task</span>
+    <span style="opacity:.7">Today's reality</span>
+  </div>
+
+  <div class="col">
+    <h4 class="a2">📤 Send-off wins today on</h4>
+    <ul>
+      <li><strong>POCs and prototypes</strong> — not used by thousands of people. If it ships broken, you throw it away and try again. Iteration cost from a bad PR is near-zero.</li>
+      <li><strong>Greenfield code</strong> — no existing conventions to violate, no hidden integration surprises. AI is genuinely strong here.</li>
+      <li><strong>Isolated bug fixes</strong> with clear AC and good test coverage already in place. The test suite is the safety net.</li>
+      <li><strong>Doc updates, lint fixes, type annotations, dep bumps</strong> — bounded, low-risk, easy to review at a glance.</li>
+      <li><strong>Codemods and refactors</strong> with a clear before/after example and tests that already cover the surface.</li>
+      <li><strong>Backlog catch-up</strong> — queue 5 low-priority tickets on Friday afternoon, review the PRs Monday morning. Throughput &gt; per-ticket efficiency.</li>
+      <li><strong>Off-hours work</strong> where you genuinely <em>are</em> doing something else and the async loop is a feature, not a tax.</li>
+    </ul>
+  </div>
+
+  <div class="col">
+    <h4 class="a1">🧑‍💻 Stay in-the-loop for</h4>
+    <ul>
+      <li><strong>Brownfield production work</strong> — code touched by real users, where a wrong PR causes incidents, not laughs.</li>
+      <li><strong>Ambiguous tickets</strong> — anywhere "what does done look like" isn't crisply written before code starts.</li>
+      <li><strong>Cross-cutting changes</strong> — touching auth, payments, schemas, contracts with other teams. High blast radius.</li>
+      <li><strong>Anywhere you'd pull the PR down to test anyway</strong> — if the local-test loop is mandatory, doing it in-loop saves the whole async round-trip.</li>
+      <li><strong>Subtle bugs</strong> — race conditions, flaky tests, "works locally fails in prod." AI's testing quality (~50% of human) is the rate-limiter here.</li>
+      <li><strong>Anything in a regulated path</strong> — settlement, compliance, financial logic. Where being right matters more than being fast.</li>
+    </ul>
+  </div>
+
+  <div class="panel-foot">
+    <strong>Heuristic →</strong>If a wrong PR costs you nothing but a delete, send it off. If a wrong PR costs you an incident, a customer apology, or a 2am page, stay in-the-loop. The cost of being wrong is the dial.
+  </div>
+</div>
+
+<!-- THRESHOLD FLIPS -->
+<div class="sec-kicker">⏳ Where this is heading</div>
+<h2 class="sec">When the threshold <em>flips</em></h2>
+<p class="sec-lede">For Send-off to win on brownfield production work — not just POCs — three capabilities have to climb together. None of them is far off, but none has arrived.</p>
+
+<div class="threshold">
+  <h3>Three gates between today and "Send-off by default"</h3>
+  <p>The slider above shows the per-ticket math flipping near 80% one-shot rate. But per-ticket math isn't the whole story — these are the three real gates that have to clear before a sensible team makes Send-off the default for production work:</p>
+
+  <ol>
+    <li><strong>One-shot rate ~80%+ on real brownfield tickets</strong> · not on benchmarks. Today's ~50% means half the time you're paying full context-switch tax on a partial PR. At ~80% that tax becomes occasional, not constant.</li>
+    <li><strong>AI testing quality near human</strong> · today's ~50%. The reason teams pull every PR down locally isn't because they don't trust the agent — it's because they don't trust the agent's testing. Close that gap and the local-test round-trip stops being mandatory.</li>
+    <li><strong>AI starts asking the right clarifying questions before coding</strong> · today, agents code from whatever was in the ticket. Ambiguous ticket → wrong PR → reprompt cycle. The day agents reliably push back with "before I start, I need to know X, Y, Z" — that's the day the async loop stops bleeding cycles to ambiguity.</li>
+  </ol>
+
+  <p style="margin-top:18px;font-style:italic;color:var(--ink-2);font-size:14.5px">Honest horizon: somewhere between <strong style="font-style:normal;color:var(--ink)">6 and 36 months</strong> depending on which gate moves fastest — most likely <strong style="font-style:normal;color:var(--ink)">12–24 months</strong> for general brownfield work, longer for regulated. The exact date is a guess; the <em>shape</em> (these three gates, in roughly this order) is the load-bearing claim. Worth watching, not worth re-tooling your team around yet.</p>
+</div>
+
+<!-- FURTHER READING -->
+<div class="sec-kicker">📚 Calibrate against real reports</div>
+<h2 class="sec">Further <em>reading</em></h2>
+<p class="sec-lede">Recent work (Feb–May 2026) worth searching for to pressure-test the numbers above against your own team's reality. None of these are quoted directly here — they're starting points, not proof.</p>
+
+<div class="panel">
+  <div class="panel-head">
+    <span>🔎 Named references · search and judge for yourself</span>
+    <span style="opacity:.7">Recency · Feb–May 2026</span>
+  </div>
+
+  <div class="col">
+    <h4 class="a1">🧑‍💻 On In-the-loop workflows</h4>
+    <ul>
+      <li><strong>Aider / Paul Gauthier's blog</strong> — ongoing 2026 posts on edit formats and one-shot vs iterative coding. The most data-driven In-the-loop optimisation work in public.</li>
+      <li><strong>Anthropic Claude Code launch materials</strong> — published patterns for Plan Mode, Skills, and agentic loops; April 2026 release notes.</li>
+      <li><strong>Cline / Continue / Roo Code community discussions</strong> — open-source IDE-pair tools, lots of public failure-mode write-ups.</li>
+      <li><strong>Latent Space podcast (swyx + Alessio)</strong> — recurring deep-dives on developer workflows with current models.</li>
+    </ul>
+  </div>
+
+  <div class="col">
+    <h4 class="a2">📤 On Send-off / async agents</h4>
+    <ul>
+      <li><strong>Cursor Background Agents launch + community feedback</strong> (early 2026) — public reports on what works and where it breaks.</li>
+      <li><strong>Cognition / Devin published case studies</strong> — specific merge rates on real customer engagements.</li>
+      <li><strong>GitHub Copilot Workspace 2026 telemetry</strong> — periodic public reports on async-agent throughput.</li>
+      <li><strong>Sourcegraph "AI code review at scale" reports</strong> — telemetry-grounded findings on review fatigue and quality drop.</li>
+      <li><strong>"AI PR review fatigue" discussions on HN / X</strong> — recurring early-2026 threads; direct evidence for the vigilance inversion.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- BOTTOM LINE -->
+<div class="bottom">
+  <h3>Bottom line <em>· May 2026</em></h3>
+  <p><strong>For brownfield production work on existing repos, default to In-the-loop.</strong> The feedback loop is tighter, the context-switch cost is lower, and the cost-of-being-wrong is lower when AI gets things wrong half the time.</p>
+  <p><strong>For POCs, greenfield prototypes, isolated low-risk tickets, and backlog catch-up, send it off.</strong> Parallelism is real value even at today's capability — as long as a wrong PR is cheap.</p>
+  <p>The threshold flips when AI's brownfield one-shot rate climbs to ~80%, testing quality nears human, and agents start asking the right clarifying questions. That's likely 12–24 months out, not next quarter. Don't rebuild your team around it yet.</p>
+
+  <div class="see">
+    <span>📐 The companion question — <strong style="color:var(--ink)">how much process scaffolding</strong> does this work need? (ADRs, AC, contracts, audit trails)</span>
+    <a href="index.html">Scaffolding levels →</a>
+  </div>
+</div>
+
+<footer>
+  <span>Reference · In-the-loop vs Send-off · Sibling to "How much scaffolding do you actually need?"</span>
+  <span class="sig">"Pick the workflow that matches today's capability. The threshold moves; the math doesn't."</span>
+  <span>May 2026 · v1.0</span>
+</footer>
+
+</div>
+
+<script>
+  const rate = document.getElementById('rate');
+  const loopCost = document.getElementById('loop-cost');
+  const asyncCost = document.getElementById('async-cost');
+  const rateV = document.getElementById('rate-v');
+  const loopV = document.getElementById('loop-v');
+  const asyncV = document.getElementById('async-v');
+  const a1Min = document.getElementById('a1-min');
+  const a2Min = document.getElementById('a2-min');
+  const a1Bar = document.getElementById('a1-bar');
+  const a2Bar = document.getElementById('a2-bar');
+  const winnerText = document.getElementById('winner-text');
+  const chart = document.getElementById('chart');
+
+  const PLAN = 30;
+  const TEST = 30;
+
+  function calcCost(p, iterCost) {
+    const n = 1 / p;
+    return PLAN + TEST + (n - 1) * iterCost;
+  }
+
+  function fmt(m) {
+    if (m >= 60) {
+      const h = Math.floor(m / 60);
+      const min = Math.round(m - h * 60);
+      return `${h}h ${min}m`;
+    }
+    return `${Math.round(m)} min`;
+  }
+
+  function findCrossover(loopC, asyncC) {
+    // crossover where parallelism would offset per-ticket overhead — rough rule: rate where async overhead per ticket within ~20% of in-loop
+    for (let r = 25; r <= 99; r++) {
+      const p = r / 100;
+      const a1 = calcCost(p, loopC);
+      const a2 = calcCost(p, asyncC);
+      if ((a2 - a1) / a1 < 0.05) return r;
+    }
+    return null;
+  }
+
+  function renderChart(loopC, asyncC, currentRate) {
+    const W = 400, H = 240;
+    const pad = { t: 16, r: 16, b: 36, l: 44 };
+    const innerW = W - pad.l - pad.r;
+    const innerH = H - pad.t - pad.b;
+
+    // X scale: 25..99
+    // Y scale: 0..max
+    let maxY = 0;
+    const points1 = [];
+    const points2 = [];
+    for (let r = 25; r <= 99; r++) {
+      const p = r / 100;
+      const a1 = calcCost(p, loopC);
+      const a2 = calcCost(p, asyncC);
+      if (a2 > maxY) maxY = a2;
+      points1.push([r, a1]);
+      points2.push([r, a2]);
+    }
+    maxY = Math.ceil(maxY / 20) * 20;
+
+    const xToPx = (r) => pad.l + ((r - 25) / (99 - 25)) * innerW;
+    const yToPx = (v) => pad.t + (1 - v / maxY) * innerH;
+
+    const pathFrom = (pts) => pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${xToPx(p[0]).toFixed(1)} ${yToPx(p[1]).toFixed(1)}`).join(' ');
+
+    // gridlines
+    const gridY = [];
+    for (let y = 0; y <= maxY; y += Math.max(20, Math.round(maxY / 4 / 20) * 20)) {
+      gridY.push(y);
+    }
+
+    let svg = '';
+    svg += `<rect x="${pad.l}" y="${pad.t}" width="${innerW}" height="${innerH}" fill="transparent" stroke="none" />`;
+
+    // gridlines + y labels
+    gridY.forEach(y => {
+      const py = yToPx(y);
+      svg += `<line x1="${pad.l}" y1="${py.toFixed(1)}" x2="${pad.l + innerW}" y2="${py.toFixed(1)}" stroke="#cdb992" stroke-width="0.5" stroke-dasharray="2 3" />`;
+      svg += `<text x="${pad.l - 6}" y="${(py + 4).toFixed(1)}" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#3b352c">${y}m</text>`;
+    });
+
+    // x axis labels
+    [25, 50, 75, 99].forEach(r => {
+      const px = xToPx(r);
+      svg += `<text x="${px.toFixed(1)}" y="${(pad.t + innerH + 18).toFixed(1)}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#3b352c">${r}%</text>`;
+    });
+    svg += `<text x="${(pad.l + innerW / 2).toFixed(1)}" y="${(pad.t + innerH + 32).toFixed(1)}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#3b352c" letter-spacing="1">AI one-shot rate</text>`;
+
+    // curves
+    svg += `<path d="${pathFrom(points1)}" fill="none" stroke="#3f7461" stroke-width="2.5" />`;
+    svg += `<path d="${pathFrom(points2)}" fill="none" stroke="#a06b1f" stroke-width="2.5" />`;
+
+    // current rate marker
+    const cx = xToPx(currentRate);
+    svg += `<line x1="${cx.toFixed(1)}" y1="${pad.t}" x2="${cx.toFixed(1)}" y2="${pad.t + innerH}" stroke="#1c1a16" stroke-width="1" stroke-dasharray="3 3" />`;
+    const cur1 = calcCost(currentRate / 100, loopC);
+    const cur2 = calcCost(currentRate / 100, asyncC);
+    svg += `<circle cx="${cx.toFixed(1)}" cy="${yToPx(cur1).toFixed(1)}" r="4" fill="#3f7461" stroke="#1c1a16" stroke-width="1" />`;
+    svg += `<circle cx="${cx.toFixed(1)}" cy="${yToPx(cur2).toFixed(1)}" r="4" fill="#a06b1f" stroke="#1c1a16" stroke-width="1" />`;
+
+    chart.innerHTML = svg;
+  }
+
+  function update() {
+    const r = parseInt(rate.value, 10);
+    const p = r / 100;
+    const loopC = parseInt(loopCost.value, 10);
+    const asyncC = parseInt(asyncCost.value, 10);
+
+    rateV.textContent = r;
+    loopV.textContent = loopC;
+    asyncV.textContent = asyncC;
+
+    const a1 = calcCost(p, loopC);
+    const a2 = calcCost(p, asyncC);
+
+    a1Min.textContent = fmt(a1);
+    a2Min.textContent = fmt(a2);
+
+    const maxM = Math.max(a1, a2, 60);
+    a1Bar.style.width = `${Math.min(100, (a1 / maxM) * 100)}%`;
+    a2Bar.style.width = `${Math.min(100, (a2 / maxM) * 100)}%`;
+
+    const diff = a2 - a1;
+    const diffPct = (diff / a1) * 100;
+
+    if (Math.abs(diffPct) < 5) {
+      winnerText.innerHTML = `Roughly tied per ticket. At this rate, <strong style="font-style:normal">parallelism becomes the deciding factor</strong> — if you have 4+ tickets ready to queue and the review bandwidth to keep up, Send-off's throughput edge starts winning.`;
+    } else if (diff > 0) {
+      winnerText.innerHTML = `<strong style="font-style:normal;color:var(--c1)">🧑‍💻 In-the-loop wins by ${fmt(diff)} per ticket</strong> (${Math.round(diffPct)}% faster). At ${r}% one-shot rate, the context-switch tax on Send-off outweighs its parallelism benefit for brownfield production work.`;
+    } else {
+      winnerText.innerHTML = `<strong style="font-style:normal;color:var(--c4)">📤 Send-off wins by ${fmt(-diff)} per ticket</strong> (${Math.round(-diffPct)}% faster). At ${r}% one-shot rate, iterations are rare enough that async overhead is negligible — parallelism becomes the winning move.`;
+    }
+
+    renderChart(loopC, asyncC, r);
+  }
+
+  rate.addEventListener('input', update);
+  loopCost.addEventListener('input', update);
+  asyncCost.addEventListener('input', update);
+  update();
+</script>
+
+</body>
+</html>
