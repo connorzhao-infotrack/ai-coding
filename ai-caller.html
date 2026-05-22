@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI-Caller (InfoDialer) — Project Overview</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2230; --line:#30363d;
+    --ink:#e6edf3; --muted:#8b949e; --dim:#6e7681;
+    --accent:#58a6ff; --cyan:#39d0d8; --purple:#bc8cff; --pink:#ff7b9b;
+    --good:#3fb950; --warn:#d29922; --bad:#f85149;
+    --code:#1f242c;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  main{max-width:1180px;margin:0 auto;padding:28px 32px}
+  h1{font-size:26px;margin:0 0 4px;letter-spacing:-.01em}
+  h2{font-size:12px;margin:24px 0 10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  h3{font-size:14px;margin:0 0 6px;color:var(--ink)}
+  p{margin:0 0 8px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .sub{color:var(--muted);margin:0 0 18px}
+  .row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .row.two{grid-template-columns:repeat(2,1fr)}
+  .row.four{grid-template-columns:repeat(4,1fr)}
+  .row.five{grid-template-columns:repeat(5,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .card h3 span{font-weight:400;color:var(--muted);font-size:12px}
+  ul,ol{margin:6px 0 0;padding-left:18px}
+  li{margin:3px 0}
+  .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#1f2937;color:var(--accent)}
+  .pill.warn{background:#3b2e0f;color:var(--warn)}
+  .pill.good{background:#0f3320;color:var(--good)}
+  .pill.bad{background:#3b1112;color:var(--bad)}
+  .pill.muted{background:#1f242c;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+  code{font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;background:var(--code);padding:1px 5px;border-radius:4px;color:#e6edf3}
+  pre{background:var(--code);padding:10px 12px;border-radius:6px;font-size:12px;overflow:auto;margin:6px 0 8px;border:1px solid var(--line)}
+  pre code{background:none;padding:0}
+  .callout{border-left:3px solid var(--warn);background:#1f1a0c;padding:10px 12px;border-radius:0 6px 6px 0;margin:10px 0}
+  .callout.bad{border-left-color:var(--bad);background:#1f0f0f}
+  .callout.good{border-left-color:var(--good);background:#0e1f15}
+  .callout.idea{border-left-color:var(--accent);background:#0d1a2b}
+  footer{margin-top:18px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:10px}
+
+  .hero{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:6px 0 18px}
+  .stat{background:linear-gradient(140deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .stat .ico{font-size:20px;line-height:1}
+  .stat .v{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:6px;color:var(--ink)}
+  .stat .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:2px}
+  .stat.accent .v{color:var(--accent)}
+  .stat.cyan .v{color:var(--cyan)}
+  .stat.purple .v{color:var(--purple)}
+  .stat.pink .v{color:var(--pink)}
+  .stat.warn .v{color:var(--warn)}
+
+  .diag{width:100%;height:auto;display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+
+  .bucket-tools{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:12px}
+  .bucket-help{font-size:12px;color:var(--muted)}
+  .reset-btn{font-size:11px;background:transparent;border:1px solid var(--line);color:var(--muted);padding:4px 10px;border-radius:5px;cursor:pointer;font-family:inherit}
+  .reset-btn:hover{color:var(--ink);border-color:var(--accent)}
+  .buckets{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:8px 0}
+  .bucket{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;min-height:280px;display:flex;flex-direction:column;gap:8px;transition:border-color .12s,background .12s}
+  .bucket.drop-over{border-color:var(--accent);background:#0d1a2b}
+  .bucket.stretch{border-style:dashed}
+  .bucket-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:8px}
+  .bucket-name{font-size:13px;font-weight:600}
+  .bucket-total{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .bucket-total.over{color:var(--warn)}
+  .task-list{display:flex;flex-direction:column;gap:7px;min-height:40px}
+  .task{background:#1c2230;border:1px solid var(--line);border-left:3px solid var(--dim);border-radius:7px;padding:7px 9px;cursor:grab;font-size:12px;user-select:none}
+  .task:active{cursor:grabbing}
+  .task.dragging{opacity:.4}
+  .t-head{display:flex;gap:6px;align-items:center;margin-bottom:2px;flex-wrap:wrap}
+  .t-units{font-size:10px;font-weight:700;background:#243044;color:#bcd1f0;padding:1px 5px;border-radius:4px;flex-shrink:0}
+  .t-phase{font-size:10px;font-weight:700;padding:1px 5px;border-radius:4px;flex-shrink:0;letter-spacing:.04em}
+  .t-phase.p1{background:#0e2426;color:var(--cyan)}
+  .t-phase.p2{background:#241a14;color:var(--muted)}
+  .t-title{font-weight:600;color:var(--ink);line-height:1.25}
+  .t-tick{font-size:10px;color:var(--accent);margin-bottom:2px}
+  .t-desc{font-size:11px;color:var(--muted);line-height:1.4}
+  .task.tag-infra{border-left-color:var(--warn)}
+  .task.tag-integration{border-left-color:var(--pink)}
+  .task.tag-api{border-left-color:var(--accent)}
+  .task.tag-fe{border-left-color:var(--cyan)}
+  .task.tag-voice{border-left-color:var(--purple)}
+  .task.tag-playbook{border-left-color:var(--good)}
+  .task.tag-tooling{border-left-color:var(--dim)}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:var(--muted);margin-top:6px}
+  .legend .dot{display:inline-block;width:10px;height:3px;margin-right:5px;vertical-align:middle;border-radius:2px}
+
+  /* parallel streams */
+  .streams{display:grid;grid-template-columns:170px 1fr 1fr 1fr 1fr 1fr;gap:4px;font-size:12px;margin-top:8px}
+  .streams .head{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:6px 4px}
+  .streams .who{padding:8px 6px;background:var(--panel);border-radius:6px;border:1px solid var(--line);font-weight:600}
+  .streams .blk{padding:8px 8px;border-radius:6px;font-size:11px;line-height:1.35}
+  .streams .blk.contract{background:#0d1a2b;border:1px solid #1e3a5f;color:#cbe1ff}
+  .streams .blk.build{background:#0e2426;border:1px solid #1f4347;color:#a8e7ec}
+  .streams .blk.integrate{background:#0e1f15;border:1px solid #1f4327;color:#b6e7c4}
+  .streams .blk.harden{background:#241a14;border:1px solid #4a2f1a;color:#f0c9a8}
+
+  @media print{ body{background:#fff;color:#000} .card,pre,.stat,.diag,.bucket,.task,.streams .who,.streams .blk{background:#fff;border-color:#bbb;color:#000} main{padding:16px} .stat .v{color:#000!important} }
+</style>
+</head>
+<body>
+<main>
+
+  <h1>🤖 AI-Caller (InfoDialer) — Project Overview</h1>
+  <p class="sub">AI calls councils &amp; water authorities on behalf of SettleIT (and other consumers later) and returns figures + status humans dial for today.</p>
+
+  <!-- ============= HERO ============= -->
+  <div class="hero">
+    <div class="stat accent">  <div class="ico">📅</div><div class="v">5 days</div><div class="l">to STAGE (Fri 29 May)</div></div>
+    <div class="stat cyan">    <div class="ico">🚀</div><div class="v">12 days</div><div class="l">to PROD (Fri 5 Jun)</div></div>
+    <div class="stat purple">  <div class="ico">👥</div><div class="v">4</div><div class="l">people, fast pace</div></div>
+    <div class="stat pink">    <div class="ico">🏘️</div><div class="v">2 + TBD</div><div class="l">Sydney Water · Blacktown locked · 3rd authority TBD on volume</div></div>
+    <div class="stat warn">    <div class="ico">🏁</div><div class="v">Jun 30</div><div class="l">top-5 milestone · 5 real orders</div></div>
+  </div>
+
+  <!-- ============= ARCH ============= -->
+  <h2>🗺️ Architecture (one picture)</h2>
+  <svg class="diag" viewBox="0 0 1100 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AI-Caller architecture">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#8b949e"/>
+      </marker>
+      <style>
+        .b{fill:#161b22;stroke:#30363d}
+        .b2{fill:#1c2230;stroke:#30363d}
+        .bAccent{fill:#0d1a2b;stroke:#58a6ff}
+        .bCyan{fill:#0e2426;stroke:#39d0d8}
+        .bPurple{fill:#1d1530;stroke:#bc8cff}
+        .bPink{fill:#2a1620;stroke:#ff7b9b}
+        .bWarn{fill:#1f1a0c;stroke:#d29922}
+        .t{fill:#e6edf3;font:600 12px -apple-system,Segoe UI,Roboto,sans-serif}
+        .tSm{fill:#8b949e;font:11px -apple-system,Segoe UI,Roboto,sans-serif}
+        .tAccent{fill:#58a6ff;font:600 12px -apple-system,Segoe UI,Roboto,sans-serif}
+        .ar{stroke:#8b949e;stroke-width:1.4;fill:none}
+        .arDashed{stroke:#8b949e;stroke-width:1.4;stroke-dasharray:4 4;fill:none}
+      </style>
+    </defs>
+    <rect class="bAccent" x="20" y="20" width="180" height="80" rx="10"/>
+    <text class="t" x="110" y="46" text-anchor="middle">🏢 Consumer (SettleIT)</text>
+    <text class="tSm" x="110" y="66" text-anchor="middle">brownfield .NET</text>
+    <text class="tSm" x="110" y="82" text-anchor="middle">+ future consumers</text>
+    <path class="ar" d="M200 60 L 310 60" marker-end="url(#arr)"/>
+    <text class="tAccent" x="255" y="50" text-anchor="middle">POST /api/v1/calls</text>
+    <text class="tSm" x="255" y="76" text-anchor="middle">+ certificateUrl</text>
+    <rect class="b" x="310" y="20" width="500" height="250" rx="12"/>
+    <text class="t" x="560" y="46" text-anchor="middle">🤖 InfoDialer (this repo)</text>
+    <rect class="b2" x="330" y="60" width="130" height="60" rx="8"/>
+    <text class="t" x="395" y="85" text-anchor="middle">API</text>
+    <text class="tSm" x="395" y="103" text-anchor="middle">HTTP + SignalR</text>
+    <rect class="b2" x="480" y="60" width="150" height="60" rx="8"/>
+    <text class="t" x="555" y="85" text-anchor="middle">Core</text>
+    <text class="tSm" x="555" y="103" text-anchor="middle">orchestrator + playbooks</text>
+    <rect class="bWarn" x="650" y="60" width="140" height="60" rx="8"/>
+    <text class="t" x="720" y="80" text-anchor="middle">📜 Extractor</text>
+    <text class="tSm" x="720" y="98" text-anchor="middle">cert URL → fields</text>
+    <text class="tSm" x="720" y="112" text-anchor="middle">(P2 · 10298)</text>
+    <rect class="bCyan" x="330" y="145" width="220" height="50" rx="8"/>
+    <text class="t" x="440" y="170" text-anchor="middle">🧠 IVoiceAIService</text>
+    <text class="tSm" x="440" y="186" text-anchor="middle">IVR · realtime voice</text>
+    <rect class="bPink" x="570" y="145" width="220" height="50" rx="8"/>
+    <text class="t" x="680" y="170" text-anchor="middle">📞 ICallProvider</text>
+    <text class="tSm" x="680" y="186" text-anchor="middle">Telnyx / ACS (trial both)</text>
+    <rect class="bPurple" x="330" y="210" width="220" height="44" rx="8"/>
+    <text class="t" x="440" y="237" text-anchor="middle">💾 Azure SQL + EF Core</text>
+    <rect class="bPurple" x="570" y="210" width="220" height="44" rx="8"/>
+    <text class="t" x="680" y="237" text-anchor="middle">📦 Blob (recordings · 30d)</text>
+    <rect class="bAccent" x="900" y="20" width="180" height="80" rx="10"/>
+    <text class="t" x="990" y="46" text-anchor="middle">📊 Dashboard</text>
+    <text class="tSm" x="990" y="64" text-anchor="middle">React + MobX</text>
+    <text class="tSm" x="990" y="80" text-anchor="middle">SignalR (live)</text>
+    <rect class="bAccent" x="900" y="155" width="180" height="80" rx="10"/>
+    <text class="t" x="990" y="184" text-anchor="middle">☎️ Authorities</text>
+    <text class="tSm" x="990" y="202" text-anchor="middle">Sydney Water · Blacktown</text>
+    <text class="tSm" x="990" y="218" text-anchor="middle">Newcastle · +more (easy)</text>
+    <path class="ar" d="M810 60 L 900 60" marker-end="url(#arr)"/>
+    <text class="tSm" x="855" y="50" text-anchor="middle">SignalR</text>
+    <path class="ar" d="M790 170 L 900 180" marker-end="url(#arr)"/>
+    <path class="arDashed" d="M810 95 C 880 95, 880 30, 200 30" marker-end="url(#arr)"/>
+    <text class="tSm" x="540" y="22">webhook callback</text>
+  </svg>
+
+  <!-- ============= 1 ============= -->
+  <h2>🎯 1 · What it is</h2>
+  <div class="row">
+    <div class="card">
+      <h3>🧩 Service shape</h3>
+      <ul>
+        <li>Generic — <b>not</b> SettleIT-specific. Consumers pass opaque <code>playbook</code> + <code>customFields</code>.</li>
+        <li>REST trigger + webhook callback. SignalR for the internal dashboard only.</li>
+        <li>Playbooks are <b>config, not code</b> — adding councils is &lt;1 day each.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>📟 IVR-only <span>· ~$0.10–0.25/call</span></h3>
+      <ul>
+        <li>Sydney Water</li>
+        <li>STT + text LLM + <code>send_dtmf</code> tool</li>
+        <li>Cheap and fast</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🗣️ Human-agent <span>· ~$0.40–1.00/call</span></h3>
+      <ul>
+        <li>Blacktown + Newcastle</li>
+        <li>Realtime voice (Gemini / OpenAI realtime — trial both)</li>
+        <li>Mock-up proves the pattern</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout good">
+    🎯 <b>Stage by Fri 2026-05-29</b> · 🚀 <b>Production by Fri 2026-06-05</b> · 🏁 <b>5 real orders by 2026-06-30</b>. The earlier the PM/dev can poke at stage, the earlier we find issues — push something demoable as soon as it stands up, even mid-week.
+  </div>
+  <div class="callout idea">
+    📌 <b>22 May standup follow-ups</b>
+    <ul>
+      <li>🎙️ <b>Recording playback in the dashboard is now P1.</b> File handlers must be able to listen back before paying the client — figures are liability. Lexi raised; agreed.</li>
+      <li>🚪 <b>AI Gateway integration (P2).</b> Text LLM calls must route through InfoTrack's AI Gateway for cost management (talk to Chen Ni). Realtime voice exempt for now — gateway doesn't support it yet.</li>
+      <li>📊 <b>Council selection by volume.</b> June's data is in — see new section below. Sydney Water unlocks 7 top NSW councils via one playbook; Brisbane is the biggest single market.</li>
+      <li>🎨 <b>User-flow mapping.</b> Shayla + Aaron (designer), Monday — map roles, steps, decision points end-to-end so there are no gaps from trigger → updated figure.</li>
+      <li>🔐 <b>Call-detail access</b> = same-client users see each other's calls. <b>Simplest path:</b> SettleIT puts a "listen" button on the order that deep-links to the AI-Caller call detail page. No dashboard discovery needed for this flow.</li>
+      <li>🚪 <b>AI Gateway is now a spike</b>, not an integration. Investigate first — if we can get away without using it for extraction, that's the win.</li>
+    </ul>
+  </div>
+
+  <!-- ============= 2 ============= -->
+  <h2>📊 2 · Where we actually are</h2>
+  <table>
+    <thead><tr><th>Area</th><th>Ticket</th><th>State</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>.NET scaffold + CI/CD + Azure</td><td>SETTLEIT-9961</td><td><span class="pill warn">🚧 In progress</span></td><td>Solution landed; staging deploy + CQRS still to wire.</td></tr>
+      <tr><td>React FE — dashboard + live call</td><td>SETTLEIT-9962</td><td><span class="pill warn">👀 Code review</span></td><td>Mocks only; live-data wiring not in scope ⚠️</td></tr>
+      <tr><td>Telephony provider spike</td><td>SETTLEIT-10127</td><td><span class="pill good">✅ Superseded</span></td><td>Close — trial via GLOBALIT-4159 / 4160.</td></tr>
+      <tr><td>Realtime voice integration</td><td>SETTLEIT-9963</td><td><span class="pill bad">🆕 Not started</span></td><td>Mock-up pattern lifts straight in.</td></tr>
+      <tr><td>Call provider + outbound</td><td>SETTLEIT-9964</td><td><span class="pill bad">🆕 Not started</span></td><td>Build behind <code>ICallProvider</code>.</td></tr>
+      <tr><td>Sydney Water IVR playbook</td><td>SETTLEIT-9965</td><td><span class="pill bad">🆕 Not started</span></td><td>Content authoring.</td></tr>
+      <tr><td>Blacktown human-agent playbook</td><td>SETTLEIT-9966</td><td><span class="pill bad">🆕 Not started</span></td><td>Now <b>P1</b> — need a council + a water authority both live.</td></tr>
+      <tr><td>SettleIT integration</td><td>SETTLEIT-9967</td><td><span class="pill bad">🆕 Not started</span></td><td>Single ticket — same team owns both ends.</td></tr>
+      <tr><td>Disclosure / consent flow</td><td>SETTLEIT-9968</td><td><span class="pill bad">🆕 Not started</span></td><td>Wording <a href="https://infotrack.atlassian.net/wiki/spaces/SET/pages/4307583200/AI+caller+legal">signed off by legal</a> — just wire it in.</td></tr>
+      <tr><td>Post-call summary extraction</td><td>SETTLEIT-9969</td><td><span class="pill bad">🆕 Not started</span></td><td>Transcript → fields. P2.</td></tr>
+      <tr><td>🌐 Browser test-mode</td><td>SETTLEIT-10297</td><td><span class="pill good">🆕 Created</span></td><td>Port from <code>C:\code\InfoDialer</code>.</td></tr>
+      <tr><td>📜 Pre-call doc extraction</td><td>SETTLEIT-10298</td><td><span class="pill good">🆕 Created</span></td><td>P2; gated on spike.</td></tr>
+      <tr><td>↳ Spike: extraction approach</td><td>SETTLEIT-10299</td><td><span class="pill good">🆕 Created</span></td><td>Sub-task of 10298; no dtapi.</td></tr>
+      <tr><td>🎙️ Call recording playback (dashboard)</td><td>—</td><td><span class="pill bad">🆕 Proposed (P1)</span></td><td>From 22 May meeting — liability-critical. File handlers must verify figures.</td></tr>
+      <tr><td>🚪 AI Gateway integration</td><td>—</td><td><span class="pill bad">🆕 Proposed (P2)</span></td><td>From 22 May meeting — text LLM through gateway (Chen Ni).</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============= 3 · PARALLELISM ============= -->
+  <h2>🔀 3 · Parallelism — how 5 days actually works</h2>
+  <p style="font-size:13px;color:var(--muted);margin:0 0 10px">
+    With 4 people and 5 working days we have ~20 person-days. P1 ≈ 20d. <b>Zero slack.</b> The way you make this work is by paralleling everything that <i>can</i> parallelise — and that depends on locking the interfaces on Day 1.
+  </p>
+  <div class="row two">
+    <div class="card">
+      <h3>📌 Mon = contract day</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:6px">Land these to <code>main</code> by EOD Monday. Nothing else parallelises cleanly without them.</p>
+      <ul>
+        <li><code>ICallProvider</code> interface signature</li>
+        <li><code>IVoiceAIService</code> interface signature</li>
+        <li>CQRS command/query record shapes (per <code>docs/api-contracts-plan.md</code>)</li>
+        <li>SignalR event payload types</li>
+        <li><code>Playbook</code> entity shape + <code>inputSchema</code> JSON shape</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🏃 Fast-pace rules</h3>
+      <ul>
+        <li><b>Stub, don't wait.</b> Collaborator not ready? Write a fake matching the contract, keep moving, swap later.</li>
+        <li><b>PR review &lt; 2 hours during work day.</b> Block your own coding to unblock a teammate.</li>
+        <li><b>Trunk-based.</b> Small PRs, merge often, fix forward. Don't sit on a long-lived branch.</li>
+        <li><b>Auto-deploy on merge to <code>main</code>.</b> Stage deploy at least daily, ideally on every PR.</li>
+        <li><b>Decisions in chat.</b> Tag <code>[decision]</code> — no meeting required.</li>
+        <li><b>1 hour stuck = pull someone in.</b> Pairing is faster than asynchronous solo struggle.</li>
+      </ul>
+    </div>
+  </div>
+  <h3 style="margin-top:14px;font-size:13px;color:var(--ink)">Independent streams (after Mon's contracts)</h3>
+  <table>
+    <thead><tr><th>#</th><th>Stream</th><th>Depends on (Mon-only)</th><th>Unblocks…</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>⚙️ Infra + staging deploy</td><td>Nothing</td><td>Everything (stage URL = where others demo)</td></tr>
+      <tr><td>2</td><td>🧠 API surface (CQRS + Playbook entity + SignalR hub)</td><td>Contracts</td><td>FE wiring, browser test-mode</td></tr>
+      <tr><td>3</td><td>🎨 FE live-data wiring</td><td>Contracts (stubs work in parallel)</td><td>Demo</td></tr>
+      <tr><td>4</td><td>🗣️ AI voice service (IVR + realtime)</td><td><code>IVoiceAIService</code> interface</td><td>Browser test-mode, end-to-end calls</td></tr>
+      <tr><td>5</td><td>📞 Telephony (<code>ICallProvider</code>)</td><td><code>ICallProvider</code> interface</td><td>Real outbound (P2)</td></tr>
+      <tr><td>6</td><td>📜 Playbook content (Sydney Water · Blacktown · Newcastle)</td><td>Playbook shape</td><td>Real call quality</td></tr>
+      <tr><td>7</td><td>🌐 Browser test-mode (port from mock-up)</td><td>SignalR shape + AI service interface</td><td>Demos without telephony</td></tr>
+      <tr><td>8</td><td>🛡️ Disclosure + consent flow</td><td>AI service interface</td><td>Human-agent calls (Blacktown, Newcastle)</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:var(--muted);margin-top:6px">
+    Streams 2–8 all start Tue once the contracts land. The one true sequential bit is the contract day itself — get past that fast.
+  </p>
+
+  <!-- ============= 4 · BUCKETS ============= -->
+  <h2>👥 4 · Work buckets (drag to rebalance)</h2>
+  <div class="bucket-tools">
+    <div class="bucket-help">Drag any block between people. 1u ≈ 1 person-day. 🎯 P1 (by 29 May) · 🗓️ P2 (by 5 Jun + rest of sprint). Layout saved to local storage.</div>
+    <button class="reset-btn" id="reset-btn" type="button">↩️ Reset to default</button>
+  </div>
+  <div class="buckets" id="buckets">
+    <div class="bucket" data-bucket="marcus" id="bucket-marcus">
+      <div class="bucket-head"><div class="bucket-name">⚙️ Marcus</div><div class="bucket-total" id="bucket-total-marcus">0u</div></div>
+      <div class="task-list" id="list-marcus"></div>
+    </div>
+    <div class="bucket" data-bucket="b" id="bucket-b">
+      <div class="bucket-head"><div class="bucket-name">🤝 B</div><div class="bucket-total" id="bucket-total-b">0u</div></div>
+      <div class="task-list" id="list-b"></div>
+    </div>
+    <div class="bucket" data-bucket="c" id="bucket-c">
+      <div class="bucket-head"><div class="bucket-name">🧠 C · BE + FE</div><div class="bucket-total" id="bucket-total-c">0u</div></div>
+      <div class="task-list" id="list-c"></div>
+    </div>
+    <div class="bucket" data-bucket="d" id="bucket-d">
+      <div class="bucket-head"><div class="bucket-name">📞 D · voice + tel</div><div class="bucket-total" id="bucket-total-d">0u</div></div>
+      <div class="task-list" id="list-d"></div>
+    </div>
+    <div class="bucket stretch" data-bucket="stretch" id="bucket-stretch">
+      <div class="bucket-head"><div class="bucket-name">🗓️ Week 2+ (P2)</div><div class="bucket-total" id="bucket-total-stretch">0u</div></div>
+      <div class="task-list" id="list-stretch"></div>
+    </div>
+  </div>
+  <div class="legend">
+    <span><span class="dot" style="background:var(--warn)"></span>infra</span>
+    <span><span class="dot" style="background:var(--pink)"></span>integration</span>
+    <span><span class="dot" style="background:var(--accent)"></span>backend / api</span>
+    <span><span class="dot" style="background:var(--cyan)"></span>frontend</span>
+    <span><span class="dot" style="background:var(--purple)"></span>voice / telephony</span>
+    <span><span class="dot" style="background:var(--good)"></span>playbook content</span>
+    <span><span class="dot" style="background:var(--dim)"></span>tooling</span>
+  </div>
+
+  <!-- ============= 5 ============= -->
+  <h2>🚨 5 · Tight-on-time fallback</h2>
+  <div class="card">
+    <ul>
+      <li><b>Recorded transcript fixtures</b> for live-page demos when a live call isn't available on stage yet — same data shape as a real call, so the FE renders identically. Useful for early PM/dev feedback before vendor numbers are live.</li>
+    </ul>
+  </div>
+
+  <!-- ============= 6 ============= -->
+  <h2>📜 6 · Cert extraction (P2 · <a href="https://infotrack.atlassian.net/browse/SETTLEIT-10298">10298</a> + spike <a href="https://infotrack.atlassian.net/browse/SETTLEIT-10299">10299</a>)</h2>
+  <div class="callout idea">
+    💡 SettleIT can't extract <i>property number, full address, certificate number (last 5)</i> from the PDF in time — so InfoDialer fetches the public certificate URL and extracts the fields. <b>Not in P1.</b> Explicitly <b>not using <a href="https://github.com/InfoTrackGlobal/DocumentTransformationService">dtapi</a></b> — overkill for one document type. Spike 10299 picks the approach (LLM-vision likely wins).
+  </div>
+<pre><code>{
+  "uniqueReference": "sydney-water-rates",
+  "inputSchema": {
+    "propertyNumber":   { "type":"string" },
+    "fullAddress":      { "type":"string" },
+    "certificateLast5": { "type":"string" }
+  },
+  "inputSourceExtraction": {
+    "sourceField": "certificateUrl",
+    "extract": {
+      "propertyNumber":   { "from":"page1.body" },
+      "fullAddress":      { "from":"page1.body" },
+      "certificateLast5": { "from":"page1.header", "transform":"last5" }
+    }
+  }
+}</code></pre>
+
+  <!-- ============= 7 · DECISIONS ============= -->
+  <h2>✅ 7 · Decisions — locked vs open</h2>
+  <table>
+    <thead><tr><th>Item</th><th>Status</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Telephony provider</td><td><span class="pill warn">🟡 Trial</span></td><td><a href="https://infotrack.atlassian.net/browse/GLOBALIT-4159">4159 (Telnyx)</a> + <a href="https://infotrack.atlassian.net/browse/GLOBALIT-4160">4160 (ACS)</a> — pick one after 3-week trial</td></tr>
+      <tr><td>Realtime voice model</td><td><span class="pill warn">🟡 Trial</span></td><td><a href="https://infotrack.atlassian.net/browse/GLOBALIT-4162">4162 (Gemini)</a> + <a href="https://infotrack.atlassian.net/browse/GLOBALIT-4163">4163 (OpenAI)</a></td></tr>
+      <tr><td>Outbound number</td><td><span class="pill warn">🟡 In flight</span></td><td>Provisioning via 4159 / 4160</td></tr>
+      <tr><td>3rd authority selection</td><td><span class="pill warn">🟡 Volume data in — needs decision</span></td><td>Newcastle = 4 orders. Most NSW councils share Sydney Water — see section 8 for the trade-off.</td></tr>
+      <tr><td>Call-detail access</td><td><span class="pill good">✅ Decided</span></td><td>Same-client users see each other's calls. Deep link from SettleIT → AI-Caller call detail page. No dashboard discovery needed.</td></tr>
+      <tr><td>AI Gateway</td><td><span class="pill warn">🟡 Spike first</span></td><td>Spike whether extraction has to route through gateway. Realtime voice direct regardless.</td></tr>
+      <tr><td>User-flow mapping</td><td><span class="pill warn">🟡 In flight</span></td><td>Shayla + Aaron, Monday. Artifact not ticket.</td></tr>
+      <tr><td>SettleIT-side ownership</td><td><span class="pill good">✅ Resolved</span></td><td>One team — anyone can commit to either repo</td></tr>
+      <tr><td>Disclosure script wording</td><td><span class="pill good">✅ Done</span></td><td><a href="https://infotrack.atlassian.net/wiki/spaces/SET/pages/4307583200/AI+caller+legal">Legal sign-off</a> — just wire it in (9968)</td></tr>
+      <tr><td>Recording retention</td><td><span class="pill good">✅ Decided</span></td><td>30 days. Blob lifecycle rule — no separate ticket needed.</td></tr>
+      <tr><td>Telephony spike (10127)</td><td><span class="pill good">✅ Superseded</span></td><td>Close — live trial replaces the desk research</td></tr>
+      <tr><td>Consumer auth shape</td><td><span class="pill muted">⚪ Open · low urgency</span></td><td>Internal-only first. Add HMAC + OAuth2 before any external consumer.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============= 8 · PROPOSED CHANGES ============= -->
+  <h2>📝 8 · Proposed ticket changes — draft, review, then push</h2>
+  <div class="callout idea">
+    🪪 <b>Read me first.</b> Phase prefix on the title (<code>[P1]</code> / <code>[P2]</code> / <code>[P3]</code> / <code>[P4]</code>) so the board ranks itself at a glance. <b>P1 + P2 = 32 person-days.</b> <b>Status column</b> tracks what's actually been pushed — green pill = applied to Jira, grey pill = still draft pending review.
+  </div>
+  <table>
+    <thead><tr><th>Ticket</th><th>Action</th><th>Proposed title</th><th>Est.</th><th>Status</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>SETTLEIT-9961</td><td><span class="pill warn">Update + scope</span></td><td><code>[P1] - Backend foundation: scaffold, CI/CD, staging deploy</code></td><td>4d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td><b>Critical.</b> Make "deploy to staging" explicit. Milestone is <i>running on stage</i>, not <i>pipeline green</i>.</td></tr>
+      <tr><td>SETTLEIT-9962</td><td><span class="pill warn">Update + expand</span></td><td><code>[P1] - Frontend: dashboard, live call page, live-data wiring</code></td><td>3d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td><b>Critical.</b> Add "wire to real API + SignalR" to scope. Currently nothing covers it.</td></tr>
+      <tr><td>—</td><td><span class="pill good">New</span></td><td><code>[P1] - API surface: CQRS slice + SignalR hub + Playbook entity</code></td><td>3d</td><td><span class="pill muted">📋 Draft</span></td><td><b>Critical.</b> Whole P1 demo flows through this. Currently no ticket.</td></tr>
+      <tr><td>SETTLEIT-9963</td><td><span class="pill warn">Update</span></td><td><code>[P1] - AI voice service: IVR + realtime modes</code></td><td>3d</td><td><span class="pill muted">📋 Draft</span></td><td>Both modes one ticket; mock-up lifts cleanly.</td></tr>
+      <tr><td>SETTLEIT-9964</td><td><span class="pill warn">Update</span></td><td><code>[P1] - Telephony: ICallProvider implementation</code></td><td>2d</td><td><span class="pill muted">📋 Draft</span></td><td>Behind interface; trial both vendors per GLOBALIT tickets.</td></tr>
+      <tr><td>SETTLEIT-9965</td><td><span class="pill warn">Update</span></td><td><code>[P1] - Sydney Water IVR playbook</code></td><td>1d</td><td><span class="pill muted">📋 Draft</span></td><td>Content authoring.</td></tr>
+      <tr><td>SETTLEIT-9966</td><td><span class="pill warn">Update + promote</span></td><td><code>[P1] - Blacktown human-agent playbook</code></td><td>1d</td><td><span class="pill muted">📋 Draft</span></td><td>Promoted to P1 — need a council + water authority both live.</td></tr>
+      <tr><td>SETTLEIT-9968</td><td><span class="pill warn">Update + promote</span></td><td><code>[P1] - Disclosure + consent flow wiring</code></td><td>1d</td><td><span class="pill muted">📋 Draft</span></td><td>Promoted to P1 (human-agent calls need it). Wording done — just wiring.</td></tr>
+      <tr><td>SETTLEIT-10297</td><td><span class="pill warn">Update</span></td><td><code>[P1] - Browser test-mode (port from mock-up)</code></td><td>1d</td><td><span class="pill muted">📋 Draft</span></td><td>Prefix only.</td></tr>
+      <tr><td>—</td><td><span class="pill bad">New (22 May)</span></td><td><code>[P1] - Call detail page: recording playback + deep-link from SettleIT</code></td><td>1d</td><td><span class="pill muted">📋 Draft</span></td><td><b>Liability-critical.</b> SettleIT puts a "listen" button on the order → opens AI-Caller call detail page (audio player + transcript). Auth = shared access token (Q3 decision — one token used in both SettleIT and AI-Caller). No full dashboard discovery needed for this flow.</td></tr>
+      <tr><td colspan="3" style="background:#0d1a2b;color:var(--accent);font-weight:600">P1 subtotal</td><td colspan="3" style="background:#0d1a2b;color:var(--accent);font-weight:600">20d · 4 ppl × 5 days</td></tr>
+      <tr><td>SETTLEIT-9967</td><td><span class="pill warn">Update</span></td><td><code>[P2] - SettleIT integration: contract + trigger + callback</code></td><td>3d</td><td><span class="pill muted">📋 Draft</span></td><td>Single ticket — same team owns both ends.</td></tr>
+      <tr><td>SETTLEIT-10299</td><td><span class="pill warn">Update</span></td><td><code>[P2] - Spike: cert extraction approach (no dtapi)</code></td><td>1d</td><td><span class="pill muted">📋 Draft</span></td><td>Do first in W2.</td></tr>
+      <tr><td>SETTLEIT-10298</td><td><span class="pill warn">Update</span></td><td><code>[P2] - Pre-call document extraction (inputSourceExtraction)</code></td><td>2d</td><td><span class="pill muted">📋 Draft</span></td><td>After spike outcome.</td></tr>
+      <tr><td>SETTLEIT-9969</td><td><span class="pill warn">Update + clarify</span></td><td><code>[P2] - Post-call summary extraction (transcript → fields)</code></td><td>2d</td><td><span class="pill muted">📋 Draft</span></td><td>Add sentence distinguishing from 10298.</td></tr>
+      <tr><td>—</td><td><span class="pill good">New</span></td><td><code>[P2] - Real outbound onboarding (Telnyx/ACS go-live, number, first calls)</code></td><td>2d</td><td><span class="pill muted">📋 Draft</span></td><td>After GLOBALIT tickets land.</td></tr>
+      <tr><td>—</td><td><span class="pill bad">New (22 May)</span></td><td><code>[P2] - 3rd authority playbook (Newcastle or higher-volume alternative)</code></td><td>1d</td><td><span class="pill muted">📋 Draft</span></td><td>Demoted from P1 pending June's volume script. Author whichever council has most pending orders.</td></tr>
+      <tr><td>—</td><td><span class="pill bad">New (22 May)</span></td><td><code>[P2] - Spike: AI Gateway (do we even need it?)</code></td><td>1d</td><td><span class="pill muted">📋 Draft</span></td><td>Investigate whether extraction's text-LLM calls must route through the gateway, or whether we can get an exemption. If "must use" → follow-up implementation ticket. If "exempt OK" → close. Realtime voice direct regardless.</td></tr>
+      <tr><td colspan="3" style="background:#0d1a2b;color:var(--accent);font-weight:600">P2 subtotal</td><td colspan="3" style="background:#0d1a2b;color:var(--accent);font-weight:600">12d</td></tr>
+      <tr><td>SETTLEIT-10127</td><td><span class="pill bad">Close</span></td><td><i>Telephony provider comparison — close as superseded by GLOBALIT-4159/4160 live trial</i></td><td>—</td><td><span class="pill muted">📋 Draft</span></td><td>Spike's job done.</td></tr>
+      <tr><td>—</td><td><span class="pill good">New (P3)</span></td><td><code>[P3] - Multi-council playbook CRUD UI</code></td><td>3d</td><td><span class="pill muted">📋 Draft</span></td><td>Makes adding councils a 0-deploy operation.</td></tr>
+      <tr><td>—</td><td><span class="pill good">New (P3)</span></td><td><code>[P3] - Webhook HMAC signing + replay protection</code></td><td>1d</td><td><span class="pill muted">📋 Draft</span></td><td>HMAC = signed callbacks so the consumer can verify "this really came from us". Stops a forged callback from flipping order state. Standard webhook security (Stripe / GitHub). Add before any external consumer.</td></tr>
+      <tr><td>—</td><td><span class="pill muted">New (P4 · optional)</span></td><td><code>[P4] - Cost-per-call telemetry + daily spend cap</code></td><td>2d</td><td><span class="pill muted">📋 Draft</span></td><td>Only if realtime voice cost surprises us in trial.</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:var(--muted);margin-top:8px">
+    <b>Totals.</b> P1 = 20d (exactly 4 ppl × 5 days — zero slack, but the parallelism map above is how we make it work). P2 = 12d (the 7 days between stage on 29 May and prod on 5 Jun, plus the 3rd-authority playbook + AI gateway from the 22 May meeting). P3 + optional P4 = nice-to-haves for after milestone.
+  </p>
+  <p style="font-size:12px;color:var(--muted)">
+    <b>To push.</b> Reply <code>push all</code> to apply every row, or call out exceptions (e.g. <code>skip P3</code>, <code>don't promote 9968</code>, <code>merge X into Y</code>). I'll batch-edit titles, descriptions, and the <i>Original Estimate</i> field, plus create / close as marked.
+  </p>
+
+  <!-- ============= AUTHORITY × COUNCIL MAP ============= -->
+  <h2>🏘️ 8b · Authority × council coverage (from June's volume script)</h2>
+  <p style="font-size:13px;margin-bottom:8px">Two upcoming-release order counts. Sydney Water dominates NSW; Brisbane is the single biggest single-council market.</p>
+  <table>
+    <thead><tr><th>Council</th><th>State</th><th>Water authority</th><th>5 Jun</th><th>12 Jun</th><th>Combined</th></tr></thead>
+    <tbody>
+      <tr><td><b>Brisbane City Council</b></td><td>QLD</td><td>Queensland Urban Utilities (QUU)</td><td><b>29</b></td><td>14</td><td><b>43</b></td></tr>
+      <tr><td>Moreton Bay Regional</td><td>QLD</td><td>Unitywater</td><td>14</td><td>7</td><td>21</td></tr>
+      <tr><td>Northern Beaches</td><td>NSW</td><td>Sydney Water</td><td>11</td><td>8</td><td>19</td></tr>
+      <tr><td>Canterbury-Bankstown</td><td>NSW</td><td>Sydney Water</td><td>7</td><td>6</td><td>13</td></tr>
+      <tr><td>Bayside</td><td>NSW</td><td>Sydney Water</td><td>7</td><td>5</td><td>12</td></tr>
+      <tr><td>Blacktown ✅ locked</td><td>NSW</td><td>Sydney Water</td><td>7</td><td>5</td><td>12</td></tr>
+      <tr><td>Gold Coast City</td><td>QLD</td><td>City of Gold Coast Water</td><td>9</td><td>—</td><td>9</td></tr>
+      <tr><td>Cumberland</td><td>NSW</td><td>Sydney Water</td><td>5</td><td>5</td><td>10</td></tr>
+      <tr><td>Hume</td><td>VIC</td><td>Yarra Valley Water</td><td>6</td><td>4</td><td>10</td></tr>
+      <tr><td>Penrith</td><td>NSW</td><td>Sydney Water</td><td>6</td><td>4</td><td>10</td></tr>
+      <tr><td>Melton</td><td>VIC</td><td>Greater Western Water</td><td>5</td><td>4</td><td>9</td></tr>
+      <tr><td>Wyndham</td><td>VIC</td><td>Greater Western Water</td><td>6</td><td>—</td><td>6</td></tr>
+      <tr><td>Inner West</td><td>NSW</td><td>Sydney Water</td><td>5</td><td>—</td><td>5</td></tr>
+      <tr><td>Maitland City Council</td><td>NSW</td><td>Hunter Water</td><td>5</td><td>—</td><td>5</td></tr>
+      <tr><td>Ipswich City Council</td><td>QLD</td><td>Queensland Urban Utilities (QUU)</td><td>5</td><td>—</td><td>5</td></tr>
+      <tr><td>Greater Geelong</td><td>VIC</td><td>Barwon Water</td><td>5</td><td>—</td><td>5</td></tr>
+      <tr><td>Newcastle</td><td>NSW</td><td>Hunter Water</td><td>—</td><td>4</td><td>4</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:11px;color:var(--muted);margin-top:6px">⚠️ Water-authority mapping above is best-effort from public service-area data — <b>verify against the order's actual <code>WaterAuthority</code> field</b> before authoring playbook content. Some councils sit on boundaries.</p>
+  <div class="row two" style="margin-top:10px">
+    <div class="card">
+      <h3>🟦 Plan A — lean into Sydney Water (NSW)</h3>
+      <p>One water-authority playbook unlocks 7 of the top NSW councils:</p>
+      <ul>
+        <li><b>Sydney Water</b> (rates) + 7 councils: Northern Beaches, Canterbury-Bankstown, Blacktown, Bayside, Penrith, Cumberland, Inner West</li>
+        <li><b>Coverage:</b> ~81 orders across the two releases</li>
+        <li><b>Effort:</b> 1 water-auth playbook + 7 council playbooks ≈ 8d (P2 mostly)</li>
+        <li>P1 milestone uses Sydney Water + Blacktown; remaining 6 councils ride the same auth pattern with minimal extra effort</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🟧 Plan B — add Brisbane + QUU (QLD)</h3>
+      <ul>
+        <li>+ <b>Brisbane City Council</b> (43 orders combined — biggest single market)</li>
+        <li>+ <b>Queensland Urban Utilities</b> playbook (covers Brisbane + Ipswich = 48 orders)</li>
+        <li><b>Risk:</b> new state, unfamiliar IVR/human-agent flows, potential accent variation, separate vendor compliance for QLD</li>
+        <li><b>Strong candidate to swap Newcastle</b> (4 orders) for the 3rd authority slot</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============= 8c · OPEN QUESTIONS ============= -->
+  <h2>❓ 8c · Open questions parked for later</h2>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:8px">Captured so they don't get lost — revisit when the relevant phase comes up.</p>
+  <table>
+    <thead><tr><th>#</th><th>Question</th><th>Status</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Q1</td><td>3rd authority — keep Newcastle (4 orders) or swap for Northern Beaches / Canterbury-Bankstown / Bayside?</td><td><span class="pill muted">⚪ Open</span></td><td>All NSW alternatives share Sydney Water — no extra water-auth work. Newcastle is only 4 orders combined; swapping is essentially free.</td></tr>
+      <tr><td>Q2</td><td>Brisbane / QLD expansion — P2, next sprint, or spike first?</td><td><span class="pill muted">⚪ Open</span></td><td>Brisbane is 43 orders (biggest single market) but adds a new state + new water authority (QUU). Section 8b breaks down the trade-off.</td></tr>
+      <tr><td>Q3</td><td>SettleIT deep-link auth shape</td><td><span class="pill good">✅ Decided</span></td><td><b>Shared access token</b> — one token used in both SettleIT and AI-Caller. Simpler than building separate multi-tenant logic.</td></tr>
+      <tr><td>Q4</td><td>AI Gateway spike — owner?</td><td><span class="pill muted">⚪ Open</span></td><td>TBD. Likely Marcus (infra angle) or Connor (has Chen Ni's contact). Park for now.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============= 9 · WATCH ============= -->
+  <h2>👀 9 · What a project lead should watch</h2>
+  <div class="row two">
+    <div class="card">
+      <h3>📈 Metrics from day 1</h3>
+      <ul>
+        <li>Extraction quality — % calls with all required fields correct (spot-check)</li>
+        <li>Cost per successful call vs target band</li>
+        <li>Provider error rate — telephony 4xx/5xx, AI tool-call failures</li>
+        <li><b>Time-to-stage</b> per change — the velocity signal that matters most this week</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🧨 Top risks</h3>
+      <ul>
+        <li><b>Liability on wrong figures.</b> Client pays based on what we extract — recording playback is the safety net. Don't ship to prod without it.</li>
+        <li><b>Day 1 contract day overruns.</b> If interfaces aren't merged by Mon EOD, the whole week slips.</li>
+        <li><b>Low real-order volume.</b> Newcastle especially — wait for June's volume data before authoring content. Make adding more council playbooks frictionless from day 1.</li>
+        <li><b>First-real-call surprises.</b> Audio quality, IVR drift, regional accents. Bake in W2 buffer.</li>
+        <li><b>AI Gateway constraints.</b> Find out from Chen Ni what's gated through the gateway before assuming direct API access. Realtime voice is exempt; text LLM isn't.</li>
+        <li><b>Vendor leak.</b> Keep <code>ICallProvider</code> + <code>IVoiceAIService</code> abstractions clean.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout good">
+    ✅ <b>Strong points to lean on.</b> Mock-up at <code>C:\code\InfoDialer</code> already proves end-to-end including realtime voice. <code>docs/api-contracts-plan.md</code> + <code>docs/playbookplna.md</code> + <code>docs/infrastructure.md</code> give the build a clear spec. Code-is-the-design means no Figma blocker. Legal disclosure already signed off.
+  </div>
+
+  <footer>
+    📚 Sources: <a href="../plan.md">plan.md</a> · <a href="./api-contracts-plan.md">api-contracts-plan.md</a> · <a href="./playbookplna.md">playbookplna.md</a> · <a href="./infrastructure.md">infrastructure.md</a> · <a href="./telephony-comparison.html">telephony-comparison.html</a> ·
+    Jira: <a href="https://infotrack.atlassian.net/browse/SETTLEIT-9878">SETTLEIT-9878</a> + children 9961–9969, 10127, 10145, 10297, 10298, 10299 · GLOBALIT 4159 / 4160 / 4162 / 4163.
+  </footer>
+
+</main>
+
+<script>
+(function(){
+  const TASKS = {
+    t_infra:      { title:'Infra + staging deploy', units:4, tag:'infra', phase:'p1',
+                    desc:'Scaffold + CI/CD + K8s + Key Vault + ECR + app regs (10145) + DEPLOY TO STAGE.',
+                    ticket:'SETTLEIT-9961' },
+    t_api:        { title:'API surface (CQRS + Playbook entity + SignalR hub)', units:3, tag:'api', phase:'p1',
+                    desc:'TriggerCall + GetCall* + transcripts + Playbook entity + seed + SignalR events. NEW ticket.' },
+    t_fewire:     { title:'Frontend live-data wiring', units:3, tag:'fe', phase:'p1',
+                    desc:'Land 9962 + swap MobX mocks → real API + SignalR.',
+                    ticket:'SETTLEIT-9962' },
+    t_aivoice:    { title:'AI voice service (IVR + realtime)', units:3, tag:'voice', phase:'p1',
+                    desc:'Both modes behind IVoiceAIService. Mock-up lifts cleanly.',
+                    ticket:'SETTLEIT-9963' },
+    t_callprov:   { title:'Telephony — ICallProvider', units:2, tag:'voice', phase:'p1',
+                    desc:'Behind ICallProvider. Trial Telnyx + ACS via personal-key bridge until GLOBALIT lands.',
+                    ticket:'SETTLEIT-9964' },
+    t_swpb:       { title:'Sydney Water IVR playbook', units:1, tag:'playbook', phase:'p1',
+                    desc:'InstructionPrompt + InputSchema + OutputSchema. Content only.',
+                    ticket:'SETTLEIT-9965' },
+    t_blpb:       { title:'Blacktown human-agent playbook', units:1, tag:'playbook', phase:'p1',
+                    desc:'Promoted to P1 — need a council + water authority both live for the demo.',
+                    ticket:'SETTLEIT-9966' },
+    t_ncpb:       { title:'Newcastle human-agent playbook', units:1, tag:'playbook', phase:'p1',
+                    desc:'Per the 3-authority cut. Hardest of the three — may need W2 polish.' },
+    t_disclose:   { title:'Disclosure + consent wiring', units:1, tag:'voice', phase:'p1',
+                    desc:'Promoted to P1 (human-agent calls need it). Wording already signed off by legal.',
+                    ticket:'SETTLEIT-9968' },
+    t_browser:    { title:'Browser test-mode (port from mock-up)', units:1, tag:'tooling', phase:'p1',
+                    desc:'Critical for early demos before vendor numbers are live.',
+                    ticket:'SETTLEIT-10297' },
+    t_recording:  { title:'Call detail page: recording + SettleIT deep-link', units:1, tag:'fe', phase:'p1',
+                    desc:'NEW (22 May). Liability-critical. SettleIT adds a "listen" button on the order → opens call detail page (audio + transcript). Auth = signed link or SSO + same-client check.' },
+    t_settleit:   { title:'SettleIT integration (contract + trigger + callback)', units:3, tag:'integration', phase:'p2',
+                    desc:'Single ticket — same team owns both ends.',
+                    ticket:'SETTLEIT-9967' },
+    t_spike:      { title:'Spike: cert extraction approach', units:1, tag:'voice', phase:'p2',
+                    desc:'No dtapi. LLM-vision vs PdfPig+regex vs Form Recognizer.',
+                    ticket:'SETTLEIT-10299' },
+    t_extract:    { title:'Pre-call document extraction', units:2, tag:'voice', phase:'p2',
+                    desc:'inputSourceExtraction handler + schema migration. After spike.',
+                    ticket:'SETTLEIT-10298' },
+    t_summary:    { title:'Post-call summary extraction', units:2, tag:'voice', phase:'p2',
+                    desc:'Transcript → structured fields. Different from 10298 (which is pre-call from doc).',
+                    ticket:'SETTLEIT-9969' },
+    t_outbound:   { title:'Real outbound onboarding', units:2, tag:'voice', phase:'p2',
+                    desc:'Telnyx/ACS go-live, number provisioning, first real calls. After GLOBALIT lands.' },
+    t_ncpb:       { title:'3rd authority playbook (Newcastle or alt)', units:1, tag:'playbook', phase:'p2',
+                    desc:'Demoted from P1 (22 May) — pending June\'s volume analysis. Author whichever council has the most pending orders.' },
+    t_aigw:       { title:'Spike: AI Gateway (do we need it?)', units:1, tag:'infra', phase:'p2',
+                    desc:'NEW (22 May meeting). Spike first — if we can avoid routing extraction through the gateway, even better. Chen Ni for context.' }
+  };
+
+  const BUCKETS = ['marcus','b','c','d','stretch'];
+  const DEFAULTS = {
+    marcus:  ['t_infra','t_recording'],
+    b:       ['t_browser','t_swpb','t_blpb'],
+    c:       ['t_api','t_fewire'],
+    d:       ['t_callprov','t_aivoice','t_disclose'],
+    stretch: ['t_settleit','t_spike','t_extract','t_summary','t_outbound','t_ncpb','t_aigw']
+  };
+  const STORAGE_KEY = 'aicaller-overview-buckets-v4';
+
+  function clone(o){ return JSON.parse(JSON.stringify(o)); }
+  function loadState(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return clone(DEFAULTS);
+      const p = JSON.parse(raw);
+      if (!BUCKETS.every(b => Array.isArray(p[b]))) return clone(DEFAULTS);
+      const seen = new Set();
+      for (const b of BUCKETS) {
+        p[b] = p[b].filter(id => id in TASKS && !seen.has(id));
+        p[b].forEach(id => seen.add(id));
+      }
+      for (const id of Object.keys(TASKS)) {
+        if (!seen.has(id)) p.stretch.push(id);
+      }
+      return p;
+    } catch(e) { return clone(DEFAULTS); }
+  }
+  function saveState(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+
+  let state = loadState();
+  const TARGET_UNITS = { marcus:5, b:5, c:5, d:5, stretch:99 };
+
+  function makeCard(taskId){
+    const t = TASKS[taskId];
+    const el = document.createElement('div');
+    el.className = 'task tag-'+t.tag;
+    el.draggable = true;
+    el.dataset.taskId = taskId;
+    const phaseLabel = t.phase === 'p1' ? '🎯 P1' : '🗓️ P2';
+    el.innerHTML =
+      '<div class="t-head"><span class="t-units">'+t.units+'u</span><span class="t-phase '+t.phase+'">'+phaseLabel+'</span><span class="t-title">'+t.title+'</span></div>' +
+      (t.ticket ? '<div class="t-tick">'+t.ticket+'</div>' : '') +
+      '<div class="t-desc">'+t.desc+'</div>';
+    el.addEventListener('dragstart', onDragStart);
+    el.addEventListener('dragend', onDragEnd);
+    return el;
+  }
+
+  function render(){
+    for (const b of BUCKETS) {
+      const list = document.getElementById('list-'+b);
+      list.innerHTML = '';
+      let total = 0;
+      for (const id of state[b]) {
+        if (!(id in TASKS)) continue;
+        total += TASKS[id].units;
+        list.appendChild(makeCard(id));
+      }
+      const tEl = document.getElementById('bucket-total-'+b);
+      tEl.textContent = total+'u';
+      tEl.classList.toggle('over', b !== 'stretch' && total > TARGET_UNITS[b]);
+    }
+  }
+
+  let dragging = null;
+  function onDragStart(e){
+    dragging = e.currentTarget.dataset.taskId;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', dragging);
+    e.currentTarget.classList.add('dragging');
+  }
+  function onDragEnd(e){
+    e.currentTarget.classList.remove('dragging');
+    document.querySelectorAll('.bucket.drop-over').forEach(el => el.classList.remove('drop-over'));
+    dragging = null;
+  }
+
+  function bindBucket(b){
+    const el = document.getElementById('bucket-'+b);
+    el.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; el.classList.add('drop-over'); });
+    el.addEventListener('dragleave', e => { if (e.target === el) el.classList.remove('drop-over'); });
+    el.addEventListener('drop', e => {
+      e.preventDefault();
+      el.classList.remove('drop-over');
+      const id = e.dataTransfer.getData('text/plain') || dragging;
+      if (!id || !(id in TASKS)) return;
+      for (const k of BUCKETS) state[k] = state[k].filter(x => x !== id);
+      state[b].push(id);
+      saveState(state);
+      render();
+    });
+  }
+  BUCKETS.forEach(bindBucket);
+
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    state = clone(DEFAULTS);
+    saveState(state);
+    render();
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
