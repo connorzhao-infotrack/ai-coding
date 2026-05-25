@@ -85,6 +85,9 @@
   .t-title{font-weight:600;color:var(--ink);line-height:1.25}
   .t-tick{font-size:10px;color:var(--accent);margin-bottom:2px}
   .t-desc{font-size:11px;color:var(--muted);line-height:1.4}
+  .t-parent{font-size:9px;font-weight:700;background:#2a2f3a;color:#c9d3e0;padding:1px 5px;border-radius:4px;letter-spacing:.04em;flex-shrink:0}
+  .chain{font-size:12px;color:var(--ink);background:var(--code);padding:6px 9px;border-radius:5px;margin:4px 0 6px;line-height:1.55}
+  .dep{font-size:11px;color:var(--muted);margin:0}
   .task.tag-infra{border-left-color:var(--warn)}
   .task.tag-integration{border-left-color:var(--pink)}
   .task.tag-api{border-left-color:var(--accent)}
@@ -287,7 +290,7 @@
     <thead><tr><th>Owner</th><th>Stream</th><th>First move</th><th>Unblocks</th></tr></thead>
     <tbody>
       <tr><td><b>⚙️ Marcus</b></td><td>IT &amp; telephony — staging deploy (9961) + <code>ICallProvider</code> (9964)</td><td>Stage deploy pipeline live</td><td>Everyone (stage = where they demo)</td></tr>
-      <tr><td><b>🗣️ Jerold</b></td><td>AI voice (9963) + <b>browser test-mode (10297)</b></td><td>🔥 Browser harness first, then voice impl</td><td>Everyone's testing</td></tr>
+      <tr><td><b>🗣️ Jerold</b></td><td>Initial playbook bootstrap → AI voice (9963) + <b>browser test-mode (10297)</b></td><td>Seed first playbook + hand to Prem/Nav, then 🔥 browser harness, then voice</td><td>Everyone's testing</td></tr>
       <tr><td><b>🤝 Ivy</b></td><td>SettleIT integration (9967) + trigger/calls API + call-detail page (10303)</td><td>Trigger endpoint + contract</td><td>Callback loop, dashboard</td></tr>
       <tr><td><b>📚 Prem + Nav</b></td><td>Playbook CRUD (10302) + content (Sydney Water 9965, Blacktown 9966)</td><td>CRUD on the landed Playbook entity</td><td>Authoring more councils fast</td></tr>
       <tr><td><b>📜 Parallel</b></td><td>Certificate extraction — spike (10299) → impl (10298)</td><td>Spike to pick approach (LLM-vision likely)</td><td>Richer call inputs; independent of call path</td></tr>
@@ -296,6 +299,52 @@
   <div class="callout">
     🧩 <b>Gaps to assign.</b> The five streams don't yet name an owner for the <b>dashboard read-side</b> (GetCalls / GetCall / transcripts + SignalR hub) or <b>FE live-data wiring (9962)</b> — both needed for the recording-playback requirement (10303). Parked with Ivy (calls API) + Prem/Nav (FE) below; confirm since 9962 is Ivy's in Jira. Also: is "playbook CRUD" the full multi-council UI (10302 pulled forward) or basic management on the new entity?
   </div>
+
+  <!-- ============= 3b · WORKSTREAMS ============= -->
+  <h2>🧬 3b · Workstreams (parents) — independent chains</h2>
+  <p style="font-size:13px;color:var(--muted);margin:0 0 10px">
+    Each card is a <b>parent</b>: a chain of tickets that depend on each other and move together. Parents are <b>independent of each other</b> — point a different person at each and they won't step on each other's toes. The only shared dependencies: <b>🏗️ Foundation</b> (everyone needs stage up) and the two interface contracts (<code>ICallProvider</code>, <code>IVoiceAIService</code>).
+  </p>
+  <div class="row">
+    <div class="card" style="border-left:3px solid var(--warn)">
+      <h3>🏗️ FOUNDATION <span>· Marcus</span></h3>
+      <div class="chain">9961 scaffold → CI/CD → <b>staging deploy</b> · auth ✓</div>
+      <p class="dep">⚓ Base layer. Telephony + Integration sit on it. <b>Do first</b> — stage URL is where everyone demos.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--purple)">
+      <h3>📞 TELEPHONY <span>· Marcus</span></h3>
+      <div class="chain">9964 ICallProvider → real outbound onboarding (P2)</div>
+      <p class="dep">Independent of AI-Voice (both behind interfaces). Can slip — real outbound is P2.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--pink)">
+      <h3>🗣️ AI-VOICE <span>· Jerold</span></h3>
+      <div class="chain">🔥 10297 browser test → 9963 voice service → 9968 disclosure</div>
+      <p class="dep">Independent of Telephony. Browser test first = the team's shared test harness.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--good)">
+      <h3>📚 PLAYBOOK <span>· Prem + Nav (+ Jerold init)</span></h3>
+      <div class="chain">entity ✓ → 10302 CRUD → content: 9965 SW · 9966 BT · 10300 3rd</div>
+      <p class="dep">⚠️ Two owners touch this. Agree entity/schema first; Jerold's initial work hands off to Prem/Nav's CRUD.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--accent)">
+      <h3>🔌 INTEGRATION <span>· Ivy</span></h3>
+      <div class="chain">calls API (CQRS+SignalR) → 9967 SettleIT → 10303 call detail → 9962 FE</div>
+      <p class="dep">Depends on 🏗️ Foundation. Shared-token auth (Q3). Owns the dashboard read-side.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--cyan)">
+      <h3>📜 EXTRACTION <span>· unowned (spare)</span></h3>
+      <div class="chain">10299 spike → 10298 pre-call → 9969 post-call</div>
+      <p class="dep">Fully independent of the call path. Start the moment someone frees up. Needs an LLM key.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--dim)">
+      <h3>🚪 GATEWAY <span>· TBD</span></h3>
+      <div class="chain">10301 spike — do we even need it?</div>
+      <p class="dep">Fully independent, tiny. Chen Ni is the contact.</p>
+    </div>
+  </div>
+  <p style="font-size:12px;color:var(--muted);margin-top:8px">
+    💡 In Jira these map to <b>components</b> / labels — <code>stream-foundation</code>, <code>stream-telephony</code>, <code>stream-ai-voice</code>, <code>stream-playbook</code>, <code>stream-integration</code>, <code>stream-extraction</code>, <code>stream-gateway</code>. I'll apply them across the tickets when the Atlassian connection is back.
+  </p>
 
   <!-- ============= 4 · BUCKETS ============= -->
   <h2>👥 4 · Work buckets (drag to rebalance)</h2>
@@ -587,6 +636,17 @@
   };
   const STORAGE_KEY = 'aicaller-overview-buckets-v5';
 
+  // workstream (parent) each task belongs to — independent chains
+  const PARENT_OF = {
+    t_infra:'🏗️ FND',
+    t_callprov:'📞 TEL', t_outbound:'📞 TEL',
+    t_browser:'🗣️ VOX', t_aivoice:'🗣️ VOX', t_disclose:'🗣️ VOX',
+    t_crud:'📚 PBK', t_swpb:'📚 PBK', t_blpb:'📚 PBK', t_ncpb:'📚 PBK',
+    t_settleit:'🔌 INT', t_api:'🔌 INT', t_recording:'🔌 INT', t_fewire:'🔌 INT',
+    t_spike:'📜 EXT', t_extract:'📜 EXT', t_summary:'📜 EXT',
+    t_aigw:'🚪 GW'
+  };
+
   function clone(o){ return JSON.parse(JSON.stringify(o)); }
   function loadState(){
     try {
@@ -617,8 +677,9 @@
     el.draggable = true;
     el.dataset.taskId = taskId;
     const phaseLabel = t.phase === 'p1' ? '🎯 P1' : '🗓️ P2';
+    const par = PARENT_OF[taskId] ? '<span class="t-parent">'+PARENT_OF[taskId]+'</span>' : '';
     el.innerHTML =
-      '<div class="t-head"><span class="t-units">'+t.units+'u</span><span class="t-phase '+t.phase+'">'+phaseLabel+'</span><span class="t-title">'+t.title+'</span></div>' +
+      '<div class="t-head"><span class="t-units">'+t.units+'u</span><span class="t-phase '+t.phase+'">'+phaseLabel+'</span>'+par+'<span class="t-title">'+t.title+'</span></div>' +
       (t.ticket ? '<div class="t-tick">'+t.ticket+'</div>' : '') +
       '<div class="t-desc">'+t.desc+'</div>';
     el.addEventListener('dragstart', onDragStart);
