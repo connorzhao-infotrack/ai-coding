@@ -218,7 +218,7 @@
     </div>
   </div>
   <div class="callout good">
-    🎯 <b>Stage by Fri 2026-05-29</b> · 🚀 <b>Production by Fri 2026-06-05</b> · 🏁 <b>5 real orders by 2026-06-30</b>. The earlier the PM/dev can poke at stage, the earlier we find issues — push something demoable as soon as it stands up, even mid-week.
+    🎯 <b>Stage by Fri 2026-05-29</b> · 🚀 <b>Production by Fri 2026-06-05</b> · 🏁 <b>5 real orders by 2026-06-30</b>. <b>These dates are committed, not aspirational.</b> Get something demoable on stage as early as possible — and stand up <b>browser test-mode first</b> so devs can exercise the AI calling without waiting on telephony.
   </div>
   <div class="callout idea">
     📌 <b>22 May standup follow-ups</b>
@@ -256,51 +256,46 @@
   </table>
 
   <!-- ============= 3 · PARALLELISM ============= -->
-  <h2>🔀 3 · Parallelism — how 5 days actually works</h2>
+  <h2>🔀 3 · Parallelism — tomorrow's streams</h2>
   <p style="font-size:13px;color:var(--muted);margin:0 0 10px">
-    With 4 people and 5 working days we have ~20 person-days. P1 ≈ 20d. <b>Zero slack.</b> The way you make this work is by paralleling everything that <i>can</i> parallelise — and that depends on locking the interfaces on Day 1.
+    Schedule is <b>committed, not aspirational</b>. Foundations have landed on <code>main</code> (Playbook domain + schema + auth — PRs #6 / #8), so it's parallel execution from here. Five streams run side-by-side. Highest-leverage move: stand up the <b>browser test harness first</b> so everyone can exercise their work without waiting on real telephony.
   </p>
   <div class="row two">
-    <div class="card">
-      <h3>📌 Mon = contract day</h3>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:6px">Land these to <code>main</code> by EOD Monday. Nothing else parallelises cleanly without them.</p>
+    <div class="card" style="border-color:var(--cyan)">
+      <h3>🔥 Do first — browser test-mode</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:6px">It's the shared <b>test harness</b>, not just a demo tool: browser mic → SignalR → the same <code>IVoiceAIService</code> a real call uses, telephony bypassed.</p>
       <ul>
-        <li><code>ICallProvider</code> interface signature</li>
-        <li><code>IVoiceAIService</code> interface signature</li>
-        <li>CQRS command/query record shapes (per <code>docs/api-contracts-plan.md</code>)</li>
-        <li>SignalR event payload types</li>
-        <li><code>Playbook</code> entity shape + <code>inputSchema</code> JSON shape</li>
+        <li>Lets <b>Jerold</b> test AI voice with no telephony</li>
+        <li>Lets <b>Prem/Nav</b> exercise a playbook the moment it's authored</li>
+        <li>Lets <b>Ivy</b> drive an end-to-end call from the trigger API</li>
+        <li>Already proven in the mock-up — porting is fast. Jerold owns it (same plumbing as his voice work).</li>
       </ul>
     </div>
     <div class="card">
       <h3>🏃 Fast-pace rules</h3>
       <ul>
-        <li><b>Stub, don't wait.</b> Collaborator not ready? Write a fake matching the contract, keep moving, swap later.</li>
-        <li><b>PR review &lt; 2 hours during work day.</b> Block your own coding to unblock a teammate.</li>
-        <li><b>Trunk-based.</b> Small PRs, merge often, fix forward. Don't sit on a long-lived branch.</li>
-        <li><b>Auto-deploy on merge to <code>main</code>.</b> Stage deploy at least daily, ideally on every PR.</li>
-        <li><b>Decisions in chat.</b> Tag <code>[decision]</code> — no meeting required.</li>
-        <li><b>1 hour stuck = pull someone in.</b> Pairing is faster than asynchronous solo struggle.</li>
+        <li><b>Stub, don't wait.</b> Fake a collaborator's piece against the agreed contract, swap later.</li>
+        <li><b>Lock the two service interfaces early</b> — <code>ICallProvider</code>, <code>IVoiceAIService</code> — so voice + telephony build in parallel.</li>
+        <li><b>PR review &lt; 2h.</b> Block your own coding to unblock a teammate.</li>
+        <li><b>Auto-deploy on merge to <code>main</code> → stage.</b> Prod from a release tag with an approval gate.</li>
+        <li><b>1 hour stuck = pull someone in.</b></li>
       </ul>
     </div>
   </div>
-  <h3 style="margin-top:14px;font-size:13px;color:var(--ink)">Independent streams (after Mon's contracts)</h3>
+  <h3 style="margin-top:14px;font-size:13px;color:var(--ink)">Tomorrow's streams — all parallel</h3>
   <table>
-    <thead><tr><th>#</th><th>Stream</th><th>Depends on (Mon-only)</th><th>Unblocks…</th></tr></thead>
+    <thead><tr><th>Owner</th><th>Stream</th><th>First move</th><th>Unblocks</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td>⚙️ Infra + staging deploy</td><td>Nothing</td><td>Everything (stage URL = where others demo)</td></tr>
-      <tr><td>2</td><td>🧠 API surface (CQRS + Playbook entity + SignalR hub)</td><td>Contracts</td><td>FE wiring, browser test-mode</td></tr>
-      <tr><td>3</td><td>🎨 FE live-data wiring</td><td>Contracts (stubs work in parallel)</td><td>Demo</td></tr>
-      <tr><td>4</td><td>🗣️ AI voice service (IVR + realtime)</td><td><code>IVoiceAIService</code> interface</td><td>Browser test-mode, end-to-end calls</td></tr>
-      <tr><td>5</td><td>📞 Telephony (<code>ICallProvider</code>)</td><td><code>ICallProvider</code> interface</td><td>Real outbound (P2)</td></tr>
-      <tr><td>6</td><td>📜 Playbook content (Sydney Water · Blacktown · Newcastle)</td><td>Playbook shape</td><td>Real call quality</td></tr>
-      <tr><td>7</td><td>🌐 Browser test-mode (port from mock-up)</td><td>SignalR shape + AI service interface</td><td>Demos without telephony</td></tr>
-      <tr><td>8</td><td>🛡️ Disclosure + consent flow</td><td>AI service interface</td><td>Human-agent calls (Blacktown, Newcastle)</td></tr>
+      <tr><td><b>⚙️ Marcus</b></td><td>IT &amp; telephony — staging deploy (9961) + <code>ICallProvider</code> (9964)</td><td>Stage deploy pipeline live</td><td>Everyone (stage = where they demo)</td></tr>
+      <tr><td><b>🗣️ Jerold</b></td><td>AI voice (9963) + <b>browser test-mode (10297)</b></td><td>🔥 Browser harness first, then voice impl</td><td>Everyone's testing</td></tr>
+      <tr><td><b>🤝 Ivy</b></td><td>SettleIT integration (9967) + trigger/calls API + call-detail page (10303)</td><td>Trigger endpoint + contract</td><td>Callback loop, dashboard</td></tr>
+      <tr><td><b>📚 Prem + Nav</b></td><td>Playbook CRUD (10302) + content (Sydney Water 9965, Blacktown 9966)</td><td>CRUD on the landed Playbook entity</td><td>Authoring more councils fast</td></tr>
+      <tr><td><b>📜 Parallel</b></td><td>Certificate extraction — spike (10299) → impl (10298)</td><td>Spike to pick approach (LLM-vision likely)</td><td>Richer call inputs; independent of call path</td></tr>
     </tbody>
   </table>
-  <p style="font-size:12px;color:var(--muted);margin-top:6px">
-    Streams 2–8 all start Tue once the contracts land. The one true sequential bit is the contract day itself — get past that fast.
-  </p>
+  <div class="callout">
+    🧩 <b>Gaps to assign.</b> The five streams don't yet name an owner for the <b>dashboard read-side</b> (GetCalls / GetCall / transcripts + SignalR hub) or <b>FE live-data wiring (9962)</b> — both needed for the recording-playback requirement (10303). Parked with Ivy (calls API) + Prem/Nav (FE) below; confirm since 9962 is Ivy's in Jira. Also: is "playbook CRUD" the full multi-council UI (10302 pulled forward) or basic management on the new entity?
+  </div>
 
   <!-- ============= 4 · BUCKETS ============= -->
   <h2>👥 4 · Work buckets (drag to rebalance)</h2>
@@ -310,23 +305,23 @@
   </div>
   <div class="buckets" id="buckets">
     <div class="bucket" data-bucket="marcus" id="bucket-marcus">
-      <div class="bucket-head"><div class="bucket-name">⚙️ Marcus</div><div class="bucket-total" id="bucket-total-marcus">0u</div></div>
+      <div class="bucket-head"><div class="bucket-name">⚙️ Marcus · IT + tel</div><div class="bucket-total" id="bucket-total-marcus">0u</div></div>
       <div class="task-list" id="list-marcus"></div>
     </div>
     <div class="bucket" data-bucket="b" id="bucket-b">
-      <div class="bucket-head"><div class="bucket-name">🤝 B</div><div class="bucket-total" id="bucket-total-b">0u</div></div>
+      <div class="bucket-head"><div class="bucket-name">🗣️ Jerold · voice + test</div><div class="bucket-total" id="bucket-total-b">0u</div></div>
       <div class="task-list" id="list-b"></div>
     </div>
     <div class="bucket" data-bucket="c" id="bucket-c">
-      <div class="bucket-head"><div class="bucket-name">🧠 C · BE + FE</div><div class="bucket-total" id="bucket-total-c">0u</div></div>
+      <div class="bucket-head"><div class="bucket-name">🤝 Ivy · SettleIT + API</div><div class="bucket-total" id="bucket-total-c">0u</div></div>
       <div class="task-list" id="list-c"></div>
     </div>
     <div class="bucket" data-bucket="d" id="bucket-d">
-      <div class="bucket-head"><div class="bucket-name">📞 D · voice + tel</div><div class="bucket-total" id="bucket-total-d">0u</div></div>
+      <div class="bucket-head"><div class="bucket-name">📚 Prem + Nav · playbook</div><div class="bucket-total" id="bucket-total-d">0u</div></div>
       <div class="task-list" id="list-d"></div>
     </div>
     <div class="bucket stretch" data-bucket="stretch" id="bucket-stretch">
-      <div class="bucket-head"><div class="bucket-name">🗓️ Week 2+ (P2)</div><div class="bucket-total" id="bucket-total-stretch">0u</div></div>
+      <div class="bucket-head"><div class="bucket-name">🔀 Parallel / Later</div><div class="bucket-total" id="bucket-total-stretch">0u</div></div>
       <div class="task-list" id="list-stretch"></div>
     </div>
   </div>
@@ -533,13 +528,16 @@
     t_infra:      { title:'Infra + staging deploy', units:4, tag:'infra', phase:'p1',
                     desc:'Scaffold + CI/CD + K8s + Key Vault + ECR + app regs (10145) + DEPLOY TO STAGE.',
                     ticket:'SETTLEIT-9961' },
-    t_api:        { title:'API surface (CQRS + Playbook entity + SignalR hub)', units:3, tag:'api', phase:'p1',
-                    desc:'TriggerCall + GetCall* + transcripts + Playbook entity + seed + SignalR events. NEW ticket.' },
+    t_api:        { title:'Calls API: CQRS + SignalR hub', units:2, tag:'api', phase:'p1',
+                    desc:'TriggerCall + GetCall* + transcripts + SignalR events. Playbook entity already landed (PR #8). Needed for trigger + dashboard.' },
+    t_crud:       { title:'Playbook CRUD (API + UI)', units:3, tag:'api', phase:'p1',
+                    desc:'Manage playbooks without a deploy. Builds on the landed Playbook entity. Pulls 10302 forward.',
+                    ticket:'SETTLEIT-10302' },
     t_fewire:     { title:'Frontend live-data wiring', units:3, tag:'fe', phase:'p1',
                     desc:'Land 9962 + swap MobX mocks → real API + SignalR.',
                     ticket:'SETTLEIT-9962' },
     t_aivoice:    { title:'AI voice service (IVR + realtime)', units:3, tag:'voice', phase:'p1',
-                    desc:'Both modes behind IVoiceAIService. Mock-up lifts cleanly.',
+                    desc:'Jerold. Both modes behind IVoiceAIService; pairs with browser test-mode. Mock-up lifts cleanly.',
                     ticket:'SETTLEIT-9963' },
     t_callprov:   { title:'Telephony — ICallProvider', units:2, tag:'voice', phase:'p1',
                     desc:'Behind ICallProvider. Trial Telnyx + ACS via personal-key bridge until GLOBALIT lands.',
@@ -550,13 +548,11 @@
     t_blpb:       { title:'Blacktown human-agent playbook', units:1, tag:'playbook', phase:'p1',
                     desc:'Promoted to P1 — need a council + water authority both live for the demo.',
                     ticket:'SETTLEIT-9966' },
-    t_ncpb:       { title:'Newcastle human-agent playbook', units:1, tag:'playbook', phase:'p1',
-                    desc:'Per the 3-authority cut. Hardest of the three — may need W2 polish.' },
     t_disclose:   { title:'Disclosure + consent wiring', units:1, tag:'voice', phase:'p1',
                     desc:'Promoted to P1 (human-agent calls need it). Wording already signed off by legal.',
                     ticket:'SETTLEIT-9968' },
-    t_browser:    { title:'Browser test-mode (port from mock-up)', units:1, tag:'tooling', phase:'p1',
-                    desc:'Critical for early demos before vendor numbers are live.',
+    t_browser:    { title:'🔥 Browser test-mode — DO FIRST', units:1, tag:'tooling', phase:'p1',
+                    desc:'Shared test harness, not just a demo. Jerold builds this first so the whole team tests AI calling without telephony. Port from mock-up.',
                     ticket:'SETTLEIT-10297' },
     t_recording:  { title:'Call detail page: recording + SettleIT deep-link', units:1, tag:'fe', phase:'p1',
                     desc:'NEW (22 May). Liability-critical. SettleIT adds a "listen" button on the order → opens call detail page (audio + transcript). Auth = signed link or SSO + same-client check.' },
@@ -581,14 +577,15 @@
   };
 
   const BUCKETS = ['marcus','b','c','d','stretch'];
+  // marcus = Marcus (IT+tel) · b = Jerold (voice+test) · c = Ivy (SettleIT+API) · d = Prem+Nav (playbook) · stretch = parallel/later
   const DEFAULTS = {
-    marcus:  ['t_infra','t_recording'],
-    b:       ['t_browser','t_swpb','t_blpb'],
-    c:       ['t_api','t_fewire'],
-    d:       ['t_callprov','t_aivoice','t_disclose'],
-    stretch: ['t_settleit','t_spike','t_extract','t_summary','t_outbound','t_ncpb','t_aigw']
+    marcus:  ['t_infra','t_callprov'],
+    b:       ['t_browser','t_aivoice','t_disclose'],
+    c:       ['t_settleit','t_api','t_recording'],
+    d:       ['t_crud','t_fewire','t_swpb','t_blpb'],
+    stretch: ['t_spike','t_extract','t_summary','t_outbound','t_ncpb','t_aigw']
   };
-  const STORAGE_KEY = 'aicaller-overview-buckets-v4';
+  const STORAGE_KEY = 'aicaller-overview-buckets-v5';
 
   function clone(o){ return JSON.parse(JSON.stringify(o)); }
   function loadState(){
@@ -611,7 +608,7 @@
   function saveState(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
 
   let state = loadState();
-  const TARGET_UNITS = { marcus:5, b:5, c:5, d:5, stretch:99 };
+  const TARGET_UNITS = { marcus:5, b:5, c:5, d:10, stretch:99 }; // d = Prem + Nav (2 people)
 
   function makeCard(taskId){
     const t = TASKS[taskId];
