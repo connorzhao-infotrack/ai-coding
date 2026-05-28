@@ -119,10 +119,10 @@
 
   <!-- ============= HERO ============= -->
   <div class="hero">
-    <div class="stat accent">  <div class="ico">📅</div><div class="v">5 days</div><div class="l">to STAGE (Fri 29 May)</div></div>
-    <div class="stat cyan">    <div class="ico">🚀</div><div class="v">12 days</div><div class="l">to PROD (Fri 5 Jun)</div></div>
+    <div class="stat accent">  <div class="ico">📅</div><div class="v">2 days</div><div class="l">to STAGE (Fri 29 May)</div></div>
+    <div class="stat cyan">    <div class="ico">🚀</div><div class="v">9 days</div><div class="l">to PROD (Fri 5 Jun)</div></div>
     <div class="stat purple">  <div class="ico">👥</div><div class="v">4</div><div class="l">people, fast pace</div></div>
-    <div class="stat pink">    <div class="ico">🏘️</div><div class="v">2 + TBD</div><div class="l">Sydney Water · Blacktown locked · 3rd authority TBD on volume</div></div>
+    <div class="stat pink">    <div class="ico">🏘️</div><div class="v">1 auth · 5 councils</div><div class="l">Sydney Water + Blacktown locked · proposing Nthn Beaches / C-Bankstown / Bayside next (all SW)</div></div>
     <div class="stat warn">    <div class="ico">🏁</div><div class="v">Jun 30</div><div class="l">top-5 milestone · 5 real orders</div></div>
   </div>
 
@@ -163,10 +163,9 @@
     <rect class="b2" x="480" y="60" width="150" height="60" rx="8"/>
     <text class="t" x="555" y="85" text-anchor="middle">Core</text>
     <text class="tSm" x="555" y="103" text-anchor="middle">orchestrator + playbooks</text>
-    <rect class="bWarn" x="650" y="60" width="140" height="60" rx="8"/>
-    <text class="t" x="720" y="80" text-anchor="middle">📜 Extractor</text>
-    <text class="tSm" x="720" y="98" text-anchor="middle">cert URL → fields</text>
-    <text class="tSm" x="720" y="112" text-anchor="middle">(P2 · 10298)</text>
+    <rect class="bWarn" x="670" y="68" width="100" height="40" rx="6" stroke-dasharray="3 3" opacity="0.55"/>
+    <text class="tSm" x="720" y="85" text-anchor="middle" opacity="0.7">📜 Extractor</text>
+    <text class="tSm" x="720" y="100" text-anchor="middle" opacity="0.55" style="font-size:10px">Optional · not in top-5</text>
     <rect class="bCyan" x="330" y="145" width="220" height="50" rx="8"/>
     <text class="t" x="440" y="170" text-anchor="middle">🧠 IVoiceAIService</text>
     <text class="tSm" x="440" y="186" text-anchor="middle">IVR · realtime voice</text>
@@ -223,6 +222,14 @@
   <div class="callout good">
     🎯 <b>Stage by Fri 2026-05-29</b> · 🚀 <b>Production by Fri 2026-06-05</b> · 🏁 <b>5 real orders by 2026-06-30</b>. <b>These dates are committed, not aspirational.</b> Get something demoable on stage as early as possible — and stand up <b>browser test-mode first</b> so devs can exercise the AI calling without waiting on telephony.
   </div>
+  <div class="callout good">
+    📈 <b>27 May progress check (5 days into the sprint)</b>
+    <ul>
+      <li>🟢 <b>Playbook backend is essentially done.</b> 9 PRs in 5 days — domain + schema (10306), foundation + GetCallTypes (10307), GetPlaybook (10313), List + availability (10314), endpoints part 1 (10308), prompt-builder logic + models (9963 partial), DTO refactor. CRUD slice + queries are merged on <code>main</code>.</li>
+      <li>🟡 <b>Marcus's PR #15 open</b> — SETTLEIT-10269 adds migrations project, pipelines, Dockerfiles, claude files. <b>Stage deploy lives or dies on this.</b> Needs review &amp; merge before Fri.</li>
+      <li>🟡 <b>P1 still to land for a Fri demo:</b> Browser test-mode (10297), Sydney Water + Blacktown playbook content (9965/9966), the live voice-call path on top of the prompt builder, Calls API + SignalR, FE live-wiring, call-detail recording (10303). The backend foundation is solid; the demo-facing pieces need a sprint push.</li>
+    </ul>
+  </div>
   <div class="callout idea">
     📌 <b>22 May standup follow-ups</b>
     <ul>
@@ -240,21 +247,30 @@
   <table>
     <thead><tr><th>Area</th><th>Ticket</th><th>State</th><th>Notes</th></tr></thead>
     <tbody>
-      <tr><td>.NET scaffold + CI/CD + Azure</td><td>SETTLEIT-9961</td><td><span class="pill warn">🚧 In progress</span></td><td>Solution landed; staging deploy + CQRS still to wire.</td></tr>
-      <tr><td>React FE — dashboard + live call</td><td>SETTLEIT-9962</td><td><span class="pill warn">👀 Code review</span></td><td>Mocks only; live-data wiring not in scope ⚠️</td></tr>
+      <tr><td>.NET scaffold (initial)</td><td>SETTLEIT-10268 / 9961</td><td><span class="pill good">✅ Merged</span></td><td>PR #4 (22 May). Solution + projects landed.</td></tr>
+      <tr><td>Migrations project + pipelines + dockerfiles + claude files</td><td>SETTLEIT-10269</td><td><span class="pill warn">👀 PR #15 open</span></td><td>Marcus, since 26 May. <b>Stage deploy depends on this</b> — must land before Fri.</td></tr>
+      <tr><td>JWT bearer auth (BE) + frontend auth (FE)</td><td>SETTLEIT-10145 (+ 9961 auth slice)</td><td><span class="pill good">✅ Merged</span></td><td>PRs #5, #6 (25 May). Ivy.</td></tr>
+      <tr><td>React FE — dashboard + live call</td><td>SETTLEIT-9962</td><td><span class="pill good">✅ Merged</span></td><td>PR #3 (20 May). Mocks only — live-data wiring still required.</td></tr>
+      <tr><td>Playbook domain + schema</td><td>SETTLEIT-10306</td><td><span class="pill good">✅ Merged</span></td><td>PR #8 (25 May).</td></tr>
+      <tr><td>Playbooks backend foundation + GetCallTypes</td><td>SETTLEIT-10307</td><td><span class="pill good">✅ Merged</span></td><td>PR #9 (26 May).</td></tr>
+      <tr><td>Get-playbook query</td><td>SETTLEIT-10313</td><td><span class="pill good">✅ Merged</span></td><td>PR #10 (26 May).</td></tr>
+      <tr><td>List + availability queries</td><td>SETTLEIT-10314</td><td><span class="pill good">✅ Merged</span></td><td>PR #11 (26 May).</td></tr>
+      <tr><td>Playbook endpoints part 1</td><td>SETTLEIT-10308</td><td><span class="pill good">✅ Merged</span></td><td>PR #12 (27 May). REST surface for CRUD lookups.</td></tr>
+      <tr><td>Playbook API contracts plan</td><td>SETTLEIT-10305</td><td><span class="pill good">✅ Merged</span></td><td>PR #7 (25 May). Design doc.</td></tr>
+      <tr><td>Realtime voice integration — prompt builder + models</td><td>SETTLEIT-9963 (partial)</td><td><span class="pill warn">🟡 Partially shipped</span></td><td>PRs #13, #16 (27 May). Prompt-builder logic + DTO refactor merged; <b>live voice call path not yet wired</b>.</td></tr>
       <tr><td>Telephony provider spike</td><td>SETTLEIT-10127</td><td><span class="pill good">✅ Superseded</span></td><td>Close — trial via GLOBALIT-4159 / 4160.</td></tr>
-      <tr><td>Realtime voice integration</td><td>SETTLEIT-9963</td><td><span class="pill bad">🆕 Not started</span></td><td>Mock-up pattern lifts straight in.</td></tr>
       <tr><td>Call provider + outbound</td><td>SETTLEIT-9964</td><td><span class="pill bad">🆕 Not started</span></td><td>Build behind <code>ICallProvider</code>.</td></tr>
-      <tr><td>Sydney Water IVR playbook</td><td>SETTLEIT-9965</td><td><span class="pill bad">🆕 Not started</span></td><td>Content authoring.</td></tr>
+      <tr><td>Sydney Water IVR playbook</td><td>SETTLEIT-9965</td><td><span class="pill bad">🆕 Not started</span></td><td>Content authoring — needs recordings from PMs.</td></tr>
       <tr><td>Blacktown human-agent playbook</td><td>SETTLEIT-9966</td><td><span class="pill bad">🆕 Not started</span></td><td>Now <b>P1</b> — need a council + a water authority both live.</td></tr>
       <tr><td>SettleIT integration</td><td>SETTLEIT-9967</td><td><span class="pill bad">🆕 Not started</span></td><td>Single ticket — same team owns both ends.</td></tr>
       <tr><td>Disclosure / consent flow</td><td>SETTLEIT-9968</td><td><span class="pill bad">🆕 Not started</span></td><td>Wording <a href="https://infotrack.atlassian.net/wiki/spaces/SET/pages/4307583200/AI+caller+legal">signed off by legal</a> — just wire it in.</td></tr>
-      <tr><td>Post-call summary extraction</td><td>SETTLEIT-9969</td><td><span class="pill bad">🆕 Not started</span></td><td>Transcript → fields. P2.</td></tr>
-      <tr><td>🌐 Browser test-mode</td><td>SETTLEIT-10297</td><td><span class="pill good">🆕 Created</span></td><td>Port from <code>C:\code\InfoDialer</code>.</td></tr>
-      <tr><td>📜 Pre-call doc extraction</td><td>SETTLEIT-10298</td><td><span class="pill good">🆕 Created</span></td><td>P2; gated on spike.</td></tr>
-      <tr><td>↳ Spike: extraction approach</td><td>SETTLEIT-10299</td><td><span class="pill good">🆕 Created</span></td><td>Sub-task of 10298; no dtapi.</td></tr>
-      <tr><td>🎙️ Call recording playback (dashboard)</td><td>—</td><td><span class="pill bad">🆕 Proposed (P1)</span></td><td>From 22 May meeting — liability-critical. File handlers must verify figures.</td></tr>
-      <tr><td>🚪 AI Gateway integration</td><td>—</td><td><span class="pill bad">🆕 Proposed (P2)</span></td><td>From 22 May meeting — text LLM through gateway (Chen Ni).</td></tr>
+      <tr><td>Post-call summary extraction</td><td>SETTLEIT-9969</td><td><span class="pill muted">⚪ Optional (was P2)</span></td><td>Transcript → fields. Demoted to optional per 27 May call.</td></tr>
+      <tr><td>🌐 Browser test-mode</td><td>SETTLEIT-10297</td><td><span class="pill bad">🆕 Not started</span></td><td>Was "do first". Port from <code>C:\code\InfoDialer</code>.</td></tr>
+      <tr><td>📜 Pre-call doc extraction</td><td>SETTLEIT-10298</td><td><span class="pill muted">⚪ Optional (was P2)</span></td><td>Demoted to optional per 27 May call — out of MVP scope.</td></tr>
+      <tr><td>↳ Spike: extraction approach</td><td>SETTLEIT-10299</td><td><span class="pill muted">⚪ Optional (was P2)</span></td><td>Sub-task of 10298; demoted with parent.</td></tr>
+      <tr><td>🎙️ Call recording playback (dashboard)</td><td>SETTLEIT-10303</td><td><span class="pill bad">🆕 Not started</span></td><td>Liability-critical. Sub-task of 9967.</td></tr>
+      <tr><td>🚪 AI Gateway spike</td><td>SETTLEIT-10301</td><td><span class="pill bad">🆕 Not started</span></td><td>From 22 May meeting — spike whether we even need it (Chen Ni).</td></tr>
+      <tr><td>🗓️ Scheduled call (X days before settlement)</td><td>—</td><td><span class="pill muted">⚪ Optional · SettleIT-side</span></td><td>Per 27 May: SettleIT decides <i>when</i> to trigger; InfoDialer doesn't own scheduling. Out of InfoDialer scope.</td></tr>
     </tbody>
   </table>
 
@@ -290,10 +306,9 @@
     <thead><tr><th>Owner</th><th>Stream</th><th>First move</th><th>Unblocks</th></tr></thead>
     <tbody>
       <tr><td><b>⚙️ Marcus</b></td><td>IT &amp; telephony — staging deploy (9961) + <code>ICallProvider</code> (9964)</td><td>Stage deploy pipeline live</td><td>Everyone (stage = where they demo)</td></tr>
-      <tr><td><b>🗣️ Jerold</b></td><td>Initial playbook bootstrap → AI voice (9963) + <b>browser test-mode (10297)</b></td><td>Seed first playbook + hand to Prem/Nav, then 🔥 browser harness, then voice</td><td>Everyone's testing</td></tr>
-      <tr><td><b>🤝 Ivy</b></td><td>SettleIT integration (9967) + trigger/calls API + call-detail page (10303)</td><td>Trigger endpoint + contract</td><td>Callback loop, dashboard</td></tr>
+      <tr><td><b>🗣️ Jerold</b></td><td>AI voice (9963 live-call wire-up) + <b>browser test-mode (10297)</b> + <b>call-detail page (10303, full stack)</b></td><td>🔥 Browser harness first, then live voice, then call-detail (BE recording API + FE page)</td><td>Everyone's testing; recording playback unblocks liability sign-off</td></tr>
+      <tr><td><b>🤝 Ivy</b></td><td>SettleIT integration (9967) + trigger/calls API + Calls/GetCall + SignalR hub</td><td>Trigger endpoint + contract</td><td>Callback loop, dashboard</td></tr>
       <tr><td><b>📚 Prem + Nav</b></td><td>Playbook CRUD (10302) + content (Sydney Water 9965, Blacktown 9966)</td><td>CRUD on the landed Playbook entity</td><td>Authoring more councils fast</td></tr>
-      <tr><td><b>📜 Parallel</b></td><td>Certificate extraction — spike (10299) → impl (10298)</td><td>Spike to pick approach (LLM-vision likely)</td><td>Richer call inputs; independent of call path</td></tr>
     </tbody>
   </table>
   <div class="callout">
@@ -318,32 +333,22 @@
     </div>
     <div class="card" style="border-left:3px solid var(--pink)">
       <h3>🗣️ AI-VOICE <span>· Jerold</span></h3>
-      <div class="chain">🔥 10297 browser test → 9963 voice service → 9968 disclosure</div>
-      <p class="dep">Independent of Telephony. Browser test first = the team's shared test harness.</p>
+      <div class="chain">🔥 10297 browser test → 9963 voice service → 9968 disclosure → 10303 call-detail (BE + FE)</div>
+      <p class="dep">Independent of Telephony. Browser test first = the team's shared test harness. Call-detail page (10303) is now in this stream — Jerold owns BE recording API + FE page.</p>
     </div>
     <div class="card" style="border-left:3px solid var(--good)">
-      <h3>📚 PLAYBOOK <span>· Prem + Nav (+ Jerold init)</span></h3>
-      <div class="chain">entity ✓ → 10302 CRUD → content: 9965 SW · 9966 BT · 10300 3rd</div>
-      <p class="dep">⚠️ Two owners touch this. Agree entity/schema first; Jerold's initial work hands off to Prem/Nav's CRUD.</p>
+      <h3>📚 PLAYBOOK <span>· Prem + Nav</span></h3>
+      <div class="chain">backend ✓ → 10302 CRUD UI → content: 9965 SW · 9966 BT · next 3 SW councils</div>
+      <p class="dep">Backend CRUD already landed (PRs #8–12). Stream is now CRUD UI + content authoring across 4 NSW councils.</p>
     </div>
     <div class="card" style="border-left:3px solid var(--accent)">
       <h3>🔌 INTEGRATION <span>· Ivy</span></h3>
-      <div class="chain">calls API (CQRS+SignalR) → 9967 SettleIT → 10303 call detail → 9962 FE</div>
-      <p class="dep">Depends on 🏗️ Foundation. Shared-token auth (Q3). Owns the dashboard read-side.</p>
-    </div>
-    <div class="card" style="border-left:3px solid var(--cyan)">
-      <h3>📜 EXTRACTION <span>· unowned (spare)</span></h3>
-      <div class="chain">10299 spike → 10298 pre-call → 9969 post-call</div>
-      <p class="dep">Fully independent of the call path. Start the moment someone frees up. Needs an LLM key.</p>
-    </div>
-    <div class="card" style="border-left:3px solid var(--dim)">
-      <h3>🚪 GATEWAY <span>· TBD</span></h3>
-      <div class="chain">10301 spike — do we even need it?</div>
-      <p class="dep">Fully independent, tiny. Chen Ni is the contact.</p>
+      <div class="chain">calls API (CQRS+SignalR) → 9967 SettleIT → 9962 FE live-wiring</div>
+      <p class="dep">Depends on 🏗️ Foundation. Shared-token auth (Q3). Owns the dashboard read-side; call-detail moved to Jerold.</p>
     </div>
   </div>
   <p style="font-size:12px;color:var(--muted);margin-top:8px">
-    💡 In Jira these map to <b>components</b> / labels — <code>stream-foundation</code>, <code>stream-telephony</code>, <code>stream-ai-voice</code>, <code>stream-playbook</code>, <code>stream-integration</code>, <code>stream-extraction</code>, <code>stream-gateway</code>. I'll apply them across the tickets when the Atlassian connection is back.
+    💡 In Jira these map to <b>components</b> / labels — <code>stream-foundation</code>, <code>stream-telephony</code>, <code>stream-ai-voice</code>, <code>stream-playbook</code>, <code>stream-integration</code>. I'll apply them across the tickets when the Atlassian connection is back.
   </p>
 
   <!-- ============= 4 · BUCKETS ============= -->
@@ -392,28 +397,6 @@
     </ul>
   </div>
 
-  <!-- ============= 6 ============= -->
-  <h2>📜 6 · Cert extraction (P2 · <a href="https://infotrack.atlassian.net/browse/SETTLEIT-10298">10298</a> + spike <a href="https://infotrack.atlassian.net/browse/SETTLEIT-10299">10299</a>)</h2>
-  <div class="callout idea">
-    💡 SettleIT can't extract <i>property number, full address, certificate number (last 5)</i> from the PDF in time — so InfoDialer fetches the public certificate URL and extracts the fields. <b>Not in P1.</b> Explicitly <b>not using <a href="https://github.com/InfoTrackGlobal/DocumentTransformationService">dtapi</a></b> — overkill for one document type. Spike 10299 picks the approach (LLM-vision likely wins).
-  </div>
-<pre><code>{
-  "uniqueReference": "sydney-water-rates",
-  "inputSchema": {
-    "propertyNumber":   { "type":"string" },
-    "fullAddress":      { "type":"string" },
-    "certificateLast5": { "type":"string" }
-  },
-  "inputSourceExtraction": {
-    "sourceField": "certificateUrl",
-    "extract": {
-      "propertyNumber":   { "from":"page1.body" },
-      "fullAddress":      { "from":"page1.body" },
-      "certificateLast5": { "from":"page1.header", "transform":"last5" }
-    }
-  }
-}</code></pre>
-
   <!-- ============= 7 · DECISIONS ============= -->
   <h2>✅ 7 · Decisions — locked vs open</h2>
   <table>
@@ -422,9 +405,12 @@
       <tr><td>Telephony provider</td><td><span class="pill warn">🟡 Trial</span></td><td><a href="https://infotrack.atlassian.net/browse/GLOBALIT-4159">4159 (Telnyx)</a> + <a href="https://infotrack.atlassian.net/browse/GLOBALIT-4160">4160 (ACS)</a> — pick one after 3-week trial</td></tr>
       <tr><td>Realtime voice model</td><td><span class="pill warn">🟡 Trial</span></td><td><a href="https://infotrack.atlassian.net/browse/GLOBALIT-4162">4162 (Gemini)</a> + <a href="https://infotrack.atlassian.net/browse/GLOBALIT-4163">4163 (OpenAI)</a></td></tr>
       <tr><td>Outbound number</td><td><span class="pill warn">🟡 In flight</span></td><td>Provisioning via 4159 / 4160</td></tr>
-      <tr><td>3rd authority selection</td><td><span class="pill warn">🟡 Volume data in — needs decision</span></td><td>Newcastle = 4 orders. Most NSW councils share Sydney Water — see section 8 for the trade-off.</td></tr>
+      <tr><td>3rd authority selection</td><td><span class="pill good">✅ Decided 27 May</span></td><td>Stay on Sydney Water. Next 3 councils = Northern Beaches / Canterbury-Bankstown / Bayside. See section 8b for reasoning.</td></tr>
+      <tr><td>Pre-call cert extraction (10298 / 10299)</td><td><span class="pill muted">⚪ Optional</span></td><td>Demoted 27 May. SettleIT-side extraction preferred; InfoDialer's path parked.</td></tr>
+      <tr><td>Post-call summary extraction (9969)</td><td><span class="pill muted">⚪ Optional</span></td><td>Demoted 27 May. Transcript replay covers the audit need.</td></tr>
+      <tr><td>Scheduled call (X days before settlement)</td><td><span class="pill muted">⚪ Optional · SettleIT-side</span></td><td>Decided 27 May: SettleIT owns the trigger timing; InfoDialer fires when called. No work on this side.</td></tr>
       <tr><td>Call-detail access</td><td><span class="pill good">✅ Decided</span></td><td>Same-client users see each other's calls. Deep link from SettleIT → AI-Caller call detail page. No dashboard discovery needed.</td></tr>
-      <tr><td>AI Gateway</td><td><span class="pill warn">🟡 Spike first</span></td><td>Spike whether extraction has to route through gateway. Realtime voice direct regardless.</td></tr>
+      <tr><td>AI Gateway</td><td><span class="pill muted">⚪ Deferred</span></td><td>Removed from active scope (27 May). Re-open only if an external constraint forces it. Realtime voice exempt regardless.</td></tr>
       <tr><td>User-flow mapping</td><td><span class="pill warn">🟡 In flight</span></td><td>Shayla + Aaron, Monday. Artifact not ticket.</td></tr>
       <tr><td>SettleIT-side ownership</td><td><span class="pill good">✅ Resolved</span></td><td>One team — anyone can commit to either repo</td></tr>
       <tr><td>Disclosure script wording</td><td><span class="pill good">✅ Done</span></td><td><a href="https://infotrack.atlassian.net/wiki/spaces/SET/pages/4307583200/AI+caller+legal">Legal sign-off</a> — just wire it in (9968)</td></tr>
@@ -454,12 +440,12 @@
       <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10303">SETTLEIT-10303</a> <span style="font-size:10px;color:var(--muted)">↳ sub-task of 9967</span></td><td><span class="pill good">Created</span></td><td><code>[P1] - Call detail page: recording playback + deep-link from SettleIT</code></td><td>1d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td><b>Liability-critical.</b> Created as sub-task of 9967 per your request. Auth = shared access token (Q3 decision).</td></tr>
       <tr><td colspan="3" style="background:#0d1a2b;color:var(--accent);font-weight:600">P1 subtotal</td><td colspan="3" style="background:#0d1a2b;color:var(--accent);font-weight:600">20d · 4 ppl × 5 days</td></tr>
       <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9967">SETTLEIT-9967</a></td><td><span class="pill warn">Update</span></td><td><code>[P2] - SettleIT integration: contract + trigger + callback</code></td><td>3d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td>Single ticket — same team owns both ends.</td></tr>
-      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10299">SETTLEIT-10299</a></td><td><span class="pill warn">Update</span></td><td><code>[P2] - Spike: cert extraction approach (no dtapi)</code></td><td>1d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td>Do first in W2.</td></tr>
-      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10298">SETTLEIT-10298</a></td><td><span class="pill warn">Update</span></td><td><code>[P2] - Pre-call document extraction (inputSourceExtraction)</code></td><td>2d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td>After spike outcome.</td></tr>
-      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9969">SETTLEIT-9969</a></td><td><span class="pill warn">Update + clarify</span></td><td><code>[P2] - Post-call summary extraction (transcript → fields)</code></td><td>2d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td>Added sentence distinguishing from 10298.</td></tr>
+      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10299">SETTLEIT-10299</a></td><td><span class="pill muted">Demote</span></td><td><code>[Optional] - Spike: cert extraction approach (no dtapi)</code></td><td>1d</td><td><span class="pill muted">⚪ Optional (27 May)</span></td><td>Parked — SettleIT-side extraction preferred.</td></tr>
+      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10298">SETTLEIT-10298</a></td><td><span class="pill muted">Demote</span></td><td><code>[Optional] - Pre-call document extraction (inputSourceExtraction)</code></td><td>2d</td><td><span class="pill muted">⚪ Optional (27 May)</span></td><td>Parked with the spike.</td></tr>
+      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9969">SETTLEIT-9969</a></td><td><span class="pill muted">Demote</span></td><td><code>[Optional] - Post-call summary extraction (transcript → fields)</code></td><td>2d</td><td><span class="pill muted">⚪ Optional (27 May)</span></td><td>Transcript replay covers the audit need.</td></tr>
       <tr><td>—</td><td><span class="pill good">New</span></td><td><code>[P2] - Real outbound onboarding (Telnyx/ACS go-live, number, first calls)</code></td><td>2d</td><td><span class="pill warn">⏸️ Skipped (per request)</span></td><td>File when GLOBALIT tickets land.</td></tr>
       <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10300">SETTLEIT-10300</a></td><td><span class="pill good">Created</span></td><td><code>[P2] - 3rd authority playbook (Newcastle or higher-volume alternative)</code></td><td>1d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td>Demoted from P1 pending June's volume script. Recommend Northern Beaches (19 orders).</td></tr>
-      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10301">SETTLEIT-10301</a></td><td><span class="pill good">Created</span></td><td><code>[P2] - Spike: AI Gateway (do we even need it?)</code></td><td>1d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td>Filed as Spike type. Chen Ni is the contact.</td></tr>
+      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10301">SETTLEIT-10301</a></td><td><span class="pill muted">Defer</span></td><td><code>[Deferred] - Spike: AI Gateway (do we even need it?)</code></td><td>—</td><td><span class="pill muted">⚪ Deferred (27 May)</span></td><td>Removed from active scope. Re-open only if external constraint forces it.</td></tr>
       <tr><td colspan="3" style="background:#0d1a2b;color:var(--accent);font-weight:600">P2 subtotal</td><td colspan="3" style="background:#0d1a2b;color:var(--accent);font-weight:600">12d</td></tr>
       <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10127">SETTLEIT-10127</a></td><td><span class="pill bad">Close</span></td><td><i>[CLOSED] Telephony provider comparison — superseded by live trial</i></td><td>—</td><td><span class="pill good">✅ Closed 22 May</span></td><td>Transitioned to Wont Do status; superseded by GLOBALIT-4159/4160 live trial.</td></tr>
       <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10302">SETTLEIT-10302</a></td><td><span class="pill good">Created</span></td><td><code>[P3] - Multi-council playbook CRUD UI</code></td><td>3d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td>Makes adding councils a 0-deploy operation.</td></tr>
@@ -468,7 +454,7 @@
     </tbody>
   </table>
   <p style="font-size:12px;color:var(--muted);margin-top:8px">
-    <b>Totals.</b> P1 = 20d (exactly 4 ppl × 5 days — zero slack, but the parallelism map above is how we make it work). P2 = 12d (the 7 days between stage on 29 May and prod on 5 Jun, plus the 3rd-authority playbook + AI gateway from the 22 May meeting). P3 + optional P4 = nice-to-haves for after milestone.
+    <b>Totals.</b> P1 = 20d (exactly 4 ppl × 5 days — zero slack, but the parallelism map above is how we make it work). P2 = 6d (SettleIT integration + real outbound onboarding + next 3 Sydney Water councils, between stage on 29 May and prod on 5 Jun). Cert extraction (10298/10299/9969) + AI Gateway (10301) moved to Optional/Deferred on 27 May. P3 = nice-to-haves for after milestone.
   </p>
   <p style="font-size:12px;color:var(--muted)">
     <b>To push.</b> Reply <code>push all</code> to apply every row, or call out exceptions (e.g. <code>skip P3</code>, <code>don't promote 9968</code>, <code>merge X into Y</code>). I'll batch-edit titles, descriptions, and the <i>Original Estimate</i> field, plus create / close as marked.
@@ -507,7 +493,7 @@
       <ul>
         <li><b>Sydney Water</b> (rates) + 7 councils: Northern Beaches, Canterbury-Bankstown, Blacktown, Bayside, Penrith, Cumberland, Inner West</li>
         <li><b>Coverage:</b> ~81 orders across the two releases</li>
-        <li><b>Effort:</b> 1 water-auth playbook + 7 council playbooks ≈ 8d (P2 mostly)</li>
+        <li><b>Effort:</b> 1 water-auth playbook + 7 council playbooks ≈ 8d (post-MVP mostly)</li>
         <li>P1 milestone uses Sydney Water + Blacktown; remaining 6 councils ride the same auth pattern with minimal extra effort</li>
       </ul>
     </div>
@@ -522,14 +508,34 @@
     </div>
   </div>
 
+  <!-- ============= 8b · NEXT 3 COUNCILS RECOMMENDATION ============= -->
+  <div class="callout good" style="margin-top:14px">
+    🎯 <b>Recommended next 3 councils (decided 27 May) — for PMs to collect recordings against</b>
+    <p style="margin:6px 0 4px"><b>Picked by balancing three factors:</b> ① higher order volume is better · ② easy to communicate on the phone with AI (best if pre-recorded / IVR) · ③ authority sharing (the fewer new water authorities, the better).</p>
+    <table style="margin:8px 0 6px">
+      <thead><tr><th>#</th><th>Council</th><th>State</th><th>Water authority</th><th>Combined orders</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td><b>1</b></td><td><b>Northern Beaches</b></td><td>NSW</td><td>Sydney Water (reused)</td><td><b>19</b></td><td>Highest unlocked volume on the existing auth playbook.</td></tr>
+        <tr><td><b>2</b></td><td><b>Canterbury-Bankstown</b></td><td>NSW</td><td>Sydney Water (reused)</td><td><b>13</b></td><td>Second highest. Free-rides Sydney Water.</td></tr>
+        <tr><td><b>3</b></td><td><b>Bayside</b></td><td>NSW</td><td>Sydney Water (reused)</td><td><b>12</b></td><td>Same auth pattern. Geographically diverse — good test of the Sydney Water playbook across different rate-payer cohorts.</td></tr>
+      </tbody>
+    </table>
+    <p style="margin:6px 0 0"><b>Impact:</b> +44 orders, <b>zero new water-authority playbooks</b>. Combined with Blacktown locked, Sydney Water now powers <b>4 councils ≈ 56 orders</b>. The remaining 3 Sydney Water councils (Penrith, Cumberland, Inner West) become trivial follow-ups for the same auth playbook.</p>
+    <p style="margin:6px 0 0;font-size:12px;color:var(--muted)">
+      <b>On the "pre-recorded" principle:</b> public-web research confirms most councils (Northern Beaches, Canterbury-Bankstown, Moreton Bay, Brisbane) only expose IVR for <i>payments</i>, not for property/rates inquiries — the council leg of every order is human-agent in practice. The IVR / pre-recorded angle therefore lives on the <b>water-authority leg</b> (Sydney Water is IVR-only — that's why we picked it). Sticking with Sydney Water councils means the easy/cheap IVR leg covers the bulk of every call.<br>
+      <b>On Brisbane (43 orders):</b> deferred. Adds QLD as a new state + QUU as a new water authority + unknown IVR shape. Re-open if we want to seed QLD after MVP.<br>
+      <b>For PMs:</b> please collect recordings of typical "settlement-figure" inquiry calls to <b>Northern Beaches, Canterbury-Bankstown, and Bayside councils</b> (any time-of-day; both pre-IVR-greeting and human-agent portions). These will seed the council-side playbooks.
+    </p>
+  </div>
+
   <!-- ============= 8c · OPEN QUESTIONS ============= -->
   <h2>❓ 8c · Open questions parked for later</h2>
   <p style="font-size:13px;color:var(--muted);margin-bottom:8px">Captured so they don't get lost — revisit when the relevant phase comes up.</p>
   <table>
     <thead><tr><th>#</th><th>Question</th><th>Status</th><th>Notes</th></tr></thead>
     <tbody>
-      <tr><td>Q1</td><td>3rd authority — keep Newcastle (4 orders) or swap for Northern Beaches / Canterbury-Bankstown / Bayside?</td><td><span class="pill muted">⚪ Open</span></td><td>All NSW alternatives share Sydney Water — no extra water-auth work. Newcastle is only 4 orders combined; swapping is essentially free.</td></tr>
-      <tr><td>Q2</td><td>Brisbane / QLD expansion — P2, next sprint, or spike first?</td><td><span class="pill muted">⚪ Open</span></td><td>Brisbane is 43 orders (biggest single market) but adds a new state + new water authority (QUU). Section 8b breaks down the trade-off.</td></tr>
+      <tr><td>Q1</td><td>3rd authority — keep Newcastle (4 orders) or swap for Northern Beaches / Canterbury-Bankstown / Bayside?</td><td><span class="pill good">✅ Decided 27 May</span></td><td>Skip Newcastle. Stay on Sydney Water; next 3 councils = <b>Northern Beaches, Canterbury-Bankstown, Bayside</b>. See section 8b.</td></tr>
+      <tr><td>Q2</td><td>Brisbane / QLD expansion — now, next sprint, or spike first?</td><td><span class="pill muted">⚪ Deferred</span></td><td>Brisbane is 43 orders (biggest single market) but adds a new state + new water authority (QUU). Re-open after MVP if QLD seeding is wanted.</td></tr>
       <tr><td>Q3</td><td>SettleIT deep-link auth shape</td><td><span class="pill good">✅ Decided</span></td><td><b>Shared access token</b> — one token used in both SettleIT and AI-Caller. Simpler than building separate multi-tenant logic.</td></tr>
       <tr><td>Q4</td><td>AI Gateway spike — owner?</td><td><span class="pill muted">⚪ Open</span></td><td>TBD. Likely Marcus (infra angle) or Connor (has Chen Ni's contact). Park for now.</td></tr>
     </tbody>
@@ -603,48 +609,36 @@
     t_browser:    { title:'🔥 Browser test-mode — DO FIRST', units:1, tag:'tooling', phase:'p1',
                     desc:'Shared test harness, not just a demo. Jerold builds this first so the whole team tests AI calling without telephony. Port from mock-up.',
                     ticket:'SETTLEIT-10297' },
-    t_recording:  { title:'Call detail page: recording + SettleIT deep-link', units:1, tag:'fe', phase:'p1',
-                    desc:'NEW (22 May). Liability-critical. SettleIT adds a "listen" button on the order → opens call detail page (audio + transcript). Auth = signed link or SSO + same-client check.' },
+    t_recording:  { title:'Call detail page: recording + SettleIT deep-link (full stack)', units:2, tag:'fe', phase:'p1',
+                    desc:'Owned by Jerold (27 May). BE recording API + FE call-detail page + SettleIT deep-link. Liability-critical.',
+                    ticket:'SETTLEIT-10303' },
     t_settleit:   { title:'SettleIT integration (contract + trigger + callback)', units:3, tag:'integration', phase:'p2',
                     desc:'Single ticket — same team owns both ends.',
                     ticket:'SETTLEIT-9967' },
-    t_spike:      { title:'Spike: cert extraction approach', units:1, tag:'voice', phase:'p2',
-                    desc:'No dtapi. LLM-vision vs PdfPig+regex vs Form Recognizer.',
-                    ticket:'SETTLEIT-10299' },
-    t_extract:    { title:'Pre-call document extraction', units:2, tag:'voice', phase:'p2',
-                    desc:'inputSourceExtraction handler + schema migration. After spike.',
-                    ticket:'SETTLEIT-10298' },
-    t_summary:    { title:'Post-call summary extraction', units:2, tag:'voice', phase:'p2',
-                    desc:'Transcript → structured fields. Different from 10298 (which is pre-call from doc).',
-                    ticket:'SETTLEIT-9969' },
     t_outbound:   { title:'Real outbound onboarding', units:2, tag:'voice', phase:'p2',
                     desc:'Telnyx/ACS go-live, number provisioning, first real calls. After GLOBALIT lands.' },
-    t_ncpb:       { title:'3rd authority playbook (Newcastle or alt)', units:1, tag:'playbook', phase:'p2',
-                    desc:'Demoted from P1 (22 May) — pending June\'s volume analysis. Author whichever council has the most pending orders.' },
-    t_aigw:       { title:'Spike: AI Gateway (do we need it?)', units:1, tag:'infra', phase:'p2',
-                    desc:'NEW (22 May meeting). Spike first — if we can avoid routing extraction through the gateway, even better. Chen Ni for context.' }
+    t_ncpb:       { title:'Next 3 Sydney Water councils (Nthn Beaches / C-Bankstown / Bayside)', units:2, tag:'playbook', phase:'p2',
+                    desc:'Decided 27 May. All reuse the Sydney Water authority playbook; council leg is human-agent. +44 orders.' }
   };
 
   const BUCKETS = ['marcus','b','c','d','stretch'];
   // marcus = Marcus (IT+tel) · b = Jerold (voice+test) · c = Ivy (SettleIT+API) · d = Prem+Nav (playbook) · stretch = parallel/later
   const DEFAULTS = {
     marcus:  ['t_infra','t_callprov'],
-    b:       ['t_browser','t_aivoice','t_disclose'],
-    c:       ['t_settleit','t_api','t_recording'],
+    b:       ['t_browser','t_aivoice','t_disclose','t_recording'],
+    c:       ['t_settleit','t_api'],
     d:       ['t_crud','t_fewire','t_swpb','t_blpb'],
-    stretch: ['t_spike','t_extract','t_summary','t_outbound','t_ncpb','t_aigw']
+    stretch: ['t_outbound','t_ncpb']
   };
-  const STORAGE_KEY = 'aicaller-overview-buckets-v5';
+  const STORAGE_KEY = 'aicaller-overview-buckets-v6';
 
   // workstream (parent) each task belongs to — independent chains
   const PARENT_OF = {
     t_infra:'🏗️ FND',
     t_callprov:'📞 TEL', t_outbound:'📞 TEL',
-    t_browser:'🗣️ VOX', t_aivoice:'🗣️ VOX', t_disclose:'🗣️ VOX',
+    t_browser:'🗣️ VOX', t_aivoice:'🗣️ VOX', t_disclose:'🗣️ VOX', t_recording:'🗣️ VOX',
     t_crud:'📚 PBK', t_swpb:'📚 PBK', t_blpb:'📚 PBK', t_ncpb:'📚 PBK',
-    t_settleit:'🔌 INT', t_api:'🔌 INT', t_recording:'🔌 INT', t_fewire:'🔌 INT',
-    t_spike:'📜 EXT', t_extract:'📜 EXT', t_summary:'📜 EXT',
-    t_aigw:'🚪 GW'
+    t_settleit:'🔌 INT', t_api:'🔌 INT', t_fewire:'🔌 INT'
   };
 
   function clone(o){ return JSON.parse(JSON.stringify(o)); }
