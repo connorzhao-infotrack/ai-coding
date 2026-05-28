@@ -189,18 +189,15 @@
     <text class="tSm" x="110" y="82" text-anchor="middle">+ future consumers</text>
     <path class="ar" d="M200 60 L 310 60" marker-end="url(#arr)"/>
     <text class="tAccent" x="255" y="50" text-anchor="middle">POST /api/v1/calls</text>
-    <text class="tSm" x="255" y="76" text-anchor="middle">+ certificateUrl</text>
+    <text class="tSm" x="255" y="76" text-anchor="middle">+ customFields (form inputs)</text>
     <rect class="b" x="310" y="20" width="500" height="250" rx="12"/>
     <text class="t" x="560" y="46" text-anchor="middle">🤖 InfoDialer (this repo)</text>
-    <rect class="b2" x="330" y="60" width="130" height="60" rx="8"/>
-    <text class="t" x="395" y="85" text-anchor="middle">API</text>
-    <text class="tSm" x="395" y="103" text-anchor="middle">HTTP + SignalR</text>
-    <rect class="b2" x="480" y="60" width="150" height="60" rx="8"/>
-    <text class="t" x="555" y="85" text-anchor="middle">Core</text>
-    <text class="tSm" x="555" y="103" text-anchor="middle">orchestrator + playbooks</text>
-    <rect class="bWarn" x="670" y="68" width="100" height="40" rx="6" stroke-dasharray="3 3" opacity="0.55"/>
-    <text class="tSm" x="720" y="85" text-anchor="middle" opacity="0.7">📜 Extractor</text>
-    <text class="tSm" x="720" y="100" text-anchor="middle" opacity="0.55" style="font-size:10px">Optional · not in top-5</text>
+    <rect class="b2" x="330" y="60" width="200" height="60" rx="8"/>
+    <text class="t" x="430" y="85" text-anchor="middle">API</text>
+    <text class="tSm" x="430" y="103" text-anchor="middle">HTTP + SignalR (internal)</text>
+    <rect class="b2" x="550" y="60" width="240" height="60" rx="8"/>
+    <text class="t" x="670" y="85" text-anchor="middle">Core</text>
+    <text class="tSm" x="670" y="103" text-anchor="middle">orchestrator + playbooks</text>
     <rect class="bCyan" x="330" y="145" width="220" height="50" rx="8"/>
     <text class="t" x="440" y="170" text-anchor="middle">🧠 IVoiceAIService</text>
     <text class="tSm" x="440" y="186" text-anchor="middle">IVR · realtime voice</text>
@@ -265,8 +262,8 @@
     <ul>
       <li><b>⚙️ Marcus</b> — Telephony stream: <b>stage pipeline (10269)</b> → <b>ICallProvider (9964)</b>. Picks up call-detail (10303) with Jerold once telephony is wired.</li>
       <li><b>🗣️ Jerold</b> — AI-Voice stream: <b>🔥 Browser test-mode (10297) FIRST</b> → <b>live voice integration (9963)</b> → <b>content authoring (9965 + 9966) with disclosure (9968) baked in as a prompt</b>. Picks up call-detail (10303) with Marcus afterwards.</li>
-      <li><b>🤝 Ivy + Prem</b> — Integration stream: <b>Calls API + SignalR hub</b> → <b>SettleIT integration (9967)</b> → <b>FE live-wiring (9962)</b>. Prem onboarding day 1–2 (clone, env setup).</li>
-      <li><b>📚 Nav</b> — Playbook stream: <b>Playbook CRUD UI (10302) full stack</b>. Nav onboarding day 1–2 (clone, env setup) — content authoring lives with Jerold given the judgment calls involved.</li>
+      <li><b>🤝 Ivy + Prem</b> — Integration stream: <b>Calls API + SignalR hub (dashboard-side, internal only)</b> → <b>SettleIT integration (9967) — REST trigger + webhook callback, no SignalR on SettleIT side</b> → <b>FE live-wiring (9962)</b>. Prem onboarding day 1–2 (clone, env setup).</li>
+      <li><b>📚 Nav</b> — Playbook stream: <b>Playbooks end-to-end (10304)</b> — Nav is the Jira-assigned owner. Backend sub-tasks (10305–10308 / 10313 / 10314) already merged; remaining work is the dashboard CRUD UI piece (overlaps 10302, currently unassigned in Jira). Nav onboarding day 1–2 — content authoring lives with Jerold given the judgment calls involved.</li>
       <li>⚠️ <b>Disclosure (9968) is no longer its own ticket</b> — it's a prompt that gets baked into each playbook's <code>InstructionPrompt</code> during content authoring.</li>
       <li>⚠️ <b>Content authoring waits for voice integration to land.</b> Once it does, it can be tested in the browser (no telephony required) — that's why browser test-mode is Jerold's first move.</li>
     </ul>
@@ -283,11 +280,9 @@
     📌 <b>22 May standup follow-ups</b>
     <ul>
       <li>🎙️ <b>Recording playback in the dashboard is now P1.</b> File handlers must be able to listen back before paying the client — figures are liability. Lexi raised; agreed.</li>
-      <li>🚪 <b>AI Gateway integration (P2).</b> Text LLM calls must route through InfoTrack's AI Gateway for cost management (talk to Chen Ni). Realtime voice exempt for now — gateway doesn't support it yet.</li>
       <li>📊 <b>Council selection by volume.</b> June's data is in — see new section below. Sydney Water unlocks 7 top NSW councils via one playbook; Brisbane is the biggest single market.</li>
       <li>🎨 <b>User-flow mapping.</b> Shayla + Aaron (designer), Monday — map roles, steps, decision points end-to-end so there are no gaps from trigger → updated figure.</li>
       <li>🔐 <b>Call-detail access</b> = same-client users see each other's calls. <b>Simplest path:</b> SettleIT puts a "listen" button on the order that deep-links to the AI-Caller call detail page. No dashboard discovery needed for this flow.</li>
-      <li>🚪 <b>AI Gateway is now a spike</b>, not an integration. Investigate first — if we can get away without using it for extraction, that's the win.</li>
     </ul>
   </div>
 
@@ -301,28 +296,35 @@
     <tbody>
       <tr><td>.NET scaffold (initial)</td><td>SETTLEIT-10268 / 9961</td><td><span class="pill good">✅ Merged</span></td><td>PR #4 (22 May). Solution + projects landed.</td></tr>
       <tr><td>Migrations project + pipelines + dockerfiles + claude files</td><td>SETTLEIT-10269</td><td><span class="pill warn">👀 PR #15 open</span></td><td>Marcus, since 26 May. <b>Stage deploy depends on this</b> — must land before Fri.</td></tr>
-      <tr><td>JWT bearer auth (BE) + frontend auth (FE)</td><td>SETTLEIT-10145 (+ 9961 auth slice)</td><td><span class="pill good">✅ Merged</span></td><td>PRs #5, #6 (25 May). Ivy.</td></tr>
-      <tr><td>React FE — dashboard + live call</td><td>SETTLEIT-9962</td><td><span class="pill good">✅ Merged</span></td><td>PR #3 (20 May). Mocks only — live-data wiring still required.</td></tr>
-      <tr><td>Playbook domain + schema</td><td>SETTLEIT-10306</td><td><span class="pill good">✅ Merged</span></td><td>PR #8 (25 May).</td></tr>
-      <tr><td>Playbooks backend foundation + GetCallTypes</td><td>SETTLEIT-10307</td><td><span class="pill good">✅ Merged</span></td><td>PR #9 (26 May).</td></tr>
-      <tr><td>Get-playbook query</td><td>SETTLEIT-10313</td><td><span class="pill good">✅ Merged</span></td><td>PR #10 (26 May).</td></tr>
-      <tr><td>List + availability queries</td><td>SETTLEIT-10314</td><td><span class="pill good">✅ Merged</span></td><td>PR #11 (26 May).</td></tr>
-      <tr><td>Playbook endpoints part 1</td><td>SETTLEIT-10308</td><td><span class="pill good">✅ Merged</span></td><td>PR #12 (27 May). REST surface for CRUD lookups.</td></tr>
-      <tr><td>Playbook API contracts plan</td><td>SETTLEIT-10305</td><td><span class="pill good">✅ Merged</span></td><td>PR #7 (25 May). Design doc.</td></tr>
+      <tr><td>[P1] Implement authentication and authorization (follow SettleIT pattern)</td><td>SETTLEIT-10145 (+ 9961 auth slice)</td><td><span class="pill good">✅ Merged</span></td><td>PRs #5, #6 (25 May). <b>Ivy Lyu</b>.</td></tr>
+      <tr><td>[P1] Frontend: dashboard, live call page, live-data wiring</td><td>SETTLEIT-9962</td><td><span class="pill good">✅ Merged</span></td><td>PR #3 (20 May). <b>Ivy Lyu</b>. Mocks only — live-data wiring still required.</td></tr>
+      <tr><td>[P1] Playbooks — schema, API, and dashboard (end-to-end)</td><td>SETTLEIT-10304</td><td><span class="pill warn">🟡 In Progress</span></td><td><b>Navneet kaur</b>. Parent of the playbook backend stream — sub-tasks 10305–10308 / 10313 / 10314 already merged. Dashboard UI piece still open.</td></tr>
+      <tr><td>↳ Playbooks planning — entity, schema, API contracts</td><td>SETTLEIT-10305</td><td><span class="pill good">✅ Merged</span></td><td>PR #7 (25 May). Sub-task of 10304.</td></tr>
+      <tr><td>↳ Playbooks — domain + schema</td><td>SETTLEIT-10306</td><td><span class="pill good">✅ Merged</span></td><td>PR #8 (25 May). Sub-task of 10304.</td></tr>
+      <tr><td>↳ Playbooks — foundation + GetCallTypes</td><td>SETTLEIT-10307</td><td><span class="pill good">✅ Merged</span></td><td>PR #9 (26 May). Sub-task of 10304.</td></tr>
+      <tr><td>↳ Playbooks — GetPlaybook query</td><td>SETTLEIT-10313</td><td><span class="pill good">✅ Merged</span></td><td>PR #10 (26 May). Sub-task of 10304.</td></tr>
+      <tr><td>↳ Playbooks — list & availability queries</td><td>SETTLEIT-10314</td><td><span class="pill good">✅ Merged</span></td><td>PR #11 (26 May). Sub-task of 10304.</td></tr>
+      <tr><td>↳ Playbooks — FastEndpoints endpoints</td><td>SETTLEIT-10308</td><td><span class="pill good">✅ Merged</span></td><td>PR #12 (27 May). Sub-task of 10304.</td></tr>
       <tr><td>Realtime voice integration — prompt builder + models</td><td>SETTLEIT-9963 (partial)</td><td><span class="pill warn">🟡 Partially shipped</span></td><td>PRs #13, #16 (27 May). Prompt-builder logic + DTO refactor merged; <b>live voice call path not yet wired</b>.</td></tr>
       <tr><td>Telephony provider spike</td><td>SETTLEIT-10127</td><td><span class="pill good">✅ Superseded</span></td><td>Close — trial via GLOBALIT-4159 / 4160.</td></tr>
-      <tr><td>Call provider + outbound</td><td>SETTLEIT-9964</td><td><span class="pill bad">🆕 Not started</span></td><td>Build behind <code>ICallProvider</code>.</td></tr>
-      <tr><td>Sydney Water IVR playbook</td><td>SETTLEIT-9965</td><td><span class="pill bad">🆕 Not started</span></td><td>Content authoring — needs recordings from PMs.</td></tr>
-      <tr><td>Blacktown human-agent playbook</td><td>SETTLEIT-9966</td><td><span class="pill bad">🆕 Not started</span></td><td>Now <b>P1</b> — need a council + a water authority both live.</td></tr>
-      <tr><td>SettleIT integration</td><td>SETTLEIT-9967</td><td><span class="pill bad">🆕 Not started</span></td><td>Single ticket — same team owns both ends.</td></tr>
-      <tr><td>Disclosure / consent flow</td><td>SETTLEIT-9968</td><td><span class="pill bad">🆕 Not started</span></td><td>Wording <a href="https://infotrack.atlassian.net/wiki/spaces/SET/pages/4307583200/AI+caller+legal">signed off by legal</a> — just wire it in.</td></tr>
-      <tr><td>Post-call summary extraction</td><td>SETTLEIT-9969</td><td><span class="pill muted">⚪ Optional (was P2)</span></td><td>Transcript → fields. Demoted to optional per 27 May call.</td></tr>
-      <tr><td>🌐 Browser test-mode</td><td>SETTLEIT-10297</td><td><span class="pill bad">🆕 Not started</span></td><td>Was "do first". Port from <code>C:\code\InfoDialer</code>.</td></tr>
-      <tr><td>📜 Pre-call doc extraction</td><td>SETTLEIT-10298</td><td><span class="pill muted">⚪ Optional (was P2)</span></td><td>Demoted to optional per 27 May call — out of MVP scope.</td></tr>
-      <tr><td>↳ Spike: extraction approach</td><td>SETTLEIT-10299</td><td><span class="pill muted">⚪ Optional (was P2)</span></td><td>Sub-task of 10298; demoted with parent.</td></tr>
-      <tr><td>🎙️ Call recording playback (dashboard)</td><td>SETTLEIT-10303</td><td><span class="pill bad">🆕 Not started</span></td><td>Liability-critical. Sub-task of 9967.</td></tr>
-      <tr><td>🚪 AI Gateway spike</td><td>SETTLEIT-10301</td><td><span class="pill bad">🆕 Not started</span></td><td>From 22 May meeting — spike whether we even need it (Chen Ni).</td></tr>
-      <tr><td>🗓️ Scheduled call (X days before settlement)</td><td>—</td><td><span class="pill muted">⚪ Optional · SettleIT-side</span></td><td>Per 27 May: SettleIT decides <i>when</i> to trigger; InfoDialer doesn't own scheduling. Out of InfoDialer scope.</td></tr>
+      <tr><td>[P1] Telephony: ICallProvider implementation</td><td>SETTLEIT-9964</td><td><span class="pill bad">🆕 Not started</span></td><td><b>Marcus Lee</b>. Build behind <code>ICallProvider</code>.</td></tr>
+      <tr><td>[P1] Sydney Water IVR playbook</td><td>SETTLEIT-9965</td><td><span class="pill bad">🆕 Not started</span></td><td><i>Unassigned</i>. Content authoring — needs recordings from PMs.</td></tr>
+      <tr><td>[P1] Blacktown human-agent playbook</td><td>SETTLEIT-9966</td><td><span class="pill bad">🆕 Not started</span></td><td><i>Unassigned</i>. Need a council + a water authority both live.</td></tr>
+      <tr><td>[P1] SettleIT integration: contract + trigger + callback</td><td>SETTLEIT-9967</td><td><span class="pill bad">🆕 Not started</span></td><td><b>Ivy Lyu</b> (Prem pairing). REST trigger + webhook callback — no SignalR on the SettleIT side.</td></tr>
+      <tr><td>[P2] Disclosure + consent flow wiring</td><td>SETTLEIT-9968</td><td><span class="pill bad">🆕 Not started</span></td><td><i>Unassigned</i>. Wording <a href="https://infotrack.atlassian.net/wiki/spaces/SET/pages/4307583200/AI+caller+legal">signed off by legal</a> — just wire it in. <b>Jira priority is [P2]; HTML §8 proposed promoting to [P1] but Jira hasn't been updated.</b></td></tr>
+      <tr><td>[P2] Post-call summary extraction (transcript → fields)</td><td>SETTLEIT-9969</td><td><span class="pill bad">❌ Cut (28 May)</span></td><td>Won't do. <code>OutputSchema</code> captures fields during the call; transcript replay covers any audit need. <b>Close in Jira.</b></td></tr>
+      <tr><td>[P1] Browser test-mode (port from mock-up)</td><td>SETTLEIT-10297</td><td><span class="pill bad">🆕 Not started</span></td><td><b>Jerold Shin</b>. Port from <code>C:\code\InfoDialer</code>.</td></tr>
+      <tr><td>Pre-call document extraction (inputSourceExtraction)</td><td>SETTLEIT-10298</td><td><span class="pill bad">❌ Cut (28 May)</span></td><td>Won't do. SettleIT supplies <code>customFields</code> via the order form — no PDF parsing needed on InfoDialer side. <b>Close in Jira; unassign Prem.</b></td></tr>
+      <tr><td>↳ Spike: cert extraction approach (no dtapi)</td><td>SETTLEIT-10299</td><td><span class="pill bad">❌ Cut (28 May)</span></td><td>Won't do. Closes with parent 10298. <b>Close in Jira.</b></td></tr>
+      <tr><td>[P1] Call detail page: recording playback + deep-link from SettleIT</td><td>SETTLEIT-10303</td><td><span class="pill bad">🆕 Not started</span></td><td><i>Unassigned</i>. Liability-critical. Sub-task of 9967.</td></tr>
+      <tr><td>[p2] Call recording storage in Azure Blob Storage</td><td>SETTLEIT-10143</td><td><span class="pill bad">🆕 Not started</span></td><td><i>Unassigned</i>. <b>Was missing from prior overview.</b> 30-day retention rule lives here.</td></tr>
+      <tr><td>[P2] Spike: AI Gateway (do we even need it?)</td><td>SETTLEIT-10301</td><td><span class="pill bad">🆕 Not started</span></td><td><i>Unassigned</i>. From 22 May — investigate (Chen Ni). <b>Jira priority [P2]; HTML §7 marks Deferred but Jira hasn't been updated.</b></td></tr>
+      <tr><td>[P2] 3rd authority playbook (Newcastle or higher-volume alternative)</td><td>SETTLEIT-10300</td><td><span class="pill bad">🆕 Not started</span></td><td><i>Unassigned</i>. Recommend Northern Beaches (19 orders).</td></tr>
+      <tr><td>[P2] Multi-council playbook CRUD UI</td><td>SETTLEIT-10302</td><td><span class="pill bad">🆕 Not started</span></td><td><i>Unassigned</i> in Jira. HTML §3 has Nav owning this with Fri-29-May deadline — but Nav's actual Jira assignment is the broader 10304. <b>Jira priority [P2]; HTML §8 labelled [P3].</b></td></tr>
+      <tr><td colspan="4" style="background:#1f1a0c;color:var(--warn);font-weight:600;text-align:center">↓ SettleIT-side tickets — <b>not required</b> for InfoDialer scope. Listed for completeness because they're still attached to epic 9878. Candidates to detach / move.</td></tr>
+      <tr><td>[P1] Button to trigger AI caller for authorities</td><td>SETTLEIT-10284</td><td><span class="pill muted">⚪ SettleIT-side</span></td><td><b>Ivy Lyu</b>. SettleIT UI work — not in InfoDialer scope.</td></tr>
+      <tr><td>[P2] Clerk Alert & File Note when Figures have been updated</td><td>SETTLEIT-10294</td><td><span class="pill muted">⚪ SettleIT-side</span></td><td><i>Unassigned</i>. SettleIT UX work — not in InfoDialer scope.</td></tr>
+      <tr><td>Schedule AI caller automatically based on settlement date</td><td>SETTLEIT-10283</td><td><span class="pill bad">❌ Cut (28 May)</span></td><td>Won't do. SettleIT triggers manually for now. <b>Close in Jira.</b></td></tr>
     </tbody>
   </table>
 
@@ -365,10 +367,10 @@
       <tr><td rowspan="3"><b>🗣️ Jerold</b><br><span style="font-size:11px;color:var(--muted)">AI-Voice stream</span></td><td>🔥 Browser test-mode port</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10297">10297</a></td><td><span class="pill warn">Fri 29 May</span></td><td>Content authoring + e2e integration tests</td></tr>
       <tr><td>Live voice integration (call-path wire-up)</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9963">9963</a></td><td><span class="pill warn">Mon 1 Jun</span></td><td>Content authoring can start</td></tr>
       <tr><td>Sydney Water + Blacktown content + disclosure prompt <span style="font-size:10px;color:var(--muted)">(Jerold or Marcus — reference legacy <code>C:\code\InfoDialer</code>)</span></td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9965">9965</a> · <a href="https://infotrack.atlassian.net/browse/SETTLEIT-9966">9966</a> · <a href="https://infotrack.atlassian.net/browse/SETTLEIT-9968">9968</a></td><td><span class="pill warn">Tue 2 Jun PM</span></td><td>Demo-able call flow Wed AM</td></tr>
-      <tr><td rowspan="3"><b>🤝 Ivy + Prem</b><br><span style="font-size:11px;color:var(--muted)">Integration stream<br>Prem onboarding Thu–Fri</span></td><td>Calls API + SignalR hub <span style="font-size:10px;color:var(--muted)">(broaden 9967 scope to include GetCalls/GetCall + hub)</span></td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9967">9967</a> (scope++)</td><td><span class="pill warn">Mon 1 Jun</span></td><td>Trigger + FE wiring + call-detail</td></tr>
-      <tr><td>SettleIT integration (trigger + callback)</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9967">9967</a></td><td><span class="pill warn">Tue 2 Jun</span></td><td>End-to-end SettleIT order → call</td></tr>
+      <tr><td rowspan="3"><b>🤝 Ivy + Prem</b><br><span style="font-size:11px;color:var(--muted)">Integration stream<br>Prem onboarding Thu–Fri</span></td><td>Calls API + SignalR hub <span style="font-size:10px;color:var(--muted)">(dashboard-side hub, internal only — broaden 9967 scope to include GetCalls/GetCall + hub)</span></td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9967">9967</a> (scope++)</td><td><span class="pill warn">Mon 1 Jun</span></td><td>Trigger + FE wiring + call-detail</td></tr>
+      <tr><td>SettleIT integration — REST trigger + webhook callback <span style="font-size:10px;color:var(--muted)">(no SignalR on the SettleIT side)</span></td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9967">9967</a></td><td><span class="pill warn">Tue 2 Jun</span></td><td>End-to-end SettleIT order → call</td></tr>
       <tr><td>FE live-wiring (swap MobX mocks → real API + SignalR)</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9962">9962</a></td><td><span class="pill warn">Tue 2 Jun</span></td><td>Live dashboard on Wed AM</td></tr>
-      <tr><td><b>📚 Nav</b><br><span style="font-size:11px;color:var(--muted)">Playbook stream<br>Onboarding Thu</span></td><td>Playbook CRUD UI (full stack)</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10302">10302</a></td><td><span class="pill warn">Fri 29 May EOD</span></td><td>Authoring playbooks without a deploy; Nav freed up Mon onwards to help integration / content</td></tr>
+      <tr><td><b>📚 Nav</b><br><span style="font-size:11px;color:var(--muted)">Playbook stream<br>Onboarding Thu</span></td><td>Playbooks end-to-end — dashboard CRUD UI piece (sub-tasks of 10304 already merged on backend)</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10304">10304</a> <span style="font-size:10px;color:var(--muted)">(overlaps <a href="https://infotrack.atlassian.net/browse/SETTLEIT-10302">10302</a>)</span></td><td><span class="pill warn">Fri 29 May EOD</span></td><td>Authoring playbooks without a deploy; Nav freed up Mon onwards to help integration / content</td></tr>
       <tr><td colspan="2"><b>🎙️ Call-detail page (full stack)</b> — Jerold (FE) + Marcus (BE recording API) start once their main items land</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10303">10303</a></td><td><span class="pill warn">Tue 2 Jun PM → Wed 3 Jun AM</span></td><td>Liability sign-off for Wed prod deploy</td></tr>
       <tr><td colspan="2"><b>🧪 Integration test + smoke</b> (everyone)</td><td>—</td><td><span class="pill good">Wed 3 Jun AM</span></td><td><b>Production deploy Wed PM — all P1 features live</b></td></tr>
       <tr><td colspan="2"><b>📊 Exec deadline buffer</b> — bug fixes, real telephony trial, polish</td><td>—</td><td><span class="pill good">Fri 5 Jun</span></td><td>Exec demo</td></tr>
@@ -461,8 +463,8 @@
     </div>
     <div class="card" style="border-left:3px solid var(--good)">
       <h3>📚 PLAYBOOK <span>· Nav</span></h3>
-      <div class="chain">backend ✓ → 10302 CRUD UI full stack (due Tue) → next 3 SW councils (post-release)</div>
-      <p class="dep">Solo stream. Backend CRUD already on <code>main</code>. Nav onboarding Thu; full-stack CRUD UI delivery by Fri EOD. Jerold reviews changes within 2h.</p>
+      <div class="chain">10304 backend sub-tasks ✓ → 10304 dashboard CRUD UI (due Fri, overlaps 10302) → next 3 SW councils (post-release)</div>
+      <p class="dep">Solo stream. Nav owns <a href="https://infotrack.atlassian.net/browse/SETTLEIT-10304">10304</a> end-to-end per Jira. Backend already on <code>main</code>. Nav onboarding Thu; full-stack CRUD UI delivery by Fri EOD. Jerold reviews changes within 2h.</p>
     </div>
     <div class="card" style="border-left:3px solid var(--accent)">
       <h3>🔌 INTEGRATION <span>· Ivy + Prem</span></h3>
@@ -541,9 +543,11 @@
       <tr><td>Realtime voice model</td><td><span class="pill warn">🟡 Trial</span></td><td><a href="https://infotrack.atlassian.net/browse/GLOBALIT-4162">4162 (Gemini)</a> + <a href="https://infotrack.atlassian.net/browse/GLOBALIT-4163">4163 (OpenAI)</a></td></tr>
       <tr><td>Outbound number</td><td><span class="pill warn">🟡 In flight</span></td><td>Provisioning via 4159 / 4160</td></tr>
       <tr><td>3rd authority selection</td><td><span class="pill good">✅ Decided 27 May</span></td><td>Stay on Sydney Water. Next 3 councils = Northern Beaches / Canterbury-Bankstown / Bayside. See section 8b for reasoning.</td></tr>
-      <tr><td>Pre-call cert extraction (10298 / 10299)</td><td><span class="pill muted">⚪ Optional</span></td><td>Demoted 27 May. SettleIT-side extraction preferred; InfoDialer's path parked.</td></tr>
-      <tr><td>Post-call summary extraction (9969)</td><td><span class="pill muted">⚪ Optional</span></td><td>Demoted 27 May. Transcript replay covers the audit need.</td></tr>
-      <tr><td>Scheduled call (X days before settlement)</td><td><span class="pill muted">⚪ Optional · SettleIT-side</span></td><td>Decided 27 May: SettleIT owns the trigger timing; InfoDialer fires when called. No work on this side.</td></tr>
+      <tr><td>Pre-call cert extraction (10298 / 10299)</td><td><span class="pill bad">❌ Cut 28 May</span></td><td>Won't do. SettleIT form supplies <code>customFields</code> directly. No PDF parsing on InfoDialer side.</td></tr>
+      <tr><td>Post-call summary extraction (9969)</td><td><span class="pill bad">❌ Cut 28 May</span></td><td>Won't do. <code>OutputSchema</code> captures fields during the call; transcript replay covers audit.</td></tr>
+      <tr><td>Scheduled call (10283)</td><td><span class="pill bad">❌ Cut 28 May</span></td><td>Won't do. SettleIT triggers manually for now. No automatic scheduling on either side.</td></tr>
+      <tr><td>InputSchema validation</td><td><span class="pill good">✅ Strict 28 May</span></td><td>With no fallback extraction, every required field must be in <code>customFields</code> from the SettleIT form. Trigger returns 422 on missing fields.</td></tr>
+      <tr><td>SignalR exposure</td><td><span class="pill good">✅ Internal only 28 May</span></td><td>SettleIT consumer gets webhook callback only. SignalR hub is for the AI-Caller dashboard (file handlers); no contract exported to consumers.</td></tr>
       <tr><td>Call-detail access</td><td><span class="pill good">✅ Decided</span></td><td>Same-client users see each other's calls. Deep link from SettleIT → AI-Caller call detail page. No dashboard discovery needed.</td></tr>
       <tr><td>AI Gateway</td><td><span class="pill muted">⚪ Deferred</span></td><td>Removed from active scope (27 May). Re-open only if an external constraint forces it. Realtime voice exempt regardless.</td></tr>
       <tr><td>User-flow mapping</td><td><span class="pill warn">🟡 In flight</span></td><td>Shayla + Aaron, Monday. Artifact not ticket.</td></tr>
@@ -555,6 +559,22 @@
     </tbody>
   </table>
 
+  </details>
+
+  <!-- ============= 7b · EXTERNAL APPROVALS ============= -->
+  <details class="collapsible" data-section="s7b">
+  <summary><h2>📨 7b · External approvals &amp; accounts (legal / security / IT)</h2></summary>
+  <table>
+    <thead><tr><th>Ticket</th><th>Purpose</th><th>Status</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/27/ATIGLIT-2669">ATIGLIT-2669</a></td><td>Legal review — Internal AI calling tool</td><td><span class="pill good">✅ Resolved</span></td><td>Aakarsh Duggal. Shortened disclaimer + PII handling agreed (anonymise IDs, 30-day call recording retention).</td></tr>
+      <tr><td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4466">GLOBALIT-4466</a></td><td>Security consultation — Telnyx as telephony vendor</td><td><span class="pill warn">🟡 In progress</span></td><td>Raised after Vishal asked us to loop in security before production. Awaiting their assessment.</td></tr>
+      <tr><td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4159">GLOBALIT-4159</a></td><td>New Telnyx account + 1 AU phone number (call testing)</td><td><span class="pill warn">🟡 Waiting reporter</span></td><td>Bruno Da Silva asked whether we'd prefer Amazon Connect instead (they're implementing it). Needs reply.</td></tr>
+      <tr><td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4160">GLOBALIT-4160</a></td><td>Azure Communication Services — outbound AU number</td><td><span class="pill warn">🟡 Pending HD</span></td><td>Approved by June. Vineeth Elias Mathew provided an Amazon Connect POC project on AWS as an alternative path.</td></tr>
+      <tr><td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4162">GLOBALIT-4162</a></td><td>API access — Google <code>gemini-3.1-flash-live-preview</code> (trial)</td><td><span class="pill warn">🟡 Pending HD</span></td><td>Approved by June. ~$50/mo trial cap, 3-week side-by-side eval vs OpenAI.</td></tr>
+      <tr><td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4163">GLOBALIT-4163</a></td><td>API access — OpenAI <code>gpt-realtime-2</code> (trial)</td><td><span class="pill warn">🟡 Pending HD</span></td><td>Approved by June. Same trial framing — keep just one after 3 weeks.</td></tr>
+    </tbody>
+  </table>
   </details>
 
   <!-- ============= 8 · PROPOSED CHANGES ============= -->
@@ -578,9 +598,10 @@
       <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10303">SETTLEIT-10303</a> <span style="font-size:10px;color:var(--muted)">↳ sub-task of 9967</span></td><td><span class="pill good">Created</span></td><td><code>[P1] - Call detail page: recording playback + deep-link from SettleIT</code></td><td>1d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td><b>Liability-critical.</b> Created as sub-task of 9967 per your request. Auth = shared access token (Q3 decision).</td></tr>
       <tr><td colspan="3" style="background:#0d1a2b;color:var(--accent);font-weight:600">P1 subtotal</td><td colspan="3" style="background:#0d1a2b;color:var(--accent);font-weight:600">20d · 4 ppl × 5 days</td></tr>
       <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9967">SETTLEIT-9967</a></td><td><span class="pill warn">Update</span></td><td><code>[P2] - SettleIT integration: contract + trigger + callback</code></td><td>3d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td>Single ticket — same team owns both ends.</td></tr>
-      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10299">SETTLEIT-10299</a></td><td><span class="pill muted">Demote</span></td><td><code>[Optional] - Spike: cert extraction approach (no dtapi)</code></td><td>1d</td><td><span class="pill muted">⚪ Optional (27 May)</span></td><td>Parked — SettleIT-side extraction preferred.</td></tr>
-      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10298">SETTLEIT-10298</a></td><td><span class="pill muted">Demote</span></td><td><code>[Optional] - Pre-call document extraction (inputSourceExtraction)</code></td><td>2d</td><td><span class="pill muted">⚪ Optional (27 May)</span></td><td>Parked with the spike.</td></tr>
-      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9969">SETTLEIT-9969</a></td><td><span class="pill muted">Demote</span></td><td><code>[Optional] - Post-call summary extraction (transcript → fields)</code></td><td>2d</td><td><span class="pill muted">⚪ Optional (27 May)</span></td><td>Transcript replay covers the audit need.</td></tr>
+      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10299">SETTLEIT-10299</a></td><td><span class="pill bad">Close</span></td><td><i>[CLOSED] Cert extraction spike — won't do</i></td><td>—</td><td><span class="pill bad">❌ Cut 28 May</span></td><td>SettleIT form supplies <code>customFields</code> directly.</td></tr>
+      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10298">SETTLEIT-10298</a></td><td><span class="pill bad">Close</span></td><td><i>[CLOSED] Pre-call document extraction — won't do</i></td><td>—</td><td><span class="pill bad">❌ Cut 28 May</span></td><td>Closes with the spike. Unassign Prem.</td></tr>
+      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9969">SETTLEIT-9969</a></td><td><span class="pill bad">Close</span></td><td><i>[CLOSED] Post-call summary extraction — won't do</i></td><td>—</td><td><span class="pill bad">❌ Cut 28 May</span></td><td>OutputSchema covers the audit need.</td></tr>
+      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10283">SETTLEIT-10283</a></td><td><span class="pill bad">Close</span></td><td><i>[CLOSED] Auto-schedule based on settlement date — won't do</i></td><td>—</td><td><span class="pill bad">❌ Cut 28 May</span></td><td>SettleIT triggers manually.</td></tr>
       <tr><td>—</td><td><span class="pill good">New</span></td><td><code>[P2] - Real outbound onboarding (Telnyx/ACS go-live, number, first calls)</code></td><td>2d</td><td><span class="pill warn">⏸️ Skipped (per request)</span></td><td>File when GLOBALIT tickets land.</td></tr>
       <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10300">SETTLEIT-10300</a></td><td><span class="pill good">Created</span></td><td><code>[P2] - 3rd authority playbook (Newcastle or higher-volume alternative)</code></td><td>1d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td>Demoted from P1 pending June's volume script. Recommend Northern Beaches (19 orders).</td></tr>
       <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10301">SETTLEIT-10301</a></td><td><span class="pill muted">Defer</span></td><td><code>[Deferred] - Spike: AI Gateway (do we even need it?)</code></td><td>—</td><td><span class="pill muted">⚪ Deferred (27 May)</span></td><td>Removed from active scope. Re-open only if external constraint forces it.</td></tr>
@@ -592,7 +613,7 @@
     </tbody>
   </table>
   <p style="font-size:12px;color:var(--muted);margin-top:8px">
-    <b>Totals.</b> P1 = 20d (exactly 4 ppl × 5 days — zero slack, but the parallelism map above is how we make it work). P2 = 6d (SettleIT integration + real outbound onboarding + next 3 Sydney Water councils, between stage on 29 May and prod on 5 Jun). Cert extraction (10298/10299/9969) + AI Gateway (10301) moved to Optional/Deferred on 27 May. P3 = nice-to-haves for after milestone.
+    <b>Totals.</b> P1 = 20d (exactly 4 ppl × 5 days — zero slack, but the parallelism map above is how we make it work). P2 = 6d (SettleIT integration + real outbound onboarding + next 3 Sydney Water councils, between Wed 3 Jun and Fri 5 Jun). Cert extraction (10298/10299/9969) + scheduling (10283) cut on 28 May; AI Gateway (10301) deferred. P3 = nice-to-haves for after milestone.
   </p>
   <p style="font-size:12px;color:var(--muted)">
     <b>To push.</b> Reply <code>push all</code> to apply every row, or call out exceptions (e.g. <code>skip P3</code>, <code>don't promote 9968</code>, <code>merge X into Y</code>). I'll batch-edit titles, descriptions, and the <i>Original Estimate</i> field, plus create / close as marked.
@@ -788,9 +809,9 @@
     t_fewire:     { title:'Frontend live-data wiring', units:2, tag:'fe', phase:'p1',
                     desc:'Ivy + Prem. Swap MobX mocks → real API + SignalR. Due Tue 2 Jun.',
                     ticket:'SETTLEIT-9962' },
-    t_crud:       { title:'Playbook CRUD UI (full stack)', units:2, tag:'api', phase:'p1',
-                    desc:'Nav (solo, onboarding Thu). UI on top of the landed Playbook backend. Manage playbooks without a deploy. Jerold reviews changes within 2h. Due Fri 29 May EOD.',
-                    ticket:'SETTLEIT-10302' },
+    t_crud:       { title:'Playbooks end-to-end — dashboard CRUD UI', units:2, tag:'api', phase:'p1',
+                    desc:'Nav (solo, onboarding Thu). Jira-assigned owner of 10304. Backend sub-tasks (10305–10308/10313/10314) merged; remaining work is dashboard CRUD UI (overlaps 10302). Manage playbooks without a deploy. Jerold reviews within 2h. Due Fri 29 May EOD.',
+                    ticket:'SETTLEIT-10304 (overlaps 10302)' },
     t_recording:  { title:'Call-detail page (full stack)', units:2, tag:'fe', phase:'p1',
                     desc:'Jerold (FE) + Marcus (BE recording API) start once their main items land. SettleIT deep-link + recording playback + transcript. Liability-critical. Due Wed 3 Jun AM (prod deploy includes it).',
                     ticket:'SETTLEIT-10303' },
