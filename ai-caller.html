@@ -121,7 +121,7 @@
   <div class="hero">
     <div class="stat accent">  <div class="ico">🎯</div><div class="v">6 days</div><div class="l">to INTERNAL RELEASE (Wed 3 Jun)</div></div>
     <div class="stat cyan">    <div class="ico">🚀</div><div class="v">8 days</div><div class="l">to EXEC DEADLINE (Fri 5 Jun)</div></div>
-    <div class="stat purple">  <div class="ico">👥</div><div class="v">5</div><div class="l">Jerold + Marcus (sr) · Ivy + Nav + Prem (mid)</div></div>
+    <div class="stat purple">  <div class="ico">👥</div><div class="v">5</div><div class="l">Jerold · Marcus · Ivy · Nav · Prem</div></div>
     <div class="stat pink">    <div class="ico">🏘️</div><div class="v">1 auth · 5 councils</div><div class="l">Sydney Water + Blacktown locked · proposing Nthn Beaches / C-Bankstown / Bayside next (all SW)</div></div>
     <div class="stat warn">    <div class="ico">🏁</div><div class="v">Jun 30</div><div class="l">top-5 milestone · 5 real orders</div></div>
   </div>
@@ -225,10 +225,10 @@
   <div class="callout idea">
     🆕 <b>28 May team split (Prem now available, Nav onboarding)</b>
     <ul>
-      <li><b>⚙️ Marcus</b> (sr) — Telephony stream: <b>land PR #15 (10269 stage pipeline)</b> → <b>ICallProvider (9964)</b>. Picks up call-detail (10303) with Jerold once telephony is wired.</li>
-      <li><b>🗣️ Jerold</b> (sr) — AI-Voice stream: <b>🔥 Browser test-mode (10297) FIRST</b> → <b>live voice integration (9963)</b> → <b>content authoring (9965 + 9966) with disclosure (9968) baked in as a prompt</b>. Picks up call-detail (10303) with Marcus afterwards.</li>
-      <li><b>🤝 Ivy + Nav</b> (mid) — Integration stream: <b>Calls API + SignalR hub</b> → <b>SettleIT integration (9967)</b> → <b>FE live-wiring (9962)</b>. Nav onboarding day 1–2 (clone, env setup).</li>
-      <li><b>📚 Prem</b> (mid) — Playbook stream: <b>Playbook CRUD UI (10302) full stack</b>. Prem onboarding day 1–2 (clone, env setup) — content authoring lives with Jerold given the judgment calls involved.</li>
+      <li><b>⚙️ Marcus</b> — Telephony stream: <b>land PR #15 (10269 stage pipeline)</b> → <b>ICallProvider (9964)</b>. Picks up call-detail (10303) with Jerold once telephony is wired.</li>
+      <li><b>🗣️ Jerold</b> — AI-Voice stream: <b>🔥 Browser test-mode (10297) FIRST</b> → <b>live voice integration (9963)</b> → <b>content authoring (9965 + 9966) with disclosure (9968) baked in as a prompt</b>. Picks up call-detail (10303) with Marcus afterwards.</li>
+      <li><b>🤝 Ivy + Nav</b> — Integration stream: <b>Calls API + SignalR hub</b> → <b>SettleIT integration (9967)</b> → <b>FE live-wiring (9962)</b>. Nav onboarding day 1–2 (clone, env setup).</li>
+      <li><b>📚 Prem</b> — Playbook stream: <b>Playbook CRUD UI (10302) full stack</b>. Prem onboarding day 1–2 (clone, env setup) — content authoring lives with Jerold given the judgment calls involved.</li>
       <li>⚠️ <b>Disclosure (9968) is no longer its own ticket</b> — it's a prompt that gets baked into each playbook's <code>InstructionPrompt</code> during content authoring.</li>
       <li>⚠️ <b>Content authoring waits for voice integration to land.</b> Once it does, it can be tested in the browser (no telephony required) — that's why browser test-mode is Jerold's first move.</li>
     </ul>
@@ -356,22 +356,22 @@
       <p class="dep">⚓ Base layer. Telephony + Integration sit on it. <b>Do first</b> — stage URL is where everyone demos.</p>
     </div>
     <div class="card" style="border-left:3px solid var(--purple)">
-      <h3>📞 TELEPHONY <span>· Marcus (sr)</span></h3>
+      <h3>📞 TELEPHONY <span>· Marcus</span></h3>
       <div class="chain">10269 pipeline (PR #15, due Fri) → 9964 ICallProvider (due Tue) → joins 10303</div>
       <p class="dep">Independent of AI-Voice (both behind interfaces). Once 9964 is in, Marcus pairs with Jerold on call-detail (10303).</p>
     </div>
     <div class="card" style="border-left:3px solid var(--pink)">
-      <h3>🗣️ AI-VOICE <span>· Jerold (sr)</span></h3>
+      <h3>🗣️ AI-VOICE <span>· Jerold</span></h3>
       <div class="chain">🔥 10297 browser test (Fri) → 9963 voice integration (Mon) → 9965/9966 content + 9968 prompt (Wed AM) → 10303 call-detail w/ Marcus (Fri 5 Jun)</div>
       <p class="dep">Independent of Telephony. Disclosure (9968) no longer its own ticket — folded into playbook content. Content authoring runs in the browser test harness (no telephony needed).</p>
     </div>
     <div class="card" style="border-left:3px solid var(--good)">
-      <h3>📚 PLAYBOOK <span>· Prem (mid)</span></h3>
+      <h3>📚 PLAYBOOK <span>· Prem</span></h3>
       <div class="chain">backend ✓ → 10302 CRUD UI full stack (due Tue) → next 3 SW councils (post-release)</div>
       <p class="dep">Solo stream. Backend CRUD already landed (PRs #8–12). Prem onboarding Thu–Fri; full-stack CRUD UI delivery by Tue.</p>
     </div>
     <div class="card" style="border-left:3px solid var(--accent)">
-      <h3>🔌 INTEGRATION <span>· Ivy + Nav (mid)</span></h3>
+      <h3>🔌 INTEGRATION <span>· Ivy + Nav</span></h3>
       <div class="chain">Calls API + SignalR hub (Mon) → 9967 SettleIT (Tue) → 9962 FE live-wiring (Tue)</div>
       <p class="dep">Depends on 🏗️ Foundation. Shared-token auth (Q3). Nav onboarding Thu–Fri; Ivy carries solo until Mon.</p>
     </div>
