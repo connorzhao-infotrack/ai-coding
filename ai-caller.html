@@ -119,9 +119,9 @@
 
   <!-- ============= HERO ============= -->
   <div class="hero">
-    <div class="stat accent">  <div class="ico">📅</div><div class="v">2 days</div><div class="l">to STAGE (Fri 29 May)</div></div>
-    <div class="stat cyan">    <div class="ico">🚀</div><div class="v">9 days</div><div class="l">to PROD (Fri 5 Jun)</div></div>
-    <div class="stat purple">  <div class="ico">👥</div><div class="v">4</div><div class="l">people, fast pace</div></div>
+    <div class="stat accent">  <div class="ico">🎯</div><div class="v">6 days</div><div class="l">to INTERNAL RELEASE (Wed 3 Jun)</div></div>
+    <div class="stat cyan">    <div class="ico">🚀</div><div class="v">8 days</div><div class="l">to EXEC DEADLINE (Fri 5 Jun)</div></div>
+    <div class="stat purple">  <div class="ico">👥</div><div class="v">5</div><div class="l">Jerold + Marcus (sr) · Ivy + Nav + Prem (mid)</div></div>
     <div class="stat pink">    <div class="ico">🏘️</div><div class="v">1 auth · 5 councils</div><div class="l">Sydney Water + Blacktown locked · proposing Nthn Beaches / C-Bankstown / Bayside next (all SW)</div></div>
     <div class="stat warn">    <div class="ico">🏁</div><div class="v">Jun 30</div><div class="l">top-5 milestone · 5 real orders</div></div>
   </div>
@@ -220,7 +220,18 @@
     </div>
   </div>
   <div class="callout good">
-    🎯 <b>Stage by Fri 2026-05-29</b> · 🚀 <b>Production by Fri 2026-06-05</b> · 🏁 <b>5 real orders by 2026-06-30</b>. <b>These dates are committed, not aspirational.</b> Get something demoable on stage as early as possible — and stand up <b>browser test-mode first</b> so devs can exercise the AI calling without waiting on telephony.
+    🎯 <b>Internal release Wed 2026-06-03</b> · 🚀 <b>Exec deadline Fri 2026-06-05</b> · 🏁 <b>5 real orders by 2026-06-30</b>. <b>These dates are committed, not aspirational.</b> Browser test-mode comes first so content authoring + integration test can run without waiting on telephony.
+  </div>
+  <div class="callout idea">
+    🆕 <b>28 May team split (Prem now available, Nav onboarding)</b>
+    <ul>
+      <li><b>⚙️ Marcus</b> (sr) — Telephony stream: <b>land PR #15 (10269 stage pipeline)</b> → <b>ICallProvider (9964)</b>. Picks up call-detail (10303) with Jerold once telephony is wired.</li>
+      <li><b>🗣️ Jerold</b> (sr) — AI-Voice stream: <b>🔥 Browser test-mode (10297) FIRST</b> → <b>live voice integration (9963)</b> → <b>content authoring (9965 + 9966) with disclosure (9968) baked in as a prompt</b>. Picks up call-detail (10303) with Marcus afterwards.</li>
+      <li><b>🤝 Ivy + Nav</b> (mid) — Integration stream: <b>Calls API + SignalR hub</b> → <b>SettleIT integration (9967)</b> → <b>FE live-wiring (9962)</b>. Nav onboarding day 1–2 (clone, env setup).</li>
+      <li><b>📚 Prem</b> (mid) — Playbook stream: <b>Playbook CRUD UI (10302) full stack</b>. Prem onboarding day 1–2 (clone, env setup) — content authoring lives with Jerold given the judgment calls involved.</li>
+      <li>⚠️ <b>Disclosure (9968) is no longer its own ticket</b> — it's a prompt that gets baked into each playbook's <code>InstructionPrompt</code> during content authoring.</li>
+      <li>⚠️ <b>Content authoring waits for voice integration to land.</b> Once it does, it can be tested in the browser (no telephony required) — that's why browser test-mode is Jerold's first move.</li>
+    </ul>
   </div>
   <div class="callout good">
     📈 <b>27 May progress check (5 days into the sprint)</b>
@@ -275,18 +286,18 @@
   </table>
 
   <!-- ============= 3 · PARALLELISM ============= -->
-  <h2>🔀 3 · Parallelism — tomorrow's streams</h2>
+  <h2>🔀 3 · Streams + deadlines for Wed 3 Jun release</h2>
   <p style="font-size:13px;color:var(--muted);margin:0 0 10px">
-    Schedule is <b>committed, not aspirational</b>. Foundations have landed on <code>main</code> (Playbook domain + schema + auth — PRs #6 / #8), so it's parallel execution from here. Five streams run side-by-side. Highest-leverage move: stand up the <b>browser test harness first</b> so everyone can exercise their work without waiting on real telephony.
+    Schedule is <b>committed, not aspirational</b>. Backend foundation is on <code>main</code> (auth + Playbook domain + CRUD endpoints — PRs #6–12), so it's parallel execution from here. 4 streams + content authoring run side-by-side. Days are Thu/Fri this week, then Mon/Tue/Wed next week (weekend off) — <b>5 working days to internal release</b>, <b>7 to exec deadline</b>.
   </p>
   <div class="row two">
     <div class="card" style="border-color:var(--cyan)">
       <h3>🔥 Do first — browser test-mode</h3>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:6px">It's the shared <b>test harness</b>, not just a demo tool: browser mic → SignalR → the same <code>IVoiceAIService</code> a real call uses, telephony bypassed.</p>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:6px">It's the shared <b>test harness</b>, not just a demo tool: browser mic → SignalR → the same <code>IVoiceAIService</code> a real call uses, telephony bypassed. Without it, content authoring is blocked.</p>
       <ul>
-        <li>Lets <b>Jerold</b> test AI voice with no telephony</li>
-        <li>Lets <b>Prem/Nav</b> exercise a playbook the moment it's authored</li>
-        <li>Lets <b>Ivy</b> drive an end-to-end call from the trigger API</li>
+        <li>Lets <b>Jerold</b> test live voice with no telephony</li>
+        <li>Lets <b>content authoring</b> (Sydney Water + Blacktown prompts) run before real telephony lands</li>
+        <li>Lets <b>Ivy + Nav</b> drive an end-to-end call from the trigger API</li>
         <li>Already proven in the mock-up — porting is fast. Jerold owns it (same plumbing as his voice work).</li>
       </ul>
     </div>
@@ -301,18 +312,36 @@
       </ul>
     </div>
   </div>
-  <h3 style="margin-top:14px;font-size:13px;color:var(--ink)">Tomorrow's streams — all parallel</h3>
+  <h3 style="margin-top:14px;font-size:13px;color:var(--ink)">Streams with per-deliverable deadlines</h3>
   <table>
-    <thead><tr><th>Owner</th><th>Stream</th><th>First move</th><th>Unblocks</th></tr></thead>
+    <thead><tr><th>Owner</th><th>Stream item</th><th>Ticket</th><th>Deadline (EOD)</th><th>Unblocks</th></tr></thead>
     <tbody>
-      <tr><td><b>⚙️ Marcus</b></td><td>IT &amp; telephony — staging deploy (9961) + <code>ICallProvider</code> (9964)</td><td>Stage deploy pipeline live</td><td>Everyone (stage = where they demo)</td></tr>
-      <tr><td><b>🗣️ Jerold</b></td><td>AI voice (9963 live-call wire-up) + <b>browser test-mode (10297)</b> + <b>call-detail page (10303, full stack)</b></td><td>🔥 Browser harness first, then live voice, then call-detail (BE recording API + FE page)</td><td>Everyone's testing; recording playback unblocks liability sign-off</td></tr>
-      <tr><td><b>🤝 Ivy</b></td><td>SettleIT integration (9967) + trigger/calls API + Calls/GetCall + SignalR hub</td><td>Trigger endpoint + contract</td><td>Callback loop, dashboard</td></tr>
-      <tr><td><b>📚 Prem + Nav</b></td><td>Playbook CRUD (10302) + content (Sydney Water 9965, Blacktown 9966)</td><td>CRUD on the landed Playbook entity</td><td>Authoring more councils fast</td></tr>
+      <tr><td rowspan="2"><b>⚙️ Marcus</b><br><span style="font-size:11px;color:var(--muted)">Telephony stream</span></td><td>Stage pipeline + migrations land</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10269">10269</a> (PR #15)</td><td><span class="pill warn">Fri 29 May</span></td><td>Every downstream deploy</td></tr>
+      <tr><td><code>ICallProvider</code> impl (Telnyx/ACS trial)</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9964">9964</a></td><td><span class="pill warn">Tue 2 Jun</span></td><td>Outbound calls Wed AM</td></tr>
+      <tr><td rowspan="3"><b>🗣️ Jerold</b><br><span style="font-size:11px;color:var(--muted)">AI-Voice stream</span></td><td>🔥 Browser test-mode port</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10297">10297</a></td><td><span class="pill warn">Fri 29 May</span></td><td>Content authoring + e2e integration tests</td></tr>
+      <tr><td>Live voice integration (call-path wire-up)</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9963">9963</a></td><td><span class="pill warn">Mon 1 Jun</span></td><td>Content authoring can start</td></tr>
+      <tr><td>Sydney Water + Blacktown content + disclosure prompt <span style="font-size:10px;color:var(--muted)">(Jerold or Marcus — reference legacy <code>C:\code\InfoDialer</code>)</span></td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9965">9965</a> · <a href="https://infotrack.atlassian.net/browse/SETTLEIT-9966">9966</a> · <a href="https://infotrack.atlassian.net/browse/SETTLEIT-9968">9968</a></td><td><span class="pill warn">Tue 2 Jun PM</span></td><td>Demo-able call flow Wed AM</td></tr>
+      <tr><td rowspan="3"><b>🤝 Ivy + Nav</b><br><span style="font-size:11px;color:var(--muted)">Integration stream<br>Nav onboarding Thu–Fri</span></td><td>Calls API + SignalR hub <span style="font-size:10px;color:var(--muted)">(broaden 9967 scope to include GetCalls/GetCall + hub)</span></td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9967">9967</a> (scope++)</td><td><span class="pill warn">Mon 1 Jun</span></td><td>Trigger + FE wiring + call-detail</td></tr>
+      <tr><td>SettleIT integration (trigger + callback)</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9967">9967</a></td><td><span class="pill warn">Tue 2 Jun</span></td><td>End-to-end SettleIT order → call</td></tr>
+      <tr><td>FE live-wiring (swap MobX mocks → real API + SignalR)</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9962">9962</a></td><td><span class="pill warn">Tue 2 Jun</span></td><td>Live dashboard on Wed AM</td></tr>
+      <tr><td><b>📚 Prem</b><br><span style="font-size:11px;color:var(--muted)">Playbook stream<br>Onboarding Thu–Fri</span></td><td>Playbook CRUD UI (full stack)</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10302">10302</a></td><td><span class="pill warn">Tue 2 Jun</span></td><td>Authoring playbooks without a deploy</td></tr>
+      <tr><td colspan="2"><b>🎙️ Call-detail page (full stack)</b> — Jerold (FE) + Marcus (BE recording API) start once their main items land</td><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10303">10303</a></td><td><span class="pill warn">Tue 2 Jun PM → Wed 3 Jun AM</span></td><td>Liability sign-off for Wed prod deploy</td></tr>
+      <tr><td colspan="2"><b>🧪 Integration test + smoke</b> (everyone)</td><td>—</td><td><span class="pill good">Wed 3 Jun AM</span></td><td><b>Production deploy Wed PM — all P1 features live</b></td></tr>
+      <tr><td colspan="2"><b>📊 Exec deadline buffer</b> — bug fixes, real telephony trial, polish</td><td>—</td><td><span class="pill good">Fri 5 Jun</span></td><td>Exec demo</td></tr>
     </tbody>
   </table>
   <div class="callout">
-    🧩 <b>Gaps to assign.</b> The five streams don't yet name an owner for the <b>dashboard read-side</b> (GetCalls / GetCall / transcripts + SignalR hub) or <b>FE live-data wiring (9962)</b> — both needed for the recording-playback requirement (10303). Parked with Ivy (calls API) + Prem/Nav (FE) below; confirm since 9962 is Ivy's in Jira. Also: is "playbook CRUD" the full multi-council UI (10302 pulled forward) or basic management on the new entity?
+    🛤️ <b>Critical path for Wed 3 Jun production deploy.</b> <b>Wed = production with everything working</b>, including call-detail page (10303). <b>Mon 1 Jun</b> is make-or-break: Calls API + SignalR + live voice integration must both land that day, otherwise content authoring + FE wiring + call-detail can't fit into Tue–Wed AM. <b>Fri 29 May</b> deadlines: browser test-mode + stage pipeline. Slipping either pushes the whole path right.
+  </div>
+  <div class="callout bad">
+    ⚠️ <b>Risks to the Wednesday date.</b>
+    <ul>
+      <li><b>Nav + Prem onboarding</b> consumes Thu–Fri. Real contribution starts Monday. Ivy carries the integration stream alone until then.</li>
+      <li><b>Call-detail page (10303) competes for Jerold + Marcus's last 1.5 days</b> alongside content + ICallProvider. If voice integration (Mon) or ICallProvider (Tue) slip, 10303 slips out of Wed and into Fri.</li>
+      <li><b>Content authoring</b> is gated on live voice integration. If 9963 slips past Mon EOD, content slips into Wed AM → no integration-test window.</li>
+      <li><b>Telephony trial</b> (Telnyx/ACS) — if neither vendor's outbound number is provisioned by Mon, real outbound calls slip to Thu+. Browser test-mode keeps the Wed deploy demoable regardless, but exec demo needs real telephony by Fri.</li>
+      <li><b>9967 scope expansion</b> — broadening to cover GetCalls + GetCall + SignalR hub means Ivy + Nav own ~3 days of work in one ticket. Worth splitting if Jira hygiene matters; can stay merged for speed.</li>
+    </ul>
   </div>
 
   <!-- ============= 3b · WORKSTREAMS ============= -->
@@ -327,24 +356,24 @@
       <p class="dep">⚓ Base layer. Telephony + Integration sit on it. <b>Do first</b> — stage URL is where everyone demos.</p>
     </div>
     <div class="card" style="border-left:3px solid var(--purple)">
-      <h3>📞 TELEPHONY <span>· Marcus</span></h3>
-      <div class="chain">9964 ICallProvider → real outbound onboarding (P2)</div>
-      <p class="dep">Independent of AI-Voice (both behind interfaces). Can slip — real outbound is P2.</p>
+      <h3>📞 TELEPHONY <span>· Marcus (sr)</span></h3>
+      <div class="chain">10269 pipeline (PR #15, due Fri) → 9964 ICallProvider (due Tue) → joins 10303</div>
+      <p class="dep">Independent of AI-Voice (both behind interfaces). Once 9964 is in, Marcus pairs with Jerold on call-detail (10303).</p>
     </div>
     <div class="card" style="border-left:3px solid var(--pink)">
-      <h3>🗣️ AI-VOICE <span>· Jerold</span></h3>
-      <div class="chain">🔥 10297 browser test → 9963 voice service → 9968 disclosure → 10303 call-detail (BE + FE)</div>
-      <p class="dep">Independent of Telephony. Browser test first = the team's shared test harness. Call-detail page (10303) is now in this stream — Jerold owns BE recording API + FE page.</p>
+      <h3>🗣️ AI-VOICE <span>· Jerold (sr)</span></h3>
+      <div class="chain">🔥 10297 browser test (Fri) → 9963 voice integration (Mon) → 9965/9966 content + 9968 prompt (Wed AM) → 10303 call-detail w/ Marcus (Fri 5 Jun)</div>
+      <p class="dep">Independent of Telephony. Disclosure (9968) no longer its own ticket — folded into playbook content. Content authoring runs in the browser test harness (no telephony needed).</p>
     </div>
     <div class="card" style="border-left:3px solid var(--good)">
-      <h3>📚 PLAYBOOK <span>· Prem + Nav</span></h3>
-      <div class="chain">backend ✓ → 10302 CRUD UI → content: 9965 SW · 9966 BT · next 3 SW councils</div>
-      <p class="dep">Backend CRUD already landed (PRs #8–12). Stream is now CRUD UI + content authoring across 4 NSW councils.</p>
+      <h3>📚 PLAYBOOK <span>· Prem (mid)</span></h3>
+      <div class="chain">backend ✓ → 10302 CRUD UI full stack (due Tue) → next 3 SW councils (post-release)</div>
+      <p class="dep">Solo stream. Backend CRUD already landed (PRs #8–12). Prem onboarding Thu–Fri; full-stack CRUD UI delivery by Tue.</p>
     </div>
     <div class="card" style="border-left:3px solid var(--accent)">
-      <h3>🔌 INTEGRATION <span>· Ivy</span></h3>
-      <div class="chain">calls API (CQRS+SignalR) → 9967 SettleIT → 9962 FE live-wiring</div>
-      <p class="dep">Depends on 🏗️ Foundation. Shared-token auth (Q3). Owns the dashboard read-side; call-detail moved to Jerold.</p>
+      <h3>🔌 INTEGRATION <span>· Ivy + Nav (mid)</span></h3>
+      <div class="chain">Calls API + SignalR hub (Mon) → 9967 SettleIT (Tue) → 9962 FE live-wiring (Tue)</div>
+      <p class="dep">Depends on 🏗️ Foundation. Shared-token auth (Q3). Nav onboarding Thu–Fri; Ivy carries solo until Mon.</p>
     </div>
   </div>
   <p style="font-size:12px;color:var(--muted);margin-top:8px">
@@ -359,23 +388,23 @@
   </div>
   <div class="buckets" id="buckets">
     <div class="bucket" data-bucket="marcus" id="bucket-marcus">
-      <div class="bucket-head"><div class="bucket-name">⚙️ Marcus · IT + tel</div><div class="bucket-total" id="bucket-total-marcus">0u</div></div>
+      <div class="bucket-head"><div class="bucket-name">⚙️ Marcus · telephony</div><div class="bucket-total" id="bucket-total-marcus">0u</div></div>
       <div class="task-list" id="list-marcus"></div>
     </div>
     <div class="bucket" data-bucket="b" id="bucket-b">
-      <div class="bucket-head"><div class="bucket-name">🗣️ Jerold · voice + test</div><div class="bucket-total" id="bucket-total-b">0u</div></div>
+      <div class="bucket-head"><div class="bucket-name">🗣️ Jerold · voice + content</div><div class="bucket-total" id="bucket-total-b">0u</div></div>
       <div class="task-list" id="list-b"></div>
     </div>
     <div class="bucket" data-bucket="c" id="bucket-c">
-      <div class="bucket-head"><div class="bucket-name">🤝 Ivy · SettleIT + API</div><div class="bucket-total" id="bucket-total-c">0u</div></div>
+      <div class="bucket-head"><div class="bucket-name">🤝 Ivy + Nav · integration</div><div class="bucket-total" id="bucket-total-c">0u</div></div>
       <div class="task-list" id="list-c"></div>
     </div>
     <div class="bucket" data-bucket="d" id="bucket-d">
-      <div class="bucket-head"><div class="bucket-name">📚 Prem + Nav · playbook</div><div class="bucket-total" id="bucket-total-d">0u</div></div>
+      <div class="bucket-head"><div class="bucket-name">📚 Prem · playbook UI</div><div class="bucket-total" id="bucket-total-d">0u</div></div>
       <div class="task-list" id="list-d"></div>
     </div>
     <div class="bucket stretch" data-bucket="stretch" id="bucket-stretch">
-      <div class="bucket-head"><div class="bucket-name">🔀 Parallel / Later</div><div class="bucket-total" id="bucket-total-stretch">0u</div></div>
+      <div class="bucket-head"><div class="bucket-name">🔀 Post-release</div><div class="bucket-total" id="bucket-total-stretch">0u</div></div>
       <div class="task-list" id="list-stretch"></div>
     </div>
   </div>
@@ -402,6 +431,9 @@
   <table>
     <thead><tr><th>Item</th><th>Status</th><th>Notes</th></tr></thead>
     <tbody>
+      <tr><td>Release dates</td><td><span class="pill good">✅ Decided 28 May</span></td><td>Internal release <b>Wed 3 Jun</b> (production with all P1 features). Exec deadline <b>Fri 5 Jun</b> (buffer + demo).</td></tr>
+      <tr><td>Team split</td><td><span class="pill good">✅ Decided 28 May</span></td><td>Marcus → telephony (10269 + 9964 + call-detail BE). Jerold → AI voice (10297 + 9963 + content + call-detail FE). Ivy + Nav → integration (9967 broadened + 9962). Prem → playbook CRUD UI (10302).</td></tr>
+      <tr><td>Calls API + SignalR hub</td><td><span class="pill good">✅ Decided 28 May</span></td><td>Broaden 9967 to cover GetCalls + GetCall + SignalR hub. No new ticket — Ivy + Nav own the whole API surface.</td></tr>
       <tr><td>Telephony provider</td><td><span class="pill warn">🟡 Trial</span></td><td><a href="https://infotrack.atlassian.net/browse/GLOBALIT-4159">4159 (Telnyx)</a> + <a href="https://infotrack.atlassian.net/browse/GLOBALIT-4160">4160 (ACS)</a> — pick one after 3-week trial</td></tr>
       <tr><td>Realtime voice model</td><td><span class="pill warn">🟡 Trial</span></td><td><a href="https://infotrack.atlassian.net/browse/GLOBALIT-4162">4162 (Gemini)</a> + <a href="https://infotrack.atlassian.net/browse/GLOBALIT-4163">4163 (OpenAI)</a></td></tr>
       <tr><td>Outbound number</td><td><span class="pill warn">🟡 In flight</span></td><td>Provisioning via 4159 / 4160</td></tr>
@@ -556,11 +588,12 @@
     <div class="card">
       <h3>🧨 Top risks</h3>
       <ul>
-        <li><b>Liability on wrong figures.</b> Client pays based on what we extract — recording playback is the safety net. Don't ship to prod without it.</li>
-        <li><b>Day 1 contract day overruns.</b> If interfaces aren't merged by Mon EOD, the whole week slips.</li>
-        <li><b>Low real-order volume.</b> Newcastle especially — wait for June's volume data before authoring content. Make adding more council playbooks frictionless from day 1.</li>
-        <li><b>First-real-call surprises.</b> Audio quality, IVR drift, regional accents. Bake in W2 buffer.</li>
-        <li><b>AI Gateway constraints.</b> Find out from Chen Ni what's gated through the gateway before assuming direct API access. Realtime voice is exempt; text LLM isn't.</li>
+        <li><b>Onboarding tax on Nav + Prem.</b> Thu–Fri burnt on setup. Ivy carries the integration stream solo until Mon; Prem's CRUD UI window shrinks to 3 days. <b>Mitigation:</b> pair them with Jerold/Marcus for env setup, lock pair-programming sessions Fri.</li>
+        <li><b>Mon 1 Jun is the make-or-break day.</b> Calls API + SignalR + live voice integration must both land. Slip either → Tue/Wed compresses past safe.</li>
+        <li><b>Call-detail page squeezed into Tue–Wed AM.</b> Liability-critical; if it slips, prod deploy ships without it (handlers can't verify figures from the dashboard).</li>
+        <li><b>Liability on wrong figures.</b> Client pays based on what we extract — recording playback is the safety net. Wed deploy must include it.</li>
+        <li><b>Day-1 contract overruns.</b> If <code>ICallProvider</code> + <code>IVoiceAIService</code> interfaces aren't agreed by Fri EOD, voice + telephony can't build in parallel next week.</li>
+        <li><b>First-real-call surprises.</b> Audio quality, IVR drift, regional accents. Real telephony trial happens between Wed deploy and Fri exec deadline.</li>
         <li><b>Vendor leak.</b> Keep <code>ICallProvider</code> + <code>IVoiceAIService</code> abstractions clean.</li>
       </ul>
     </div>
@@ -580,65 +613,59 @@
 <script>
 (function(){
   const TASKS = {
-    t_infra:      { title:'Infra + staging deploy', units:4, tag:'infra', phase:'p1',
-                    desc:'Scaffold + CI/CD + K8s + Key Vault + ECR + app regs (10145) + DEPLOY TO STAGE.',
-                    ticket:'SETTLEIT-9961' },
-    t_api:        { title:'Calls API: CQRS + SignalR hub', units:2, tag:'api', phase:'p1',
-                    desc:'TriggerCall + GetCall* + transcripts + SignalR events. Playbook entity already landed (PR #8). Needed for trigger + dashboard.' },
-    t_crud:       { title:'Playbook CRUD (API + UI)', units:3, tag:'api', phase:'p1',
-                    desc:'Manage playbooks without a deploy. Builds on the landed Playbook entity. Pulls 10302 forward.',
-                    ticket:'SETTLEIT-10302' },
-    t_fewire:     { title:'Frontend live-data wiring', units:3, tag:'fe', phase:'p1',
-                    desc:'Land 9962 + swap MobX mocks → real API + SignalR.',
-                    ticket:'SETTLEIT-9962' },
-    t_aivoice:    { title:'AI voice service (IVR + realtime)', units:3, tag:'voice', phase:'p1',
-                    desc:'Jerold. Both modes behind IVoiceAIService; pairs with browser test-mode. Mock-up lifts cleanly.',
-                    ticket:'SETTLEIT-9963' },
+    t_infra:      { title:'Stage pipeline + migrations (PR #15)', units:1, tag:'infra', phase:'p1',
+                    desc:'Marcus. Land PR #15 — adds migrations project + CI pipelines + Dockerfiles. Due Fri 29 May.',
+                    ticket:'SETTLEIT-10269' },
     t_callprov:   { title:'Telephony — ICallProvider', units:2, tag:'voice', phase:'p1',
-                    desc:'Behind ICallProvider. Trial Telnyx + ACS via personal-key bridge until GLOBALIT lands.',
+                    desc:'Marcus. Behind ICallProvider. Trial Telnyx + ACS via personal-key bridge until GLOBALIT lands. Due Tue 2 Jun.',
                     ticket:'SETTLEIT-9964' },
-    t_swpb:       { title:'Sydney Water IVR playbook', units:1, tag:'playbook', phase:'p1',
-                    desc:'InstructionPrompt + InputSchema + OutputSchema. Content only.',
-                    ticket:'SETTLEIT-9965' },
-    t_blpb:       { title:'Blacktown human-agent playbook', units:1, tag:'playbook', phase:'p1',
-                    desc:'Promoted to P1 — need a council + water authority both live for the demo.',
-                    ticket:'SETTLEIT-9966' },
-    t_disclose:   { title:'Disclosure + consent wiring', units:1, tag:'voice', phase:'p1',
-                    desc:'Promoted to P1 (human-agent calls need it). Wording already signed off by legal.',
-                    ticket:'SETTLEIT-9968' },
     t_browser:    { title:'🔥 Browser test-mode — DO FIRST', units:1, tag:'tooling', phase:'p1',
-                    desc:'Shared test harness, not just a demo. Jerold builds this first so the whole team tests AI calling without telephony. Port from mock-up.',
+                    desc:'Jerold. Shared test harness — browser mic → SignalR → IVoiceAIService. Unblocks content authoring + integration test. Port from mock-up. Due Fri 29 May.',
                     ticket:'SETTLEIT-10297' },
-    t_recording:  { title:'Call detail page: recording + SettleIT deep-link (full stack)', units:2, tag:'fe', phase:'p1',
-                    desc:'Owned by Jerold (27 May). BE recording API + FE call-detail page + SettleIT deep-link. Liability-critical.',
-                    ticket:'SETTLEIT-10303' },
-    t_settleit:   { title:'SettleIT integration (contract + trigger + callback)', units:3, tag:'integration', phase:'p2',
-                    desc:'Single ticket — same team owns both ends.',
+    t_aivoice:    { title:'AI voice integration (live call-path)', units:3, tag:'voice', phase:'p1',
+                    desc:'Jerold. Wires the prompt-builder slice into the live call path via IVoiceAIService. Due Mon 1 Jun.',
+                    ticket:'SETTLEIT-9963' },
+    t_content:    { title:'Sydney Water + Blacktown content (incl. disclosure prompt)', units:1, tag:'playbook', phase:'p1',
+                    desc:'Jerold or Marcus — reference the legacy InfoDialer app at C:\\code\\InfoDialer. Authors InstructionPrompt + schemas for 9965 + 9966; disclosure (9968) baked in as a prompt. Tests via browser harness — no telephony needed. Due Tue 2 Jun PM.',
+                    ticket:'SETTLEIT-9965/9966/9968' },
+    t_api:        { title:'Calls API + SignalR hub', units:3, tag:'api', phase:'p1',
+                    desc:'Ivy + Nav. CQRS slice for TriggerCall + GetCall* + transcripts + SignalR events. Critical-path Mon 1 Jun. Ticket TBF.' },
+    t_settleit:   { title:'SettleIT integration (trigger + callback)', units:2, tag:'integration', phase:'p1',
+                    desc:'Ivy + Nav. Single ticket — same team owns both ends. Due Tue 2 Jun.',
                     ticket:'SETTLEIT-9967' },
+    t_fewire:     { title:'Frontend live-data wiring', units:2, tag:'fe', phase:'p1',
+                    desc:'Ivy + Nav. Swap MobX mocks → real API + SignalR. Due Tue 2 Jun.',
+                    ticket:'SETTLEIT-9962' },
+    t_crud:       { title:'Playbook CRUD UI (full stack)', units:3, tag:'api', phase:'p1',
+                    desc:'Prem. UI on top of the landed Playbook backend (PRs #8–12). Manage playbooks without a deploy. Due Tue 2 Jun.',
+                    ticket:'SETTLEIT-10302' },
+    t_recording:  { title:'Call-detail page (full stack)', units:2, tag:'fe', phase:'p1',
+                    desc:'Jerold (FE) + Marcus (BE recording API) start once their main items land. SettleIT deep-link + recording playback + transcript. Liability-critical. Due Wed 3 Jun AM (prod deploy includes it).',
+                    ticket:'SETTLEIT-10303' },
     t_outbound:   { title:'Real outbound onboarding', units:2, tag:'voice', phase:'p2',
                     desc:'Telnyx/ACS go-live, number provisioning, first real calls. After GLOBALIT lands.' },
     t_ncpb:       { title:'Next 3 Sydney Water councils (Nthn Beaches / C-Bankstown / Bayside)', units:2, tag:'playbook', phase:'p2',
-                    desc:'Decided 27 May. All reuse the Sydney Water authority playbook; council leg is human-agent. +44 orders.' }
+                    desc:'Decided 27 May. All reuse the Sydney Water authority playbook; council leg is human-agent. +44 orders. Post-release.' }
   };
 
   const BUCKETS = ['marcus','b','c','d','stretch'];
   // marcus = Marcus (IT+tel) · b = Jerold (voice+test) · c = Ivy (SettleIT+API) · d = Prem+Nav (playbook) · stretch = parallel/later
   const DEFAULTS = {
-    marcus:  ['t_infra','t_callprov'],
-    b:       ['t_browser','t_aivoice','t_disclose','t_recording'],
-    c:       ['t_settleit','t_api'],
-    d:       ['t_crud','t_fewire','t_swpb','t_blpb'],
+    marcus:  ['t_infra','t_callprov','t_recording'],
+    b:       ['t_browser','t_aivoice','t_content'],
+    c:       ['t_api','t_settleit','t_fewire'],
+    d:       ['t_crud'],
     stretch: ['t_outbound','t_ncpb']
   };
-  const STORAGE_KEY = 'aicaller-overview-buckets-v6';
+  const STORAGE_KEY = 'aicaller-overview-buckets-v7';
 
   // workstream (parent) each task belongs to — independent chains
   const PARENT_OF = {
-    t_infra:'🏗️ FND',
-    t_callprov:'📞 TEL', t_outbound:'📞 TEL',
-    t_browser:'🗣️ VOX', t_aivoice:'🗣️ VOX', t_disclose:'🗣️ VOX', t_recording:'🗣️ VOX',
-    t_crud:'📚 PBK', t_swpb:'📚 PBK', t_blpb:'📚 PBK', t_ncpb:'📚 PBK',
-    t_settleit:'🔌 INT', t_api:'🔌 INT', t_fewire:'🔌 INT'
+    t_infra:'📞 TEL', t_callprov:'📞 TEL', t_outbound:'📞 TEL',
+    t_browser:'🗣️ VOX', t_aivoice:'🗣️ VOX', t_content:'🗣️ VOX',
+    t_recording:'🎙️ DTL',
+    t_crud:'📚 PBK', t_ncpb:'📚 PBK',
+    t_api:'🔌 INT', t_settleit:'🔌 INT', t_fewire:'🔌 INT'
   };
 
   function clone(o){ return JSON.parse(JSON.stringify(o)); }
@@ -662,7 +689,7 @@
   function saveState(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
 
   let state = loadState();
-  const TARGET_UNITS = { marcus:5, b:5, c:5, d:10, stretch:99 }; // d = Prem + Nav (2 people)
+  const TARGET_UNITS = { marcus:5, b:5, c:9, d:4, stretch:99 }; // c = Ivy+Nav pair (Nav onboards Thu-Fri); d = Prem solo (onboards Thu-Fri)
 
   function makeCard(taskId){
     const t = TASKS[taskId];
