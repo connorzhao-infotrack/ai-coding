@@ -262,7 +262,7 @@
     <ul>
       <li><b>⚙️ Marcus</b> — Telephony stream: <b>stage pipeline (10269)</b> → <b>ICallProvider (9964)</b>. Picks up call-detail (10303) with Jerold once telephony is wired.</li>
       <li><b>🗣️ Jerold</b> — AI-Voice stream: <b>🔥 Browser test-mode (10297) FIRST</b> → <b>live voice integration (9963)</b> → <b>content authoring (9965 + 9966) with disclosure (9968) baked in as a prompt</b>. Picks up call-detail (10303) with Marcus afterwards.</li>
-      <li><b>🤝 Ivy + Prem</b> — Integration stream: <b>Calls API + SignalR hub (dashboard-side, internal only)</b> → <b>SettleIT integration (9967) — REST trigger + webhook callback, no SignalR on SettleIT side</b> → <b>FE live-wiring (9962)</b>. Prem onboarding day 1–2 (clone, env setup).</li>
+      <li><b>🤝 Ivy + Prem</b> — Integration stream: <b>Calls API (trigger + GetCall + SignalR hub, internal only)</b> → <b>SettleIT integration (9967) — REST trigger + webhook callback, no SignalR on SettleIT side</b> → <b>FE live-wiring for call-detail (9962, list view deprioritized)</b>. Prem onboarding day 1–2 (clone, env setup).</li>
       <li><b>📚 Nav</b> — Playbook stream: <b>Playbooks end-to-end (10304)</b> — Nav is the Jira-assigned owner. Backend sub-tasks (10305–10308 / 10313 / 10314) already merged; remaining work is the dashboard CRUD UI piece (overlaps 10302, currently unassigned in Jira). Nav onboarding day 1–2 — content authoring lives with Jerold given the judgment calls involved.</li>
       <li>⚠️ <b>Disclosure (9968) is no longer its own ticket</b> — it's a prompt that gets baked into each playbook's <code>InstructionPrompt</code> during content authoring.</li>
       <li>⚠️ <b>Content authoring waits for voice integration to land.</b> Once it does, it can be tested in the browser (no telephony required) — that's why browser test-mode is Jerold's first move.</li>
@@ -312,7 +312,7 @@
       <tr><td>[P1] Blacktown human-agent playbook</td><td>SETTLEIT-9966</td><td><span class="pill bad">🆕 Not started</span></td><td><i>Unassigned</i>. Need a council + a water authority both live.</td></tr>
       <tr><td>[P1] SettleIT integration: contract + trigger + callback</td><td>SETTLEIT-9967</td><td><span class="pill bad">🆕 Not started</span></td><td><b>Ivy Lyu</b> (Prem pairing). REST trigger + webhook callback — no SignalR on the SettleIT side.</td></tr>
       <tr><td>[P2] Disclosure + consent flow wiring</td><td>SETTLEIT-9968</td><td><span class="pill bad">🆕 Not started</span></td><td><i>Unassigned</i>. Wording <a href="https://infotrack.atlassian.net/wiki/spaces/SET/pages/4307583200/AI+caller+legal">signed off by legal</a> — just wire it in. <b>Jira priority is [P2]; HTML §8 proposed promoting to [P1] but Jira hasn't been updated.</b></td></tr>
-      <tr><td>[P2] Post-call summary extraction (transcript → fields)</td><td>SETTLEIT-9969</td><td><span class="pill bad">❌ Cut (28 May)</span></td><td>Won't do. <code>OutputSchema</code> captures fields during the call; transcript replay covers any audit need. <b>Close in Jira.</b></td></tr>
+      <tr><td>[P2] Post-call summary extraction (transcript → fields)</td><td>SETTLEIT-9969</td><td><span class="pill warn">🟡 Deprioritized (28 May)</span></td><td>Not in Wed 3 Jun scope. <code>OutputSchema</code> captures fields during the call; transcript replay covers audit. Revisit after release if a real gap appears.</td></tr>
       <tr><td>[P1] Browser test-mode (port from mock-up)</td><td>SETTLEIT-10297</td><td><span class="pill bad">🆕 Not started</span></td><td><b>Jerold Shin</b>. Port from <code>C:\code\InfoDialer</code>.</td></tr>
       <tr><td>Pre-call document extraction (inputSourceExtraction)</td><td>SETTLEIT-10298</td><td><span class="pill bad">❌ Cut (28 May)</span></td><td>Won't do. SettleIT supplies <code>customFields</code> via the order form — no PDF parsing needed on InfoDialer side. <b>Close in Jira; unassign Prem.</b></td></tr>
       <tr><td>↳ Spike: cert extraction approach (no dtapi)</td><td>SETTLEIT-10299</td><td><span class="pill bad">❌ Cut (28 May)</span></td><td>Won't do. Closes with parent 10298. <b>Close in Jira.</b></td></tr>
@@ -386,7 +386,7 @@
       <li><b>Call-detail page (10303) competes for Jerold + Marcus's last 1.5 days</b> alongside content + ICallProvider. If voice integration (Mon) or ICallProvider (Tue) slip, 10303 slips out of Wed and into Fri.</li>
       <li><b>Content authoring</b> is gated on live voice integration. If 9963 slips past Mon EOD, content slips into Wed AM → no integration-test window.</li>
       <li><b>Telephony trial</b> (Telnyx/ACS) — if neither vendor's outbound number is provisioned by Mon, real outbound calls slip to Thu+. Browser test-mode keeps the Wed deploy demoable regardless, but exec demo needs real telephony by Fri.</li>
-      <li><b>9967 scope expansion</b> — broadening to cover GetCalls + GetCall + SignalR hub means Ivy + Prem own ~3 days of work in one ticket. Worth splitting if Jira hygiene matters; can stay merged for speed.</li>
+      <li><b>9967 scope</b> — trigger + webhook callback + <b>GetCall</b> + SignalR hub (internal). <b>GetCalls list endpoint deprioritized</b> — file handlers reach calls via SettleIT deep-link, no need for the listing screen in Wed scope.</li>
     </ul>
   </div>
 
@@ -468,7 +468,7 @@
     </div>
     <div class="card" style="border-left:3px solid var(--accent)">
       <h3>🔌 INTEGRATION <span>· Ivy + Prem</span></h3>
-      <div class="chain">Calls API + SignalR hub (Mon) → 9967 SettleIT (Tue) → 9962 FE live-wiring (Tue)</div>
+      <div class="chain">Calls API + SignalR hub (Mon) → 9967 SettleIT (Tue) → 9962 FE call-detail wiring (Tue) <span style="color:var(--muted);font-size:11px">— list view deprioritized</span></div>
       <p class="dep">Depends on 🏗️ Foundation. Shared-token auth (Q3). Prem onboarding Thu–Fri; Ivy carries solo until Mon.</p>
     </div>
   </div>
@@ -538,14 +538,15 @@
     <tbody>
       <tr><td>Release dates</td><td><span class="pill good">✅ Decided 28 May</span></td><td>Internal release <b>Wed 3 Jun</b> (production with all P1 features). Exec deadline <b>Fri 5 Jun</b> (buffer + demo).</td></tr>
       <tr><td>Team split</td><td><span class="pill good">✅ Decided 28 May</span></td><td>Marcus → telephony (10269 + 9964 + call-detail BE). Jerold → AI voice (10297 + 9963 + content + call-detail FE). Ivy + Prem → integration (9967 broadened + 9962). Nav → playbook CRUD UI (10302).</td></tr>
-      <tr><td>Calls API + SignalR hub</td><td><span class="pill good">✅ Decided 28 May</span></td><td>Broaden 9967 to cover GetCalls + GetCall + SignalR hub. No new ticket — Ivy + Prem own the whole API surface.</td></tr>
+      <tr><td>Calls API + SignalR hub</td><td><span class="pill good">✅ Decided 28 May</span></td><td>Broaden 9967 to cover trigger + webhook callback + <b>GetCall</b> (singular) + SignalR hub (internal). <b>GetCalls list endpoint deprioritized</b> — out of Wed scope.</td></tr>
       <tr><td>Telephony provider</td><td><span class="pill warn">🟡 Trial</span></td><td><a href="https://infotrack.atlassian.net/browse/GLOBALIT-4159">4159 (Telnyx)</a> + <a href="https://infotrack.atlassian.net/browse/GLOBALIT-4160">4160 (ACS)</a> — pick one after 3-week trial</td></tr>
       <tr><td>Realtime voice model</td><td><span class="pill warn">🟡 Trial</span></td><td><a href="https://infotrack.atlassian.net/browse/GLOBALIT-4162">4162 (Gemini)</a> + <a href="https://infotrack.atlassian.net/browse/GLOBALIT-4163">4163 (OpenAI)</a></td></tr>
       <tr><td>Outbound number</td><td><span class="pill warn">🟡 In flight</span></td><td>Provisioning via 4159 / 4160</td></tr>
       <tr><td>3rd authority selection</td><td><span class="pill good">✅ Decided 27 May</span></td><td>Stay on Sydney Water. Next 3 councils = Northern Beaches / Canterbury-Bankstown / Bayside. See section 8b for reasoning.</td></tr>
       <tr><td>Pre-call cert extraction (10298 / 10299)</td><td><span class="pill bad">❌ Cut 28 May</span></td><td>Won't do. SettleIT form supplies <code>customFields</code> directly. No PDF parsing on InfoDialer side.</td></tr>
-      <tr><td>Post-call summary extraction (9969)</td><td><span class="pill bad">❌ Cut 28 May</span></td><td>Won't do. <code>OutputSchema</code> captures fields during the call; transcript replay covers audit.</td></tr>
+      <tr><td>Post-call summary extraction (9969)</td><td><span class="pill warn">🟡 Deprioritized 28 May</span></td><td>Not in Wed scope. <code>OutputSchema</code> captures fields during the call; transcript replay covers audit. Revisit post-release.</td></tr>
       <tr><td>Scheduled call (10283)</td><td><span class="pill bad">❌ Cut 28 May</span></td><td>Won't do. SettleIT triggers manually for now. No automatic scheduling on either side.</td></tr>
+      <tr><td>Dashboard list view (GetCalls)</td><td><span class="pill warn">🟡 Deprioritized 28 May</span></td><td>Not in Wed scope. File handlers reach calls via SettleIT deep-link → call-detail page (10303). GetCall (singular) + SignalR hub + call-detail FE all stay in Wed scope. List endpoint + grid view = post-release polish.</td></tr>
       <tr><td>InputSchema validation</td><td><span class="pill good">✅ Strict 28 May</span></td><td>With no fallback extraction, every required field must be in <code>customFields</code> from the SettleIT form. Trigger returns 422 on missing fields.</td></tr>
       <tr><td>SignalR exposure</td><td><span class="pill good">✅ Internal only 28 May</span></td><td>SettleIT consumer gets webhook callback only. SignalR hub is for the AI-Caller dashboard (file handlers); no contract exported to consumers.</td></tr>
       <tr><td>Call-detail access</td><td><span class="pill good">✅ Decided</span></td><td>Same-client users see each other's calls. Deep link from SettleIT → AI-Caller call detail page. No dashboard discovery needed.</td></tr>
@@ -600,7 +601,7 @@
       <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9967">SETTLEIT-9967</a></td><td><span class="pill warn">Update</span></td><td><code>[P2] - SettleIT integration: contract + trigger + callback</code></td><td>3d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td>Single ticket — same team owns both ends.</td></tr>
       <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10299">SETTLEIT-10299</a></td><td><span class="pill bad">Close</span></td><td><i>[CLOSED] Cert extraction spike — won't do</i></td><td>—</td><td><span class="pill bad">❌ Cut 28 May</span></td><td>SettleIT form supplies <code>customFields</code> directly.</td></tr>
       <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10298">SETTLEIT-10298</a></td><td><span class="pill bad">Close</span></td><td><i>[CLOSED] Pre-call document extraction — won't do</i></td><td>—</td><td><span class="pill bad">❌ Cut 28 May</span></td><td>Closes with the spike. Unassign Prem.</td></tr>
-      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9969">SETTLEIT-9969</a></td><td><span class="pill bad">Close</span></td><td><i>[CLOSED] Post-call summary extraction — won't do</i></td><td>—</td><td><span class="pill bad">❌ Cut 28 May</span></td><td>OutputSchema covers the audit need.</td></tr>
+      <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-9969">SETTLEIT-9969</a></td><td><span class="pill warn">Deprioritize</span></td><td><code>[Deprioritized] - Post-call summary extraction</code></td><td>—</td><td><span class="pill warn">🟡 Deprio 28 May</span></td><td>Not in Wed scope; OutputSchema covers audit. Revisit post-release.</td></tr>
       <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10283">SETTLEIT-10283</a></td><td><span class="pill bad">Close</span></td><td><i>[CLOSED] Auto-schedule based on settlement date — won't do</i></td><td>—</td><td><span class="pill bad">❌ Cut 28 May</span></td><td>SettleIT triggers manually.</td></tr>
       <tr><td>—</td><td><span class="pill good">New</span></td><td><code>[P2] - Real outbound onboarding (Telnyx/ACS go-live, number, first calls)</code></td><td>2d</td><td><span class="pill warn">⏸️ Skipped (per request)</span></td><td>File when GLOBALIT tickets land.</td></tr>
       <tr><td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-10300">SETTLEIT-10300</a></td><td><span class="pill good">Created</span></td><td><code>[P2] - 3rd authority playbook (Newcastle or higher-volume alternative)</code></td><td>1d</td><td><span class="pill good">✅ Pushed 22 May</span></td><td>Demoted from P1 pending June's volume script. Recommend Northern Beaches (19 orders).</td></tr>
