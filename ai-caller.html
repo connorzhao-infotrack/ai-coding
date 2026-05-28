@@ -149,7 +149,7 @@
 <main>
 
   <h1>🤖 AI-Caller (InfoDialer) — Project Overview</h1>
-  <p class="sub">AI calls councils &amp; water authorities on behalf of SettleIT (and other consumers later) and returns figures + status humans dial for today.</p>
+  <p class="sub">AI calls councils &amp; water authorities on behalf of SettleIT (and other consumers later) and returns figures + status humans dial for today. <button id="toggle-all" type="button" class="reset-btn" style="margin-left:6px">📂 Expand all</button></p>
 
   <!-- ============= HERO ============= -->
   <div class="hero">
@@ -161,7 +161,8 @@
   </div>
 
   <!-- ============= ARCH ============= -->
-  <h2>🗺️ Architecture (one picture)</h2>
+  <details class="collapsible" data-section="arch">
+  <summary><h2>🗺️ Architecture (one picture)</h2></summary>
   <svg class="diag" viewBox="0 0 1100 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AI-Caller architecture">
     <defs>
       <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -225,8 +226,10 @@
     <text class="tSm" x="540" y="22">webhook callback</text>
   </svg>
 
+  </details>
+
   <!-- ============= 1 ============= -->
-  <details class="collapsible" open>
+  <details class="collapsible" data-section="s1">
   <summary><h2>🎯 1 · What it is</h2></summary>
   <div class="row">
     <div class="card">
@@ -291,7 +294,7 @@
   </details>
 
   <!-- ============= 2 ============= -->
-  <details class="collapsible" open>
+  <details class="collapsible" data-section="s2">
   <summary><h2>📊 2 · Where we actually are</h2></summary>
   <table>
     <thead><tr><th>Area</th><th>Ticket</th><th>State</th><th>Notes</th></tr></thead>
@@ -326,7 +329,8 @@
   </details>
 
   <!-- ============= 3 · PARALLELISM ============= -->
-  <h2>🔀 3 · Streams + deadlines for Wed 3 Jun release</h2>
+  <details class="collapsible" data-section="s3">
+  <summary><h2>🔀 3 · Streams + deadlines for Wed 3 Jun release</h2></summary>
   <p style="font-size:13px;color:var(--muted);margin:0 0 10px">
     Schedule is <b>committed, not aspirational</b>. Backend foundation is on <code>main</code> (auth + Playbook domain + CRUD endpoints — PRs #6–12), so it's parallel execution from here. 4 streams + content authoring run side-by-side. Days are Thu/Fri this week, then Mon/Tue/Wed next week (weekend off) — <b>5 working days to internal release</b>, <b>7 to exec deadline</b>.
   </p>
@@ -384,8 +388,11 @@
     </ul>
   </div>
 
+  </details>
+
   <!-- ============= 3a · GANTT ============= -->
-  <h2>🗓️ 3a · Daily timeline (Thu 28 May → Fri 5 Jun)</h2>
+  <details class="collapsible" data-section="s3a">
+  <summary><h2>🗓️ 3a · Daily timeline (Thu 28 May → Fri 5 Jun)</h2></summary>
   <p style="font-size:13px;color:var(--muted);margin:0 0 8px"><b>Drag a bar</b> between rows (re-assign owner) or sideways (shift day). <b>Drag the left/right edges</b> to resize. Weekend is hatched. Layout saved in this browser; use Reset to restore defaults.</p>
   <div class="gantt" id="gantt">
     <div class="gantt-head" style="grid-row:1;grid-column:1"></div>
@@ -428,8 +435,11 @@
     </ul>
   </div>
 
+  </details>
+
   <!-- ============= 3b · WORKSTREAMS ============= -->
-  <h2>🧬 3b · Workstreams (parents) — independent chains</h2>
+  <details class="collapsible" data-section="s3b">
+  <summary><h2>🧬 3b · Workstreams (parents) — independent chains</h2></summary>
   <p style="font-size:13px;color:var(--muted);margin:0 0 10px">
     Each card is a <b>parent</b>: a chain of tickets that depend on each other and move together. Parents are <b>independent of each other</b> — point a different person at each and they won't step on each other's toes. The only shared dependencies: <b>🏗️ Foundation</b> (everyone needs stage up) and the two interface contracts (<code>ICallProvider</code>, <code>IVoiceAIService</code>).
   </p>
@@ -464,8 +474,11 @@
     💡 In Jira these map to <b>components</b> / labels — <code>stream-foundation</code>, <code>stream-telephony</code>, <code>stream-ai-voice</code>, <code>stream-playbook</code>, <code>stream-integration</code>. I'll apply them across the tickets when the Atlassian connection is back.
   </p>
 
+  </details>
+
   <!-- ============= 4 · BUCKETS ============= -->
-  <h2>👥 4 · Work buckets (drag to rebalance)</h2>
+  <details class="collapsible" data-section="s4">
+  <summary><h2>👥 4 · Work buckets (drag to rebalance)</h2></summary>
   <div class="bucket-tools">
     <div class="bucket-help">Drag any block between people. 1u ≈ 1 person-day. 🎯 P1 (by 29 May) · 🗓️ P2 (by 5 Jun + rest of sprint). Layout saved to local storage.</div>
     <button class="reset-btn" id="reset-btn" type="button">↩️ Reset to default</button>
@@ -502,16 +515,22 @@
     <span><span class="dot" style="background:var(--dim)"></span>tooling</span>
   </div>
 
+  </details>
+
   <!-- ============= 5 ============= -->
-  <h2>🚨 5 · Tight-on-time fallback</h2>
+  <details class="collapsible" data-section="s5">
+  <summary><h2>🚨 5 · Tight-on-time fallback</h2></summary>
   <div class="card">
     <ul>
       <li><b>Recorded transcript fixtures</b> for live-page demos when a live call isn't available on stage yet — same data shape as a real call, so the FE renders identically. Useful for early PM/dev feedback before vendor numbers are live.</li>
     </ul>
   </div>
 
+  </details>
+
   <!-- ============= 7 · DECISIONS ============= -->
-  <h2>✅ 7 · Decisions — locked vs open</h2>
+  <details class="collapsible" data-section="s7">
+  <summary><h2>✅ 7 · Decisions — locked vs open</h2></summary>
   <table>
     <thead><tr><th>Item</th><th>Status</th><th>Notes</th></tr></thead>
     <tbody>
@@ -536,8 +555,11 @@
     </tbody>
   </table>
 
+  </details>
+
   <!-- ============= 8 · PROPOSED CHANGES ============= -->
-  <h2>📝 8 · Proposed ticket changes — draft, review, then push</h2>
+  <details class="collapsible" data-section="s8">
+  <summary><h2>📝 8 · Proposed ticket changes — draft, review, then push</h2></summary>
   <div class="callout good">
     🪪 <b>Status of the batch.</b> 12 tickets updated, 4 new tickets created (10300 / 10301 / 10302 / 10303), 1 closed (10127). 4 rows intentionally skipped per request (API surface, real-outbound onboarding, HMAC, cost telemetry) — file these when ready. The call-detail page landed as <b>sub-task 10303 under SETTLEIT-9967</b>, not a sibling.
   </div>
@@ -576,8 +598,11 @@
     <b>To push.</b> Reply <code>push all</code> to apply every row, or call out exceptions (e.g. <code>skip P3</code>, <code>don't promote 9968</code>, <code>merge X into Y</code>). I'll batch-edit titles, descriptions, and the <i>Original Estimate</i> field, plus create / close as marked.
   </p>
 
+  </details>
+
   <!-- ============= AUTHORITY × COUNCIL MAP ============= -->
-  <h2>🏘️ 8b · Authority × council coverage (from June's volume script)</h2>
+  <details class="collapsible" data-section="s8b">
+  <summary><h2>🏘️ 8b · Authority × council coverage (from June's volume script)</h2></summary>
   <p style="font-size:13px;margin-bottom:8px">Two upcoming-release order counts. Sydney Water dominates NSW; Brisbane is the single biggest single-council market.</p>
   <table>
     <thead><tr><th>Council</th><th>State</th><th>Water authority</th><th>5 Jun</th><th>12 Jun</th><th>Combined</th></tr></thead>
@@ -644,8 +669,11 @@
     </p>
   </div>
 
+  </details>
+
   <!-- ============= 8c · OPEN QUESTIONS ============= -->
-  <h2>❓ 8c · Open questions parked for later</h2>
+  <details class="collapsible" data-section="s8c">
+  <summary><h2>❓ 8c · Open questions parked for later</h2></summary>
   <p style="font-size:13px;color:var(--muted);margin-bottom:8px">Captured so they don't get lost — revisit when the relevant phase comes up.</p>
   <table>
     <thead><tr><th>#</th><th>Question</th><th>Status</th><th>Notes</th></tr></thead>
@@ -657,8 +685,11 @@
     </tbody>
   </table>
 
+  </details>
+
   <!-- ============= 9 · WATCH ============= -->
-  <h2>👀 9 · What a project lead should watch</h2>
+  <details class="collapsible" data-section="s9">
+  <summary><h2>👀 9 · What a project lead should watch</h2></summary>
   <div class="row two">
     <div class="card">
       <h3>📈 Metrics from day 1</h3>
@@ -683,6 +714,8 @@
     </div>
   </div>
 
+  </details>
+
   <div class="callout good">
     ✅ <b>Strong points to lean on.</b> Mock-up at <code>C:\code\InfoDialer</code> already proves end-to-end including realtime voice. <code>docs/api-contracts-plan.md</code> + <code>docs/playbookplna.md</code> + <code>docs/infrastructure.md</code> give the build a clear spec. Code-is-the-design means no Figma blocker. Legal disclosure already signed off.
   </div>
@@ -693,6 +726,41 @@
   </footer>
 
 </main>
+
+<script>
+/* ============= Section collapsible state ============= */
+(function(){
+  const KEY = 'aicaller-sections-v1';
+  let stored;
+  try { stored = JSON.parse(localStorage.getItem(KEY)) || {}; } catch { stored = {}; }
+  const all = document.querySelectorAll('details.collapsible');
+  all.forEach(d => {
+    const id = d.dataset.section;
+    if (!id) return;
+    d.open = !!stored[id]; // collapsed by default; restore if previously opened
+    d.addEventListener('toggle', () => {
+      stored[id] = d.open;
+      localStorage.setItem(KEY, JSON.stringify(stored));
+      updateToggleAllLabel();
+    });
+  });
+  function allOpen(){ return Array.from(all).every(d => d.open); }
+  function updateToggleAllLabel(){
+    const btn = document.getElementById('toggle-all');
+    if (!btn) return;
+    btn.textContent = allOpen() ? '📁 Collapse all' : '📂 Expand all';
+  }
+  const btn = document.getElementById('toggle-all');
+  if (btn){
+    btn.addEventListener('click', () => {
+      const target = !allOpen();
+      all.forEach(d => { d.open = target; });
+      // toggle events fire above and update stored + label
+    });
+    updateToggleAllLabel();
+  }
+})();
+</script>
 
 <script>
 (function(){
