@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI-Caller — Dynamic Input Form (V1 Plan)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2230; --line:#30363d;
+    --ink:#e6edf3; --muted:#8b949e; --dim:#6e7681;
+    --accent:#58a6ff; --cyan:#39d0d8; --purple:#bc8cff; --pink:#ff7b9b;
+    --good:#3fb950; --warn:#d29922; --bad:#f85149;
+    --code:#1f242c;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  main{max-width:1080px;margin:0 auto;padding:28px 32px}
+  h1{font-size:25px;margin:0 0 4px;letter-spacing:-.01em}
+  h2{font-size:12px;margin:26px 0 10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  h3{font-size:14px;margin:0 0 6px;color:var(--ink)}
+  p{margin:0 0 8px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .sub{color:var(--muted);margin:0 0 18px}
+  .row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .row.two{grid-template-columns:repeat(2,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .card h3 span{font-weight:400;color:var(--muted);font-size:12px}
+  ul,ol{margin:6px 0 0;padding-left:18px}
+  li{margin:4px 0}
+  .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#1f2937;color:var(--accent)}
+  .pill.warn{background:#3b2e0f;color:var(--warn)}
+  .pill.good{background:#0f3320;color:var(--good)}
+  .pill.bad{background:#3b1112;color:var(--bad)}
+  .pill.muted{background:#1f242c;color:var(--muted)}
+  .pill.new{background:#2a1620;color:var(--pink)}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+  th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+  code{font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;background:var(--code);padding:1px 5px;border-radius:4px;color:#e6edf3}
+  pre{background:var(--code);padding:10px 12px;border-radius:6px;font-size:12px;overflow:auto;margin:6px 0 8px;border:1px solid var(--line)}
+  pre code{background:none;padding:0}
+  .callout{border-left:3px solid var(--warn);background:#1f1a0c;padding:10px 12px;border-radius:0 6px 6px 0;margin:10px 0}
+  .callout.bad{border-left-color:var(--bad);background:#1f0f0f}
+  .callout.good{border-left-color:var(--good);background:#0e1f15}
+  .callout.idea{border-left-color:var(--accent);background:#0d1a2b}
+  .diag{width:100%;height:auto;display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:6px}
+  .tag{font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;letter-spacing:.03em}
+  .tag.exists{background:#0f3320;color:var(--good)}
+  .tag.new{background:#2a1620;color:var(--pink)}
+  .tag.verify{background:#3b2e0f;color:var(--warn)}
+  footer{margin-top:22px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:10px}
+  .legend{display:flex;flex-wrap:wrap;gap:16px;font-size:11px;color:var(--muted);margin-top:8px}
+  .legend .sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:middle}
+</style>
+</head>
+<body>
+<main>
+
+  <h1>🧩 AI-Caller — Dynamic Input Form (V1 Plan)</h1>
+  <p class="sub">How the file handler supplies the details each authority needs, so the AI can make the call. Draft for team review — 1 Jun 2026.</p>
+
+  <div class="callout idea">
+    <b>One-paragraph summary.</b> Before the AI calls an authority it needs specific identifiers (property number, certificate number, customer reference, …). These vary by authority and most are <b>not</b> stored in SettleIT. The input requirements live in the <b>InfoDialer playbook</b> (single source of truth); SettleIT <b>prefetches</b> them when the adjustment page loads, so clicking <b>Call authority</b> opens a modal of labelled text boxes <b>instantly — no spinner</b>. The handler fills them in and the values are passed to InfoDialer as a JSON string (and saved against the order so a retry doesn’t need re-entry).
+  </div>
+
+  <!-- ============ 1 · WHY ============ -->
+  <h2>1 · Why we need it</h2>
+  <div class="row">
+    <div class="card">
+      <h3>🎯 The AI needs call-specific details</h3>
+      <ul>
+        <li>We are <b>not</b> doing document extraction.</li>
+        <li>To verify a rate, the AI must quote identifiers the authority asks for.</li>
+        <li>Those identifiers differ per authority (and per scenario).</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🗄️ Most of it isn’t in our DB</h3>
+      <ul>
+        <li>SettleIT reliably stores only <b>lot/plan</b> (title reference).</li>
+        <li>Certificate number, rates account number, customer/payment reference — <b>not stored</b> (some “recorded in pencil”).</li>
+        <li>So the file handler must supply them at call time.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🧭 Keep it configurable</h3>
+      <ul>
+        <li>Adding a council shouldn’t need a code change.</li>
+        <li>The <b>playbook</b> already owns the call’s input definition (<code>InputSchema</code>).</li>
+        <li>Let that be the single source of truth — don’t duplicate it on SettleIT.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ 2 · DECISIONS ============ -->
+  <h2>2 · V1 decisions (locked)</h2>
+  <div class="row two">
+    <div class="card" style="border-color:var(--good)">
+      <h3>✅ Approach</h3>
+      <ul>
+        <li><b>Ask the file handler for everything</b> the playbook requires — no auto-fill guessing in V1.</li>
+        <li><b>SettleIT fetches the field list from InfoDialer</b> (the playbook <code>InputSchema</code>) — no duplicate schema stored on SettleIT.</li>
+        <li><b>Prefetch on page load</b> — load the field list when the adjustment page opens, so the modal is instant when “Call authority” is clicked (no spinner).</li>
+        <li><b>Flatten the scenarios</b> — one field set per playbook; cert is very likely already returned by call time, so we target the “certificate returned” case.</li>
+        <li>All fields are <b>plain strings</b>, so the form is a simple labelled-input loop — <b>not</b> a JSON-Schema engine.</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:var(--accent)">
+      <h3>🏷️ Labels &amp; storage</h3>
+      <ul>
+        <li><b>Label resolution chain:</b> schema <code>title</code> → small hard-coded key→label map → humanized field name (<code>propertyNumber</code> → “Property Number”). Good enough for a dev-only V1.</li>
+        <li><b>Persist the entered values</b> on the order’s <code>AdjustmentRateVerifications</code> row (new JSON column) so a <b>retry doesn’t require re-entry</b>.</li>
+        <li>The schema itself is <b>fetched, not stored</b> — values are stored, definition is not.</li>
+        <li>Button is <b>Dev-only</b> (env flag), placed <b>outside</b> the input box.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ 3 · FLOW ============ -->
+  <h2>3 · End-to-end flow</h2>
+  <svg class="diag" viewBox="0 0 1040 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dynamic input form flow">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#8b949e"/>
+      </marker>
+      <style>
+        .b{fill:#161b22;stroke:#30363d}
+        .bNew{fill:#2a1620;stroke:#ff7b9b}
+        .bEx{fill:#0e1f15;stroke:#3fb950}
+        .bVer{fill:#1f1a0c;stroke:#d29922}
+        .t{fill:#e6edf3;font:600 12px -apple-system,Segoe UI,Roboto,sans-serif}
+        .tSm{fill:#8b949e;font:10.5px -apple-system,Segoe UI,Roboto,sans-serif}
+        .ar{stroke:#8b949e;stroke-width:1.4;fill:none}
+      </style>
+    </defs>
+
+    <!-- row 1 -->
+    <rect class="b" x="14" y="20" width="150" height="58" rx="9"/>
+    <text class="t" x="89" y="44" text-anchor="middle">👩‍💼 File handler</text>
+    <text class="tSm" x="89" y="62" text-anchor="middle">Adjustment page</text>
+
+    <rect class="bNew" x="196" y="20" width="170" height="58" rx="9"/>
+    <text class="t" x="281" y="37" text-anchor="middle">🧾 Prefetch fields</text>
+    <text class="tSm" x="281" y="54" text-anchor="middle">on page load · GET</text>
+    <text class="tSm" x="281" y="70" text-anchor="middle">InputSchema, cached</text>
+
+    <rect class="bNew" x="398" y="20" width="180" height="58" rx="9"/>
+    <text class="t" x="488" y="37" text-anchor="middle">📞 “Call authority”</text>
+    <text class="tSm" x="488" y="54" text-anchor="middle">dev-flag · outside input</text>
+    <text class="tSm" x="488" y="70" text-anchor="middle">opens modal instantly</text>
+
+    <rect class="bNew" x="610" y="20" width="180" height="58" rx="9"/>
+    <text class="t" x="700" y="40" text-anchor="middle">🪟 Modal form</text>
+    <text class="tSm" x="700" y="57" text-anchor="middle">labelled string inputs</text>
+    <text class="tSm" x="700" y="70" text-anchor="middle">handler fills + submits</text>
+
+    <path class="ar" d="M164 49 L 196 49" marker-end="url(#arr)"/>
+    <path class="ar" d="M366 49 L 398 49" marker-end="url(#arr)"/>
+    <path class="ar" d="M578 49 L 610 49" marker-end="url(#arr)"/>
+
+    <!-- down connector -->
+    <path class="ar" d="M700 78 L 700 110 L 700 120" marker-end="url(#arr)"/>
+
+    <!-- row 2 -->
+    <rect class="bNew" x="610" y="122" width="180" height="62" rx="9"/>
+    <text class="t" x="700" y="146" text-anchor="middle">⚙️ InitiateAiCall</text>
+    <text class="tSm" x="700" y="163" text-anchor="middle">validate JSON · persist on</text>
+    <text class="tSm" x="700" y="176" text-anchor="middle">ARV · set PlaybookInputs</text>
+
+    <rect class="bEx" x="398" y="122" width="180" height="62" rx="9"/>
+    <text class="t" x="488" y="146" text-anchor="middle">🚚 TriggerCallAsync</text>
+    <text class="tSm" x="488" y="163" text-anchor="middle">POST /api/v1/calls</text>
+    <text class="tSm" x="488" y="176" text-anchor="middle">machine-token auth ✓</text>
+
+    <rect class="b" x="196" y="122" width="170" height="62" rx="9"/>
+    <text class="t" x="281" y="146" text-anchor="middle">🤖 InfoDialer</text>
+    <text class="tSm" x="281" y="163" text-anchor="middle">places the call,</text>
+    <text class="tSm" x="281" y="176" text-anchor="middle">runs the playbook</text>
+
+    <rect class="bNew" x="14" y="122" width="150" height="62" rx="9"/>
+    <text class="t" x="89" y="142" text-anchor="middle">↩️ Callback</text>
+    <text class="tSm" x="89" y="159" text-anchor="middle">receiver ✓ · firing</text>
+    <text class="tSm" x="89" y="174" text-anchor="middle">not built yet</text>
+
+    <path class="ar" d="M610 153 L 578 153" marker-end="url(#arr)"/>
+    <path class="ar" d="M398 153 L 366 153" marker-end="url(#arr)"/>
+    <path class="ar" d="M196 153 L 164 153" marker-end="url(#arr)"/>
+  </svg>
+  <div class="legend">
+    <span><span class="sw" style="background:#0e1f15;border:1px solid #3fb950"></span>Already built</span>
+    <span><span class="sw" style="background:#2a1620;border:1px solid #ff7b9b"></span>New work for V1</span>
+    <span><span class="sw" style="background:#161b22;border:1px solid #30363d"></span>Existing component</span>
+  </div>
+
+  <!-- ============ 4 · FIELDS ============ -->
+  <h2>4 · Fields each authority needs (V1 — “certificate returned” case)</h2>
+  <p style="color:var(--muted);margin-bottom:4px">These live in each playbook’s <code>InputSchema</code> and are what the modal will render. Source = where the value comes from today.</p>
+  <table>
+    <thead><tr><th>Playbook</th><th>Fields the handler provides</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td><b>Sydney Water</b> <span style="font-size:11px;color:var(--muted)">(water auth · IVR)</span></td><td>First 7 digits of property number</td><td>Manual</td></tr>
+      <tr><td><b>Blacktown</b> <span style="font-size:11px;color:var(--muted)">(council)</span></td><td>Company name · Property number · Full address · Last digits of certificate number</td><td>Manual</td></tr>
+      <tr><td><b>Northern Beaches</b></td><td>Lot/plan</td><td><span style="color:var(--good)">From order</span></td></tr>
+      <tr><td><b>Bankstown</b></td><td>Lot/plan · Customer reference no. (payment ref)</td><td>Lot/plan from order; ref manual</td></tr>
+      <tr><td><b>Bayside</b></td><td>Rates account number · Certificate number</td><td>Manual</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:var(--muted);margin-top:8px"><b>Lot/plan</b> is the only field reliably stored on the order — a candidate to pre-fill in V2. Everything else is manual entry in V1, which matches “ask the handler for everything”. Source data: council calls by Jerold &amp; Lexi (1 Jun).</p>
+
+  <!-- ============ 5 · BUILD ============ -->
+  <h2>5 · What’s already built vs new work</h2>
+  <div class="row two">
+    <div class="card" style="border-color:var(--good)">
+      <h3><span class="tag exists">ALREADY BUILT</span> &nbsp;don’t rebuild</h3>
+      <ul>
+        <li><b>Outbound trigger pipe</b> — <code>TriggerCallRequest</code> already has the <code>PlaybookInputs</code> slot; <code>IInfoDialerApiClient.TriggerCallAsync</code> POSTs to <code>/api/v1/calls</code> with machine-token auth.</li>
+        <li><b>Inbound callback receiver</b> — <code>ProcessInfoDialerNotificationCommand</code> is implemented + tested (5 handler + 6 validator tests), authenticated as a SettleIT System User.</li>
+        <li><b>The two tables</b> — <code>AdjustmentRateVerifications</code> (per-order) + the State/RateCategory→playbook mapping exist (SETTLEIT-10328).</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:var(--pink)">
+      <h3><span class="tag new">NEW FOR V1</span></h3>
+      <ul>
+        <li><b>InfoDialer — content:</b> populate each playbook’s <code>InputSchema</code> with the required fields + <code>title</code> labels (it’s empty today).</li>
+        <li><b>InfoDialer — endpoint:</b> a small “get input requirements” endpoint returning a playbook’s <code>InputSchema</code> (the API client already exists — add a method).</li>
+        <li><b>SettleIT FE:</b> <b>prefetch</b> the field list on adjustment-page load; Call-authority button (dev-flag, outside input) opens a modal that loops the fields into labelled text boxes → serialize to JSON.</li>
+        <li><b>SettleIT BE:</b> <code>InitiateAiCall</code> command — validate JSON, persist on ARV, set <code>PlaybookInputs</code>, call the existing <code>TriggerCallAsync</code>.</li>
+        <li><b>Storage:</b> add <code>PlaybookInputs nvarchar(max)</code> column to <code>AdjustmentRateVerifications</code> (retry without re-entry).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ 6 · WORK + OPEN ============ -->
+  <h2>6 · Work &amp; open items</h2>
+  <div class="row two">
+    <div class="card">
+      <h3>🧩 Pieces of work <span>· team to divvy up</span></h3>
+      <ul>
+        <li><b>SettleIT frontend</b> — prefetch on page load + Call-authority button + dynamic modal.</li>
+        <li><b>SettleIT backend</b> — <code>InitiateAiCall</code> command + ARV persistence + <code>GetAiCallsForOrder</code>.</li>
+        <li><b>InfoDialer</b> — populate <code>InputSchema</code> + the get-input-requirements endpoint + callback firing/token.</li>
+      </ul>
+      <p style="font-size:11px;color:var(--muted);margin-top:8px">Owners not pre-assigned — the team sorts who takes what. Some pieces span both repos (e.g. adding the InfoDialer endpoint).</p>
+    </div>
+    <div class="card" style="border-color:var(--warn)">
+      <h3>🔎 Confirmed gaps — required work (checked 1 Jun)</h3>
+      <ul>
+        <li><b><code>InputSchema</code> is currently empty &amp; unused</b> — must be populated per playbook (with <code>title</code> labels) and exposed via the endpoint. This is the prerequisite for the fetch approach. <span class="tag new">NEW</span></li>
+        <li><b>InfoDialer doesn’t fire the callback at all</b> (no code; <code>CallbackUrl</code> stored but unused) — needs callback firing + a SettleIT system-user M2M token. <span class="tag new">NEW · InfoDialer</span></li>
+        <li><b>No per-order “calls for this order” query</b> on SettleIT (only the inbound write path exists) — small <code>GetAiCallsForOrder</code> query + FE endpoint to drive button state. <span class="tag new">NEW · SettleIT</span></li>
+        <li><b>Inputs → prompt is already done</b> ✓ — <code>BuildPromptService</code> renders <code>PlaybookInputs</code> into a “Call data:” block (tested). Remaining: wire TriggerCall → prompt → realtime session (part of the live voice-call path). <span class="tag exists">PARTLY BUILT</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ 7 · SCOPE ============ -->
+  <h2>7 · Explicitly out of scope for V1</h2>
+  <div class="card">
+    <ul>
+      <li><b>Auto-filling fields from the order</b> (beyond lot/plan) — needs a per-council mapping. V2.</li>
+      <li><b>Scenario selector</b> (“cert returned” vs “not returned” changing the field set) — V1 flattens to the cert-returned case. V2.</li>
+      <li><b>A generic JSON-Schema form engine</b> — not needed; all inputs are flat strings rendered by a simple loop.</li>
+      <li><b>Mid-call dynamic questions</b> (e.g. Blacktown asking “is this a new 603 cert?”) — handled by the AI live via the playbook prompt, not a pre-call form field.</li>
+    </ul>
+  </div>
+
+  <footer>
+    Draft for team review · 1 Jun 2026 · companion to <a href="./project-overview.html">project-overview.html</a>. Field data from council calls (Jerold, Lexi). “Being verified” items are under active code check and will be confirmed before build.
+  </footer>
+
+</main>
+</body>
+</html>
