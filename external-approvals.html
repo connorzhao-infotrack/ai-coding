@@ -112,8 +112,8 @@
       <tr>
         <td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4506">GLOBALIT-4506</a></td>
         <td>AiGateway access — <code>gpt-5.4-mini</code> (text) + <code>gpt-realtime-whisper</code> (STT)</td>
-        <td><span class="pill warn">🟡 On track (split)</span></td>
-        <td><b>Text leg on track:</b> Vineeth is provisioning the team in AiGateway for <code>gpt-5.4-mini</code> and will confirm. <b>STT leg blocked:</b> <code>gpt-realtime-whisper</code> is <b>not available in Azure AU</b> — same region-availability wall as <code>gpt-realtime-2</code>. IVR-only calls (Sydney Water) need an STT path, so this needs a fallback (alternative Azure-AU STT model) or the same direct-OpenAI exception.</td>
+        <td><span class="pill warn">🟡 Text on track</span> · <span class="pill muted">⏸️ STT deprio</span></td>
+        <td><b>Text leg on track:</b> Vineeth is provisioning the team in AiGateway for <code>gpt-5.4-mini</code> and will confirm. <b>STT leg deprioritized (5 Jun):</b> <code>gpt-realtime-whisper</code> isn't in Azure AU — but <b>STT is no longer treated as a hard blocker</b>. The call still goes through without a dedicated STT model: human-agent mode uses the realtime voice model's built-in transcription, and IVR mode degrades to read-back / DTMF-tone-detection. We can ship without it.</td>
       </tr>
     </tbody>
   </table>
@@ -122,7 +122,7 @@
   <h2>🔗 Dependency map — what each ticket gates</h2>
   <p style="font-size:13px;color:var(--muted);margin:0 0 8px">
     Left → right: <b>approval / access tickets</b> feed the <b>capability</b> they unlock, which in turn gates <b>production go-live</b>.
-    Solid grey = on the live path · <span style="color:var(--bad)">red dashed = blocked dependency</span> · <span style="color:var(--dim)">grey dashed = deprioritized / fallback</span>.
+    Solid grey = on the live path · <span style="color:var(--bad)">red dashed = blocked dependency</span> · <span style="color:var(--dim)">grey dashed = deprioritized / fallback</span>. 📅 = date the ticket was raised.
   </p>
   <svg class="diag" viewBox="0 0 1100 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="External approvals dependency map">
     <defs>
@@ -160,35 +160,43 @@
     <!-- ===== tickets (col 1) ===== -->
     <rect class="bWarn" x="20" y="40" width="230" height="44" rx="8"/>
     <text class="t" x="32" y="60">🟡 GLOBALIT-4159</text>
+    <text class="tSm" x="242" y="60" text-anchor="end">📅 21 May 26</text>
     <text class="tSm" x="32" y="76">Telnyx AU number · pending approval</text>
 
     <rect class="bWarn" x="20" y="96" width="230" height="44" rx="8"/>
     <text class="t" x="32" y="116">🟡 GLOBALIT-4466</text>
+    <text class="tSm" x="242" y="116" text-anchor="end">📅 28 May 26</text>
     <text class="tSm" x="32" y="132">Telnyx security consult</text>
 
     <rect class="bMuted" x="20" y="152" width="230" height="44" rx="8"/>
     <text class="t" x="32" y="172">⏸️ GLOBALIT-4160</text>
+    <text class="tSm" x="242" y="172" text-anchor="end">📅 21 May 26</text>
     <text class="tSm" x="32" y="188">ACS number · deprioritized (fallback)</text>
 
     <rect class="bWarn" x="20" y="224" width="230" height="44" rx="8"/>
     <text class="t" x="32" y="244">🟡 GLOBALIT-4162</text>
+    <text class="tSm" x="242" y="244" text-anchor="end">📅 21 May 26</text>
     <text class="tSm" x="32" y="260">Gemini 3.1 flash live · ongoing</text>
 
     <rect class="bBad" x="20" y="280" width="230" height="44" rx="8"/>
     <text class="t" x="32" y="300">🔴 GLOBALIT-4163</text>
+    <text class="tSm" x="242" y="300" text-anchor="end">📅 21 May 26</text>
     <text class="tSm" x="32" y="316">gpt-realtime-2 · not in Azure AU</text>
 
     <rect class="bBad" x="20" y="336" width="230" height="44" rx="8"/>
     <text class="t" x="32" y="356">🔴 GLOBALIT-4504</text>
+    <text class="tSm" x="242" y="356" text-anchor="end">📅 29 May 26</text>
     <text class="tSm" x="32" y="372">Security review · needs 4163 access</text>
 
     <rect class="bWarn" x="20" y="408" width="230" height="44" rx="8"/>
     <text class="t" x="32" y="428">🟡 GLOBALIT-4506a</text>
+    <text class="tSm" x="242" y="428" text-anchor="end">📅 29 May 26</text>
     <text class="tSm" x="32" y="444">gpt-5.4-mini text · on track</text>
 
-    <rect class="bBad" x="20" y="464" width="230" height="44" rx="8"/>
-    <text class="t" x="32" y="484">🔴 GLOBALIT-4506b</text>
-    <text class="tSm" x="32" y="500">realtime-whisper STT · not in Azure AU</text>
+    <rect class="bMuted" x="20" y="464" width="230" height="44" rx="8"/>
+    <text class="t" x="32" y="484">⏸️ GLOBALIT-4506b</text>
+    <text class="tSm" x="242" y="484" text-anchor="end">📅 29 May 26</text>
+    <text class="tSm" x="32" y="500">realtime-whisper STT · can live without</text>
 
     <!-- ===== capabilities (col 2) ===== -->
     <rect class="bWarn" x="450" y="70" width="240" height="54" rx="9"/>
@@ -199,9 +207,9 @@
     <text class="t" x="570" y="280" text-anchor="middle">🗣️ Human-agent realtime</text>
     <text class="tSm" x="570" y="298" text-anchor="middle">Gemini only (OpenAI path blocked)</text>
 
-    <rect class="bBad" x="450" y="408" width="240" height="54" rx="9"/>
+    <rect class="bWarn" x="450" y="408" width="240" height="54" rx="9"/>
     <text class="t" x="570" y="432" text-anchor="middle">📟 IVR mode (text + STT)</text>
-    <text class="tSm" x="570" y="450" text-anchor="middle">blocked: no Azure-AU STT</text>
+    <text class="tSm" x="570" y="450" text-anchor="middle">STT deprio · degrade gracefully</text>
 
     <rect class="bGood" x="450" y="486" width="240" height="40" rx="9"/>
     <text class="t" x="570" y="510" text-anchor="middle">✅ Legal sign-off (ATIGLIT-2669)</text>
@@ -219,24 +227,32 @@
 
     <path class="ar"  d="M250 246 C 350 246, 360 283, 450 283" marker-end="url(#arrG)"/>
     <path class="ar"  d="M135 324 L 135 336" marker-end="url(#arrG)"/>
-    <path class="arR" d="M250 358 C 350 358, 360 295, 450 295" marker-end="url(#arrR)"/>
+    <path class="arA" d="M250 358 C 350 358, 360 295, 450 295" marker-end="url(#arrA)"/>
 
     <path class="ar"  d="M250 430 C 350 430, 360 430, 450 430" marker-end="url(#arrG)"/>
-    <path class="arR" d="M250 486 C 350 486, 360 450, 450 450" marker-end="url(#arrR)"/>
+    <path class="arM" d="M250 486 C 350 486, 360 450, 450 450" marker-end="url(#arrG)"/>
+
+    <!-- ===== escalation ladder annotation ===== -->
+    <rect class="bGate" x="270" y="220" width="160" height="120" rx="9" stroke-dasharray="4 4" opacity="0.85"/>
+    <text class="tHd" x="350" y="240" text-anchor="middle" style="font-size:10px">ESCALATION LADDER</text>
+    <text class="tSm" x="350" y="258" text-anchor="middle" style="fill:#bcd1f0">① Gemini 3.1 (current)</text>
+    <text class="tSm" x="350" y="276" text-anchor="middle">↓ if quality fails</text>
+    <text class="tSm" x="350" y="294" text-anchor="middle" style="fill:#bcd1f0">② Exec exception</text>
+    <text class="tSm" x="350" y="312" text-anchor="middle">↓ if declined</text>
+    <text class="tSm" x="350" y="330" text-anchor="middle" style="fill:#f8a5a5">③ Personal token (LR)</text>
 
     <!-- ===== arrows: capability -> go-live ===== -->
     <path class="arA" d="M690 97  C 800 97, 820 255, 900 258" marker-end="url(#arrA)"/>
     <path class="ar"  d="M690 283 C 800 283, 820 270, 900 272" marker-end="url(#arrG)"/>
-    <path class="arR" d="M690 435 C 800 435, 820 295, 900 292" marker-end="url(#arrR)"/>
+    <path class="arA" d="M690 435 C 800 435, 820 295, 900 292" marker-end="url(#arrA)"/>
     <path class="arA" d="M690 506 C 810 506, 830 312, 900 308" marker-end="url(#arrA)"/>
   </svg>
-  <div class="callout bad">
-    🚧 <b>Two hard blockers on the critical path to go-live:</b>
+  <div class="callout">
+    🚧 <b>One hard blocker on the critical path to go-live:</b>
     <ul>
-      <li><b>IVR mode has no STT</b> — <code>gpt-realtime-whisper</code> isn't in Azure AU (4506b). Sydney Water (IVR-only) can't run until we get a fallback Azure-AU STT model or a direct-OpenAI exception.</li>
-      <li><b>Telnyx number not yet approved</b> (4159) — no real outbound calls until it lands. Browser test-mode keeps the demo alive, but production calling waits on this.</li>
+      <li><b>Telnyx number not yet approved</b> (<a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4159">4159</a>) — no real outbound calls until it lands. Browser test-mode keeps the demo alive, but production calling waits on this.</li>
     </ul>
-    Human-agent realtime is <b>not</b> blocked — Gemini (4162) carries it while OpenAI <code>gpt-realtime-2</code> (4163) + its security review (4504) sit behind the Azure-availability wall. Legal (ATIGLIT-2669) is the one fully-cleared gate.
+    <p style="margin:6px 0 0"><b>STT (4506b)</b> is no longer a hard blocker — the call still goes through without a dedicated STT model. <b>Realtime voice</b> has a 3-step ladder (Gemini 3.1 → exec exception → personal token); see below. <b>Legal</b> (ATIGLIT-2669) is the one fully-cleared gate. <b>Text leg</b> (4506 text) is on track via AiGateway.</p>
   </div>
 
   <!-- ============= 3 JUN DECISION CONTEXT ============= -->
@@ -249,12 +265,63 @@
     </ul>
   </div>
 
-  <!-- ============= THE ARGUMENT ============= -->
-  <h2>🔓 Proposal — open up direct OpenAI access for low-sensitivity workloads</h2>
-  <div class="callout idea">
-    <p><b>The ask:</b> approve a <b>scoped exception</b> to the Azure-only model policy that allows <b>direct OpenAI access for explicitly low-sensitivity workloads</b>, with AI-Caller as the first candidate. This unblocks the realtime voice + STT legs (<code>gpt-realtime-2</code>, <code>gpt-realtime-whisper</code>) without waiting indefinitely on Azure AU region availability.</p>
+  <!-- IT evidence: Vineeth quotes -->
+  <h2>📎 Receipts — Vineeth ↔ Connor (3 Jun, Teams)</h2>
+  <div class="card">
+    <blockquote><span class="who">Connor:</span> can we directly access it from openai?</blockquote>
+    <blockquote><span class="who">Vineeth:</span> are we only limit to access those model through azure? currently — yes</blockquote>
+    <blockquote><span class="who">Connor:</span> so no gpt-realtime-2? I am happy to raise it to anyone to open it up. it make 0 sense</blockquote>
+    <blockquote><span class="who">Vineeth:</span> Azure does support it in other geos — so it will be a matter of time</blockquote>
+    <blockquote><span class="who">Vineeth:</span> We do have a relationship with Microsoft and the data residency is guaranteed with Azure OpenAI — not the case with direct openai. That's why all the LLM models are sourced either from AWS/Azure or Google. Not direct.</blockquote>
+    <blockquote><span class="who">Connor:</span> gpt-realtime has been released for 8 month and it's not available; I don't think Azure will enable gpt-realtime-2.0 anytime soon.</blockquote>
+    <p style="font-size:12px;color:var(--muted);margin-top:8px">The policy is real (AU data residency via the Microsoft relationship) — we are not arguing it away. We are arguing that <b>AI-Caller is a workload where that policy buys no protection</b>, and that "matter of time" needs a concrete plan B because Azure AU's realtime roadmap is empty.</p>
   </div>
 
+  <!-- ============= THE ESCALATION LADDER ============= -->
+  <h2>🪜 Escalation ladder — realtime voice path</h2>
+  <div class="callout idea">
+    <p>Realtime voice is the only capability still without a corporate-sanctioned production path. <b>The ladder below is the plan</b>: try the in-flight option first, escalate to exec for a scoped exception if quality falls short, fall back to a personal-token bridge as a temporary last resort.</p>
+  </div>
+  <div class="row">
+    <div class="card" style="border-left:3px solid var(--good)">
+      <h3>① Try Gemini 3.1 flash live <span class="pill good">current</span></h3>
+      <ul>
+        <li><b>Status:</b> In trial via <a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4162">GLOBALIT-4162</a> (~$50/mo cap).</li>
+        <li><b>Owner:</b> Connor + voice team.</li>
+        <li><b>What it is:</b> Side-by-side eval of <code>gemini-3.1-flash-live-preview</code> vs <code>gpt-realtime-2</code> as the human-agent voice. Gemini is the known weaker model — we ship with it if quality is "good enough".</li>
+        <li><b>Quality bar to NOT escalate:</b> ≥10 representative calls (mix of Northern Beaches / Bayside / Blacktown). Acceptable = (a) successful figure-extraction rate within <b>20%</b> of the gpt-realtime-2 baseline measured on the same transcripts, (b) call duration not >50% longer, (c) human-handoff / confusion rate &lt;30%.</li>
+        <li><b>Pros:</b> No new approvals. Already paid for. Sustainable production path if quality holds.</li>
+        <li><b>Cons:</b> Known to be the weaker model. May force longer calls, more handoffs.</li>
+        <li><b>Trigger to escalate:</b> Quality bar above missed on the eval set.</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:3px solid var(--warn)">
+      <h3>② Exec exception — direct OpenAI for low-sensitivity <span class="pill warn">if ① fails</span></h3>
+      <ul>
+        <li><b>Status:</b> Not raised yet — escalate only if ① fails the bar.</li>
+        <li><b>Approvers:</b> Emie (CTO) / Corey / John Ahern (CEO). Connor to raise.</li>
+        <li><b>What it is:</b> A <b>scoped exception</b> to the Azure-only model policy: allow direct OpenAI access for explicitly low-sensitivity workloads, AI-Caller as the first named instance. See guardrails below.</li>
+        <li><b>Pros:</b> Corporate-sanctioned. <b>Sustainable production path</b> — no key-person risk. Sets a re-usable precedent for similarly-scoped workloads.</li>
+        <li><b>Cons:</b> Process time (likely 1–2 weeks). Exec may decline on precedent / governance grounds. <code>GLOBALIT-4504</code> security review reactivates as part of this.</li>
+        <li><b>Trigger to escalate further:</b> Exec declines the exception.</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:3px solid var(--bad)">
+      <h3>③ Personal OpenAI token <span class="pill bad">last resort · still needs exec OK</span></h3>
+      <ul>
+        <li><b>Status:</b> Standby — used only if ② declined and we accept the risk.</li>
+        <li><b>Approvers:</b> Same exec line — they still need to sign off on the data path even if the billing is personal.</li>
+        <li><b>What it is:</b> Connor's personal OpenAI API account powers the realtime voice as a temporary bridge.</li>
+        <li><b>Important caveat:</b> <b>The personal token does not sidestep the underlying data-residency concern</b> — data still goes direct to OpenAI, exactly the same path Vineeth flagged. The only thing it changes is who's billed. Exec needs to know this so the approval is conscious, not a procedural workaround.</li>
+        <li><b>Pros:</b> Unblocks immediately, no further IT approval cycle.</li>
+        <li><b>Cons:</b> <b>Not sustainable.</b> Key-person risk: if Connor changes role / leaves / is on leave, production breaks. Connor pays out-of-pocket. Doesn't scale to other consumers.</li>
+        <li><b>Auto-revert trigger:</b> The moment ② is approved (or, theoretically, Azure AU ships the model — see auto-revert clause).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============= WHY / GUARDRAILS ============= -->
+  <h2>Argument for the exec exception</h2>
   <div class="row two">
     <div class="card">
       <h3>Why the blanket policy doesn't fit here</h3>
@@ -283,14 +350,23 @@
       <li><b>Scope by named workload, not blanket.</b> Exception applies only to services on an approved low-sensitivity list — AI-Caller first; each addition reviewed.</li>
       <li><b>Data minimisation at the boundary.</b> The playbook sends only the fields required for the call (property number + address); nothing else is forwarded to OpenAI.</li>
       <li><b>Enterprise terms.</b> Use OpenAI's API under zero-data-retention / no-training enterprise terms; document this on the security review (<a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4504">GLOBALIT-4504</a>).</li>
-      <li><b>Keep what's already covered on Azure.</b> The text leg (<code>gpt-5.4-mini</code>) stays on AiGateway/Azure; only the realtime + STT legs Azure AU can't serve go direct.</li>
-      <li><b>Auto-revert.</b> The moment Azure AU ships <code>gpt-realtime-2</code> / a realtime STT, migrate back behind <code>IVoiceAIService</code> — no rework, the abstraction already exists.</li>
+      <li><b>Keep what's already covered on Azure.</b> The text leg (<code>gpt-5.4-mini</code>) stays on AiGateway/Azure; only the realtime leg Azure AU can't serve goes direct.</li>
       <li><b>Disclosure + retention unchanged.</b> The legally-approved disclosure script and 30-day retention apply regardless of provider.</li>
     </ul>
   </div>
 
+  <div class="callout">
+    <h3 style="margin:0 0 6px">⏪ Auto-revert clause</h3>
+    <p style="margin:0 0 6px">Migrate the realtime voice path back behind <code>IVoiceAIService</code> the moment <b>either</b> of the following becomes true:</p>
+    <ul style="margin:4px 0 0">
+      <li><b>(a)</b> Azure AU ships <code>gpt-realtime-2</code> (or an equivalent realtime model). <span class="pill muted">unlikely soon</span> — <code>gpt-realtime</code> has been GA ~8 months and still isn't in AU; no roadmap commitment from Microsoft.</li>
+      <li><b>(b)</b> We receive a corporate-sanctioned direct-OpenAI exception (step ② of the ladder above). <span class="pill good">realistic trigger</span> — this is the path we actually expect to revert through.</li>
+    </ul>
+    <p style="font-size:12px;color:var(--muted);margin:8px 0 0">The abstraction is already there: provider swap is a config change, no rewrite. The clause exists so a personal-token bridge (③) doesn't quietly become the permanent answer.</p>
+  </div>
+
   <div class="callout good" style="margin-top:14px">
-    <b>Bottom line for whoever approves it:</b> we're not asking to weaken data-residency for sensitive data. We're asking to stop a <b>zero-PII, public-figures-retrieval</b> workload from being held hostage to a region roadmap. The risk surface is tiny and already legally reviewed; the cost of the status quo is an open-ended slip on the realtime voice path. Connor is happy to raise this to whoever owns the policy.
+    <b>Bottom line for whoever approves it:</b> we're not asking to weaken data-residency for sensitive data. We're laying out a <b>3-step ladder</b> — try Gemini 3.1 first, escalate to exec for a scoped exception if quality fails, personal token as a temporary bridge if exec declines. Step ② is the sustainable answer; ③ is a transparent stop-gap with the same data path as ②, not a way around the policy. Connor is happy to raise this to whoever owns it the moment ① fails the bar.
   </div>
 
   <footer>
