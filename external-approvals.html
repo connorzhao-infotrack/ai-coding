@@ -277,11 +277,31 @@
     <p style="font-size:12px;color:var(--muted);margin-top:8px">The policy is real (AU data residency via the Microsoft relationship) — we are not arguing it away. We are arguing that <b>AI-Caller is a workload where that policy buys no protection</b>, and that "matter of time" needs a concrete plan B because Azure AU's realtime roadmap is empty.</p>
   </div>
 
-  <!-- ============= MODEL VERDICT ============= -->
-  <h2>📊 Model verdict — why gpt-realtime-2 specifically</h2>
+  <!-- ============= MODEL VERDICT + WHY NOT AWS ============= -->
+  <h2>📊 Model verdict — why gpt-realtime-2, why not AWS</h2>
   <div class="card">
-    <img src="why-gpt-realtime.png" alt="Realtime voice model verdict — gpt-realtime-2 (9.2/10) vs Gemini 3.1 Flash Live (8.7/10) vs Nova 2 Sonic (8.0/10)" style="max-width:100%;height:auto;border-radius:6px;border:1px solid var(--line);display:block">
-    <p style="font-size:12px;color:var(--muted);margin-top:10px"><b>Takeaway for the ladder:</b> gpt-realtime-2 scores <b>9.2/10</b> with the only weakness being cost — it's the best all-round real-time voice agent. Gemini 3.1 Flash Live scores <b>8.7/10</b> with explicit caveats ("preview model; weaker agent reliability") — exactly the weakness that matters most for a high-stakes outbound rates call. This delta is why Step ① has a quality-bar gate: if Gemini's "weaker agent reliability" shows up in our eval, we have a corroborated, third-party-rated reason to escalate.</p>
+    <table style="font-size:13px;margin-bottom:8px">
+      <thead><tr><th>Rank</th><th>Model</th><th>Rating</th><th>Best for</th><th>Main weakness</th></tr></thead>
+      <tbody>
+        <tr><td><b>1</b></td><td><b>gpt-realtime-2</b> <span class="pill">OpenAI</span></td><td><b>9.2 / 10</b></td><td>Best all-round real-time voice agent — reasoning, conversation flow, tool use, reliability</td><td>Expensive</td></tr>
+        <tr><td>2</td><td>Gemini 3.1 Flash Live <span class="pill warn">Google</span></td><td>8.7 / 10</td><td>Lowest latency + live multimodal</td><td><b>Preview model; weaker agent reliability</b></td></tr>
+        <tr><td>3</td><td>Nova 2 Sonic <span class="pill bad">AWS</span></td><td>8.0 / 10</td><td>AWS Bedrock / enterprise call-centre</td><td>Less frontier than GPT/Gemini latest</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--muted);margin:0 0 10px">Source verdict: <a href="why-gpt-realtime.png">why-gpt-realtime.png</a>.</p>
+
+    <p style="margin:0 0 4px"><b>Anticipated pushback — "why not AWS Connect / Lex / Nova Sonic?"</b></p>
+    <ul style="margin-top:0">
+      <li><b>AWS Connect ≠ voice AI model.</b> It's a cloud contact-centre / telephony platform (the same layer as Telnyx and ACS, already settled in <a href="telephony-comparison.html">telephony-comparison.html</a>). It doesn't replace the voice model — a real deployment uses both layers.</li>
+      <li><b>Amazon Lex is the AWS-native bot framework</b> — intent/slot-based, materially weaker than LLM-based voice agents for unscripted operator conversations. Not in the same league as gpt-realtime / Gemini Live for this use case.</li>
+      <li><b>Nova 2 Sonic is the AWS apples-to-apples option</b> — rated <b>below</b> both Gemini 3.1 and gpt-realtime-2 in the verdict above. We'd be picking a 3rd-place model when we already have to compromise to 2nd place.</li>
+    </ul>
+
+    <div class="callout idea" style="margin:8px 0 6px">
+      🎯 <b>Why this is a top-5 risk, not a vendor preference.</b> The top-5 KPI lives or dies on smooth phone conversation with human council operators. Telephony is settled (Telnyx). The voice model is the only remaining quality lever. Picking a weaker model raises handoff / failure rate, which directly threatens the KPI. <b>We're already compromising</b> with Gemini 3.1 (Step ① of the ladder) instead of gpt-realtime-2 — dropping further to Lex / Nova Sonic isn't a sensible move when third parties already rank them lower.
+    </div>
+
+    <blockquote style="margin:6px 0 0">💬 Honest take: I'm not very confident Gemini 3.1 Flash Live will hold up against real operators — let alone any AWS voice option. If 3.1 Flash misses the bar in eval, we should be raising step ② (exec exception), not pivoting sideways to a model the benchmarks already rate below it.</blockquote>
   </div>
 
   <!-- ============= THE ESCALATION LADDER ============= -->
