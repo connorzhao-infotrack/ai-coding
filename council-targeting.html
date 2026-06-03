@@ -483,6 +483,9 @@
   <p class="sub">6 audio captures unblock 4 council integrations + 2 water-authority integrations. Listed in the recommended capture order — earliest first.</p>
   <div class="todo-queue">
     <h3>Outstanding recordings to obtain</h3>
+    <div class="callout idea" style="margin:0 0 12px">
+      📝 <b>Capture preference:</b> <b>transcribe first, recording is best to have.</b> A written transcript is enough to start authoring a playbook (faster, cheaper to capture). An audio recording is better — it lets us tune the voice agent's intonation, pacing, and exact phrasings against the real operator. Don't block on audio if a transcript is available.
+    </div>
     <ol>
       <li class="partial">
         <div>
@@ -504,23 +507,33 @@
       </li>
     </ol>
 
-    <div class="queue-divider">Last resort · only if 1-3 don't unlock enough volume</div>
+    <div class="queue-divider">Nice to have · not blocking</div>
     <ol start="4">
+      <li class="partial">
+        <div>
+          <span class="cap-num">4</span><span class="cap-target">Northern Beaches council</span><span class="cap-tag council">council</span>
+          <span class="cap-meta">Transcript already captured — playbook authoring can start without this. <b>Audio capture would help tune voice prompts</b> (intonation, pacing, exact phrasings). Lower priority than 1-3 since not blocking.</span>
+        </div>
+      </li>
+    </ol>
+
+    <div class="queue-divider">Last resort · only if 1-4 don't unlock enough volume</div>
+    <ol start="5">
       <li class="lastresort">
         <div>
-          <span class="cap-num">4</span><span class="cap-target">Queensland Urban Utilities (QUU)</span><span class="cap-tag water">water-auth</span>
+          <span class="cap-num">5</span><span class="cap-target">Queensland Urban Utilities (QUU)</span><span class="cap-tag water">water-auth</span>
           <span class="cap-meta">Brisbane / Ipswich / Lockyer Valley / Scenic Rim / Somerset all sit behind QUU. Capture only if we commit to the Brisbane phone-AI path.</span>
         </div>
       </li>
       <li class="lastresort">
         <div>
-          <span class="cap-num">5</span><span class="cap-target">Brisbane City Council</span><span class="cap-tag council">council</span>
-          <span class="cap-meta">BCC steers balance enquiries to its online form — capture is useful only if we commit to phone-AI. Otherwise scrape the form. Together with #4, unblocks 29 orders.</span>
+          <span class="cap-num">6</span><span class="cap-target">Brisbane City Council</span><span class="cap-tag council">council</span>
+          <span class="cap-meta">BCC steers balance enquiries to its online form — capture is useful only if we commit to phone-AI. Otherwise scrape the form. Together with #5, unblocks 29 orders.</span>
         </div>
       </li>
       <li class="lastresort">
         <div>
-          <span class="cap-num">6</span><span class="cap-target">Gold Coast City Council</span><span class="cap-tag council">council</span>
+          <span class="cap-num">7</span><span class="cap-target">Gold Coast City Council</span><span class="cap-tag council">council</span>
           <span class="cap-meta">One recording covers both council and water (same entity). Only 9 orders — lowest ROI; do last if at all.</span>
         </div>
       </li>
