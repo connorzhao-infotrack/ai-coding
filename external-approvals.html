@@ -374,7 +374,7 @@
   <!-- ============= BIGGER PICTURE ============= -->
   <h2>🚀 Bigger picture — open up direct OpenAI for safe internal workloads</h2>
   <div class="callout idea">
-    <p style="margin:0 0 8px">The narrow case above (AI-Caller specifically) is real, but the same shape applies to other internal projects we'll build. Codifying a <b>named-workload exception process</b> now is cheaper than re-litigating it each time.</p>
+    <p style="margin:0 0 8px">The narrow case above (AI-Caller specifically) is real, but the same shape applies to other internal projects we'll build. <b>Easier to agree a clear path once than to have the same debate every time.</b></p>
     <ol style="margin:0;padding-left:18px">
       <li><b>It's an internal app with no client-sensitive data.</b> AI-Caller sends property address + lot/plan + certificate number — public-record-adjacent data we already type into council websites by hand. No client identifiers, no documents, no credentials. <i>(See the "Why AI-Caller is low-sensitivity" card above for the itemised detail.)</i></li>
       <li><b>Cloud providers lag the model frontier by 6–18 months, worst on "niche" infra like realtime + STT</b> — exactly what a voice-AI product needs. <code>gpt-realtime</code> has been GA 8 months and still isn't in Azure AU. Right now we have <b>no production STT path</b> and <b>no production access to the best realtime voice model</b>; the blocker is Microsoft's region roadmap, not a safety problem in what we'd send.</li>
