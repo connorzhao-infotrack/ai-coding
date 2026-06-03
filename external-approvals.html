@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI-Caller (InfoDialer) — External Approvals &amp; Accounts</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2230; --line:#30363d;
+    --ink:#e6edf3; --muted:#8b949e; --dim:#6e7681;
+    --accent:#58a6ff; --cyan:#39d0d8; --purple:#bc8cff; --pink:#ff7b9b;
+    --good:#3fb950; --warn:#d29922; --bad:#f85149;
+    --code:#1f242c;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  main{max-width:1080px;margin:0 auto;padding:28px 32px}
+  h1{font-size:26px;margin:0 0 4px;letter-spacing:-.01em}
+  h2{font-size:12px;margin:28px 0 10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  h3{font-size:14px;margin:0 0 6px;color:var(--ink)}
+  p{margin:0 0 8px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .sub{color:var(--muted);margin:0 0 18px}
+  .crumb{font-size:12px;color:var(--muted);margin:0 0 14px}
+  .row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .row.two{grid-template-columns:repeat(2,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  ul,ol{margin:6px 0 0;padding-left:18px}
+  li{margin:3px 0}
+  .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#1f2937;color:var(--accent);white-space:nowrap}
+  .pill.warn{background:#3b2e0f;color:var(--warn)}
+  .pill.good{background:#0f3320;color:var(--good)}
+  .pill.bad{background:#3b1112;color:var(--bad)}
+  .pill.muted{background:#1f242c;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+  code{font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;background:var(--code);padding:1px 5px;border-radius:4px;color:#e6edf3}
+  .callout{border-left:3px solid var(--warn);background:#1f1a0c;padding:10px 12px;border-radius:0 6px 6px 0;margin:10px 0}
+  .callout.bad{border-left-color:var(--bad);background:#1f0f0f}
+  .callout.good{border-left-color:var(--good);background:#0e1f15}
+  .callout.idea{border-left-color:var(--accent);background:#0d1a2b}
+  blockquote{margin:6px 0;padding:6px 12px;border-left:3px solid var(--dim);color:var(--muted);font-style:italic}
+  .who{color:var(--ink);font-style:normal;font-weight:600}
+  footer{margin-top:24px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:10px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin:6px 0 14px}
+</style>
+</head>
+<body>
+<main>
+
+  <p class="crumb">📁 AI-Caller (InfoDialer) · <a href="project-overview.html">← Project Overview</a></p>
+  <h1>📨 External Approvals &amp; Accounts</h1>
+  <p class="sub">Legal / security / IT tickets that gate go-live — vendor accounts, model access, security &amp; legal sign-off. <b>Updated Wed 3 Jun 2026</b> after the IT sync with Vineeth Mathew.</p>
+
+  <div class="legend">
+    <span><span class="pill good">✅ Resolved</span> done</span>
+    <span><span class="pill warn">🟡 In flight</span> waiting on a desk / reporter</span>
+    <span><span class="pill bad">🔴 Blocked / declined</span> needs a decision to unblock</span>
+    <span><span class="pill muted">⏸️ Deprioritized</span> parked on purpose</span>
+  </div>
+
+  <!-- ============= APPROVALS TABLE ============= -->
+  <h2>Approval &amp; access register</h2>
+  <table>
+    <thead><tr><th>Ticket</th><th>Purpose</th><th>Status</th><th>Notes (as of 3 Jun 2026)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/27/ATIGLIT-2669">ATIGLIT-2669</a></td>
+        <td>Legal review — internal AI calling tool</td>
+        <td><span class="pill good">✅ Resolved</span></td>
+        <td>Aakarsh Duggal. Shortened disclaimer + PII handling agreed (anonymise IDs, 30-day call-recording retention). <b>This sign-off underpins the OpenAI exception case below.</b></td>
+      </tr>
+      <tr>
+        <td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4466">GLOBALIT-4466</a></td>
+        <td>Security consultation — Telnyx as telephony vendor</td>
+        <td><span class="pill warn">🟡 In progress</span></td>
+        <td>Raised after Vishal asked us to loop in security before production. Awaiting their assessment. Telnyx is the <b>committed</b> primary provider.</td>
+      </tr>
+      <tr>
+        <td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4159">GLOBALIT-4159</a></td>
+        <td>New Telnyx account + 1 AU phone number (call testing)</td>
+        <td><span class="pill warn">🟡 Number pending approval</span></td>
+        <td>Telnyx account is up and a test key/number are in hand; the <b>permanent AU number is still waiting on IT approval</b> (Vineeth, 3 Jun). Connor is chasing — manual chase got a number through in ~2 days last time. Bruno's earlier "prefer Amazon Connect?" question is moot now Telnyx is committed.</td>
+      </tr>
+      <tr>
+        <td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4160">GLOBALIT-4160</a></td>
+        <td>Azure Communication Services — outbound AU number</td>
+        <td><span class="pill muted">⏸️ Deprioritized</span></td>
+        <td><b>Deprioritized — we are going with Telnyx.</b> ACS stays as a fallback behind the same <code>ICallProvider</code> interface but is not being provisioned for go-live. No action needed on the Amazon Connect POC path Vineeth offered.</td>
+      </tr>
+      <tr>
+        <td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4162">GLOBALIT-4162</a></td>
+        <td>API access — Google <code>gemini-3.1-flash-live-preview</code> (realtime voice trial)</td>
+        <td><span class="pill warn">🟡 Ongoing</span></td>
+        <td><b>In progress / on track.</b> ~$50/mo trial cap, side-by-side voice eval. With OpenAI realtime blocked on Azure (see 4163), <b>Gemini is currently the only viable realtime-voice path</b> for the human-agent mode.</td>
+      </tr>
+      <tr>
+        <td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4163">GLOBALIT-4163</a></td>
+        <td>API access — OpenAI <code>gpt-realtime-2</code> (realtime voice trial)</td>
+        <td><span class="pill bad">🔴 Effectively declined</span></td>
+        <td><b>Not supported via the current path.</b> IT only permits these models <b>through Azure</b> ("currently — yes", Vineeth, 3 Jun); direct OpenAI is not allowed because AU data residency is only guaranteed via the Microsoft/Azure relationship. <b>Azure AU does not offer <code>gpt-realtime-2</code>.</b> Vineeth: "Azure supports it in other geos — a matter of time"; Connor's counter: <code>gpt-realtime</code> has been GA ~8 months and still isn't in AU, so there is no credible ETA. <b>This is blocked purely by Azure region availability, not by any risk in our use case</b> → see the exception argument below.</td>
+      </tr>
+      <tr>
+        <td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4504">GLOBALIT-4504</a></td>
+        <td>Security Design Review — OpenAI realtime voice (<code>gpt-realtime-2</code>)</td>
+        <td><span class="pill bad">🔴 Stalled (blocked by 4163)</span></td>
+        <td>Raised 29 May for the realtime-voice security sign-off. Vineeth's steer: email Naren / Ruchi to drive the review. <b>Currently moot</b> while access itself is blocked by Azure availability (4163). Scope is low-risk: outbound-to-authority audio only, no broad PII, disclosure legally signed off (ATIGLIT-2669), 30-day retention. Re-activate this the moment a direct-OpenAI exception or an Azure AU region lands.</td>
+      </tr>
+      <tr>
+        <td><a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4506">GLOBALIT-4506</a></td>
+        <td>AiGateway access — <code>gpt-5.4-mini</code> (text) + <code>gpt-realtime-whisper</code> (STT)</td>
+        <td><span class="pill warn">🟡 On track (split)</span></td>
+        <td><b>Text leg on track:</b> Vineeth is provisioning the team in AiGateway for <code>gpt-5.4-mini</code> and will confirm. <b>STT leg blocked:</b> <code>gpt-realtime-whisper</code> is <b>not available in Azure AU</b> — same region-availability wall as <code>gpt-realtime-2</code>. IVR-only calls (Sydney Water) need an STT path, so this needs a fallback (alternative Azure-AU STT model) or the same direct-OpenAI exception.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ============= DEPENDENCY MAP ============= -->
+  <h2>🔗 Dependency map — what each ticket gates</h2>
+  <p style="font-size:13px;color:var(--muted);margin:0 0 8px">
+    Left → right: <b>approval / access tickets</b> feed the <b>capability</b> they unlock, which in turn gates <b>production go-live</b>.
+    Solid grey = on the live path · <span style="color:var(--bad)">red dashed = blocked dependency</span> · <span style="color:var(--dim)">grey dashed = deprioritized / fallback</span>.
+  </p>
+  <svg class="diag" viewBox="0 0 1100 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="External approvals dependency map">
+    <defs>
+      <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#8b949e"/>
+      </marker>
+      <marker id="arrR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#f85149"/>
+      </marker>
+      <marker id="arrA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#d29922"/>
+      </marker>
+      <style>
+        .bGood{fill:#0e1f15;stroke:#3fb950}
+        .bWarn{fill:#1f1a0c;stroke:#d29922}
+        .bBad{fill:#1f0f0f;stroke:#f85149}
+        .bMuted{fill:#161b22;stroke:#6e7681}
+        .bCap{fill:#0d1a2b;stroke:#58a6ff}
+        .bGate{fill:#1d1530;stroke:#bc8cff}
+        .t{fill:#e6edf3;font:600 12px -apple-system,Segoe UI,Roboto,sans-serif}
+        .tSm{fill:#8b949e;font:10px -apple-system,Segoe UI,Roboto,sans-serif}
+        .tHd{fill:#8b949e;font:600 11px -apple-system,Segoe UI,Roboto,sans-serif;letter-spacing:.06em}
+        .ar{stroke:#8b949e;stroke-width:1.4;fill:none}
+        .arR{stroke:#f85149;stroke-width:1.4;stroke-dasharray:5 4;fill:none}
+        .arA{stroke:#d29922;stroke-width:1.4;stroke-dasharray:5 4;fill:none}
+        .arM{stroke:#6e7681;stroke-width:1.4;stroke-dasharray:5 4;fill:none}
+      </style>
+    </defs>
+
+    <!-- column headers -->
+    <text class="tHd" x="135" y="18" text-anchor="middle">ACCESS / APPROVAL</text>
+    <text class="tHd" x="570" y="18" text-anchor="middle">CAPABILITY</text>
+    <text class="tHd" x="990" y="18" text-anchor="middle">GO-LIVE</text>
+
+    <!-- ===== tickets (col 1) ===== -->
+    <rect class="bWarn" x="20" y="40" width="230" height="44" rx="8"/>
+    <text class="t" x="32" y="60">🟡 GLOBALIT-4159</text>
+    <text class="tSm" x="32" y="76">Telnyx AU number · pending approval</text>
+
+    <rect class="bWarn" x="20" y="96" width="230" height="44" rx="8"/>
+    <text class="t" x="32" y="116">🟡 GLOBALIT-4466</text>
+    <text class="tSm" x="32" y="132">Telnyx security consult</text>
+
+    <rect class="bMuted" x="20" y="152" width="230" height="44" rx="8"/>
+    <text class="t" x="32" y="172">⏸️ GLOBALIT-4160</text>
+    <text class="tSm" x="32" y="188">ACS number · deprioritized (fallback)</text>
+
+    <rect class="bWarn" x="20" y="224" width="230" height="44" rx="8"/>
+    <text class="t" x="32" y="244">🟡 GLOBALIT-4162</text>
+    <text class="tSm" x="32" y="260">Gemini 3.1 flash live · ongoing</text>
+
+    <rect class="bBad" x="20" y="280" width="230" height="44" rx="8"/>
+    <text class="t" x="32" y="300">🔴 GLOBALIT-4163</text>
+    <text class="tSm" x="32" y="316">gpt-realtime-2 · not in Azure AU</text>
+
+    <rect class="bBad" x="20" y="336" width="230" height="44" rx="8"/>
+    <text class="t" x="32" y="356">🔴 GLOBALIT-4504</text>
+    <text class="tSm" x="32" y="372">Security review · needs 4163 access</text>
+
+    <rect class="bWarn" x="20" y="408" width="230" height="44" rx="8"/>
+    <text class="t" x="32" y="428">🟡 GLOBALIT-4506a</text>
+    <text class="tSm" x="32" y="444">gpt-5.4-mini text · on track</text>
+
+    <rect class="bBad" x="20" y="464" width="230" height="44" rx="8"/>
+    <text class="t" x="32" y="484">🔴 GLOBALIT-4506b</text>
+    <text class="tSm" x="32" y="500">realtime-whisper STT · not in Azure AU</text>
+
+    <!-- ===== capabilities (col 2) ===== -->
+    <rect class="bWarn" x="450" y="70" width="240" height="54" rx="9"/>
+    <text class="t" x="570" y="94" text-anchor="middle">📞 Outbound calling</text>
+    <text class="tSm" x="570" y="112" text-anchor="middle">Telnyx · awaiting number + security</text>
+
+    <rect class="bWarn" x="450" y="256" width="240" height="54" rx="9"/>
+    <text class="t" x="570" y="280" text-anchor="middle">🗣️ Human-agent realtime</text>
+    <text class="tSm" x="570" y="298" text-anchor="middle">Gemini only (OpenAI path blocked)</text>
+
+    <rect class="bBad" x="450" y="408" width="240" height="54" rx="9"/>
+    <text class="t" x="570" y="432" text-anchor="middle">📟 IVR mode (text + STT)</text>
+    <text class="tSm" x="570" y="450" text-anchor="middle">blocked: no Azure-AU STT</text>
+
+    <rect class="bGood" x="450" y="486" width="240" height="40" rx="9"/>
+    <text class="t" x="570" y="510" text-anchor="middle">✅ Legal sign-off (ATIGLIT-2669)</text>
+
+    <!-- ===== go-live (col 3) ===== -->
+    <rect class="bGate" x="900" y="232" width="180" height="86" rx="11"/>
+    <text class="t" x="990" y="268" text-anchor="middle">🏁 Production</text>
+    <text class="t" x="990" y="286" text-anchor="middle">go-live</text>
+    <text class="tSm" x="990" y="304" text-anchor="middle">gated by all + legal</text>
+
+    <!-- ===== arrows: tickets -> capability ===== -->
+    <path class="ar"  d="M250 62  C 350 62, 360 97, 450 97"   marker-end="url(#arrG)"/>
+    <path class="ar"  d="M250 118 C 350 118, 360 97, 450 100" marker-end="url(#arrG)"/>
+    <path class="arM" d="M250 174 C 350 174, 360 110, 450 112" marker-end="url(#arrG)"/>
+
+    <path class="ar"  d="M250 246 C 350 246, 360 283, 450 283" marker-end="url(#arrG)"/>
+    <path class="ar"  d="M135 324 L 135 336" marker-end="url(#arrG)"/>
+    <path class="arR" d="M250 358 C 350 358, 360 295, 450 295" marker-end="url(#arrR)"/>
+
+    <path class="ar"  d="M250 430 C 350 430, 360 430, 450 430" marker-end="url(#arrG)"/>
+    <path class="arR" d="M250 486 C 350 486, 360 450, 450 450" marker-end="url(#arrR)"/>
+
+    <!-- ===== arrows: capability -> go-live ===== -->
+    <path class="arA" d="M690 97  C 800 97, 820 255, 900 258" marker-end="url(#arrA)"/>
+    <path class="ar"  d="M690 283 C 800 283, 820 270, 900 272" marker-end="url(#arrG)"/>
+    <path class="arR" d="M690 435 C 800 435, 820 295, 900 292" marker-end="url(#arrR)"/>
+    <path class="arA" d="M690 506 C 810 506, 830 312, 900 308" marker-end="url(#arrA)"/>
+  </svg>
+  <div class="callout bad">
+    🚧 <b>Two hard blockers on the critical path to go-live:</b>
+    <ul>
+      <li><b>IVR mode has no STT</b> — <code>gpt-realtime-whisper</code> isn't in Azure AU (4506b). Sydney Water (IVR-only) can't run until we get a fallback Azure-AU STT model or a direct-OpenAI exception.</li>
+      <li><b>Telnyx number not yet approved</b> (4159) — no real outbound calls until it lands. Browser test-mode keeps the demo alive, but production calling waits on this.</li>
+    </ul>
+    Human-agent realtime is <b>not</b> blocked — Gemini (4162) carries it while OpenAI <code>gpt-realtime-2</code> (4163) + its security review (4504) sit behind the Azure-availability wall. Legal (ATIGLIT-2669) is the one fully-cleared gate.
+  </div>
+
+  <!-- ============= 3 JUN DECISION CONTEXT ============= -->
+  <h2>What changed — 3 Jun IT sync (Connor ↔ Vineeth Mathew)</h2>
+  <div class="callout">
+    <ul>
+      <li><b>Model access is Azure-gated.</b> <span class="who">Vineeth:</span> we're limited to models sourced through Azure (or AWS/Google) — "currently, yes" — because AU data residency is only guaranteed via the Microsoft relationship; "not the case with direct OpenAI." Australia has stricter policies now.</li>
+      <li><b>The realtime models we want aren't in Azure AU.</b> <code>gpt-realtime-2</code> and <code>gpt-realtime-whisper</code> are unavailable in the AU region. Azure carries them in other geos, so it's "a matter of time" — but with <code>gpt-realtime</code> still missing ~8 months after GA, there's no committed date.</li>
+      <li><b>Net effect:</b> the project is blocked on a <i>vendor region roadmap we don't control</i> — not on anything risky in what we actually send. Gemini (4162) and the AiGateway text leg (4506) carry the build in the meantime.</li>
+    </ul>
+  </div>
+
+  <!-- ============= THE ARGUMENT ============= -->
+  <h2>🔓 Proposal — open up direct OpenAI access for low-sensitivity workloads</h2>
+  <div class="callout idea">
+    <p><b>The ask:</b> approve a <b>scoped exception</b> to the Azure-only model policy that allows <b>direct OpenAI access for explicitly low-sensitivity workloads</b>, with AI-Caller as the first candidate. This unblocks the realtime voice + STT legs (<code>gpt-realtime-2</code>, <code>gpt-realtime-whisper</code>) without waiting indefinitely on Azure AU region availability.</p>
+  </div>
+
+  <div class="row two">
+    <div class="card">
+      <h3>Why the blanket policy doesn't fit here</h3>
+      <ul>
+        <li>The Azure-only rule exists to guarantee <b>AU data residency</b> for sensitive data. It's the right default.</li>
+        <li>But it's being applied to a workload that carries <b>no sensitive data</b>, and the result is an <b>indefinite block</b> on a model Azure AU simply hasn't shipped.</li>
+        <li>"A matter of time" is not a date. <code>gpt-realtime</code> has been GA ~8 months and still isn't in AU. We can't commit a delivery date to a region roadmap we don't own.</li>
+        <li>A policy meant to <i>reduce risk</i> is, for this use case, only <i>adding delay</i> — with no offsetting risk reduction.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Why AI-Caller is low-sensitivity</h3>
+      <ul>
+        <li><b>Minimal inputs:</b> property number + address. That's the whole payload the AI needs to ask a council/water authority for figures.</li>
+        <li><b>Public-record-adjacent outputs:</b> rates / water balances / certificate figures a human currently phones for — not confidential client data.</li>
+        <li><b>No broad PII, no credentials, no identity documents</b> ever leave our boundary.</li>
+        <li><b>Audio is outbound-to-authority only</b> — we're calling a public service desk, not handling a customer's private call.</li>
+        <li><b>Legal already signed off</b> (<a href="https://infotrack.atlassian.net/servicedesk/customer/portal/27/ATIGLIT-2669">ATIGLIT-2669</a>): shortened disclaimer, ID anonymisation, 30-day recording retention, disclosure/consent on human-agent calls.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Proposed guardrails (so the exception stays safe)</h3>
+    <ul>
+      <li><b>Scope by named workload, not blanket.</b> Exception applies only to services on an approved low-sensitivity list — AI-Caller first; each addition reviewed.</li>
+      <li><b>Data minimisation at the boundary.</b> The playbook sends only the fields required for the call (property number + address); nothing else is forwarded to OpenAI.</li>
+      <li><b>Enterprise terms.</b> Use OpenAI's API under zero-data-retention / no-training enterprise terms; document this on the security review (<a href="https://infotrack.atlassian.net/servicedesk/customer/portal/140/GLOBALIT-4504">GLOBALIT-4504</a>).</li>
+      <li><b>Keep what's already covered on Azure.</b> The text leg (<code>gpt-5.4-mini</code>) stays on AiGateway/Azure; only the realtime + STT legs Azure AU can't serve go direct.</li>
+      <li><b>Auto-revert.</b> The moment Azure AU ships <code>gpt-realtime-2</code> / a realtime STT, migrate back behind <code>IVoiceAIService</code> — no rework, the abstraction already exists.</li>
+      <li><b>Disclosure + retention unchanged.</b> The legally-approved disclosure script and 30-day retention apply regardless of provider.</li>
+    </ul>
+  </div>
+
+  <div class="callout good" style="margin-top:14px">
+    <b>Bottom line for whoever approves it:</b> we're not asking to weaken data-residency for sensitive data. We're asking to stop a <b>zero-PII, public-figures-retrieval</b> workload from being held hostage to a region roadmap. The risk surface is tiny and already legally reviewed; the cost of the status quo is an open-ended slip on the realtime voice path. Connor is happy to raise this to whoever owns the policy.
+  </div>
+
+  <footer>
+    Sources: IT sync with Vineeth Mathew (Teams, 2–3 Jun 2026) · service-desk tickets ATIGLIT-2669, GLOBALIT-4159 / 4160 / 4162 / 4163 / 4466 / 4504 / 4506 · legal sign-off <a href="https://infotrack.atlassian.net/wiki/spaces/SET/pages/4307583200/AI+caller+legal">AI caller legal</a>.<br>
+    ← Back to the <a href="project-overview.html">Project Overview</a>.
+  </footer>
+
+</main>
+</body>
+</html>
