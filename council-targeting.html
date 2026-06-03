@@ -95,6 +95,33 @@
   .verdict.held{color:var(--good)}
   .verdict.refuted{color:var(--bad)}
 
+  /* Todo-style recording status */
+  .todo{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:3px 8px;border-radius:5px;font-weight:600;line-height:1.3}
+  .todo::before{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:3px;font-size:11px;font-weight:700;flex-shrink:0}
+  .todo.done{background:rgba(63,185,80,0.12);color:var(--good);border:1px solid rgba(63,185,80,0.3)}
+  .todo.done::before{content:'✓';background:var(--good);color:#0d1117}
+  .todo.partial{background:rgba(210,153,34,0.12);color:var(--warn);border:1px solid rgba(210,153,34,0.3)}
+  .todo.partial::before{content:'◐';background:var(--warn);color:#0d1117;font-size:12px}
+  .todo.pending{background:rgba(248,81,73,0.12);color:var(--bad);border:1px solid rgba(248,81,73,0.3)}
+  .todo.pending::before{content:'';background:transparent;border:1.5px solid var(--bad);width:13px;height:13px}
+  .todo.na{background:rgba(110,118,129,0.12);color:var(--muted);border:1px solid rgba(110,118,129,0.3)}
+  .todo.na::before{content:'—';background:transparent;color:var(--muted)}
+
+  /* PM Capture Queue todo list */
+  .todo-queue{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0}
+  .todo-queue h3{margin:0 0 10px;font-size:14px}
+  .todo-queue ol{list-style:none;padding:0;margin:0;counter-reset:cap}
+  .todo-queue li{counter-increment:cap;display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .todo-queue li:last-child{border-bottom:none}
+  .todo-queue li::before{content:'☐';font-size:18px;color:var(--bad);line-height:1;flex-shrink:0;margin-top:1px}
+  .todo-queue li.partial::before{content:'◐';color:var(--warn)}
+  .todo-queue .cap-num{display:inline-block;background:var(--code);color:var(--accent);font-weight:700;padding:1px 7px;border-radius:4px;font-size:11px;font-family:ui-monospace,Menlo,Consolas,monospace;margin-right:6px}
+  .todo-queue .cap-target{font-weight:700;color:var(--ink)}
+  .todo-queue .cap-meta{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+  .todo-queue .cap-tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;background:var(--code);color:var(--muted);margin-left:6px;text-transform:uppercase;letter-spacing:.04em}
+  .todo-queue .cap-tag.council{background:#0d1a2b;color:var(--accent)}
+  .todo-queue .cap-tag.water{background:#0e2426;color:var(--cyan)}
+
   @media print{ body{background:#fff;color:#000} .card,.stat{background:#fff;border-color:#bbb;color:#000} main{padding:16px} .stat .v{color:#000!important} }
 </style>
 </head>
@@ -118,13 +145,13 @@
     <table>
       <thead><tr><th>#</th><th>Council</th><th>State</th><th>Orders</th><th>% of 84</th><th>Water authority</th><th>📼 Council recording</th><th>💧 Water-auth recording</th></tr></thead>
       <tbody>
-        <tr><td><b>1</b></td><td><b>Brisbane City Council</b></td><td>QLD</td><td><b>29</b></td><td>34.5%</td><td>Queensland Urban Utilities (QUU)</td><td><span class="pill bad">❌ none — PM capture needed</span></td><td><span class="pill bad">❌ none — PM capture needed</span></td></tr>
-        <tr><td><b>2</b></td><td><b>Moreton Bay Regional Council</b></td><td>QLD</td><td><b>14</b></td><td>16.7%</td><td>Unitywater</td><td><span class="pill bad">❌ none — PM capture needed</span></td><td><span class="pill bad">❌ none — PM capture needed</span></td></tr>
-        <tr><td><b>3</b></td><td>Northern Beaches</td><td>NSW</td><td>11</td><td>13.1%</td><td>Sydney Water</td><td><span class="pill good">✅ transcript provided</span></td><td><span class="pill good">✅ Sydney Water recording in hand</span></td></tr>
-        <tr><td><b>4</b></td><td><b>Gold Coast City Council</b></td><td>QLD</td><td><b>9</b></td><td>10.7%</td><td>City of Gold Coast Water (council-owned, same entity)</td><td><span class="pill bad">❌ none — PM capture needed</span></td><td><span class="pill muted">— same as council (one entity)</span></td></tr>
-        <tr><td>5</td><td>Canterbury-Bankstown</td><td>NSW</td><td>7</td><td>8.3%</td><td>Sydney Water</td><td><span class="pill warn">🟡 fields documented · audio still needed</span></td><td><span class="pill good">✅ Sydney Water recording in hand</span></td></tr>
-        <tr><td>6</td><td>Blacktown City Council</td><td>NSW</td><td>7</td><td>8.3%</td><td>Sydney Water</td><td><span class="pill good">✅ recording provided</span></td><td><span class="pill good">✅ Sydney Water recording in hand</span></td></tr>
-        <tr><td>7</td><td>Bayside</td><td>NSW</td><td>7</td><td>8.3%</td><td>Sydney Water</td><td><span class="pill good">✅ recording provided</span></td><td><span class="pill good">✅ Sydney Water recording in hand</span></td></tr>
+        <tr><td><b>1</b></td><td><b>Brisbane City Council</b></td><td>QLD</td><td><b>29</b></td><td>34.5%</td><td>Queensland Urban Utilities (QUU)</td><td><span class="todo pending">Capture council audio</span></td><td><span class="todo pending">Capture QUU audio</span></td></tr>
+        <tr><td><b>2</b></td><td><b>Moreton Bay Regional Council</b></td><td>QLD</td><td><b>14</b></td><td>16.7%</td><td>Unitywater</td><td><span class="todo pending">Capture council audio</span></td><td><span class="todo pending">Capture Unitywater audio</span></td></tr>
+        <tr><td><b>3</b></td><td>Northern Beaches</td><td>NSW</td><td>11</td><td>13.1%</td><td>Sydney Water</td><td><span class="todo done">transcript provided</span></td><td><span class="todo done">Sydney Water in hand</span></td></tr>
+        <tr><td><b>4</b></td><td><b>Gold Coast City Council</b></td><td>QLD</td><td><b>9</b></td><td>10.7%</td><td>City of Gold Coast Water (council-owned, same entity)</td><td><span class="todo pending">Capture council audio</span></td><td><span class="todo na">same entity as council</span></td></tr>
+        <tr><td>5</td><td>Canterbury-Bankstown</td><td>NSW</td><td>7</td><td>8.3%</td><td>Sydney Water</td><td><span class="todo partial">Capture audio (fields documented)</span></td><td><span class="todo done">Sydney Water in hand</span></td></tr>
+        <tr><td>6</td><td>Blacktown City Council</td><td>NSW</td><td>7</td><td>8.3%</td><td>Sydney Water</td><td><span class="todo done">recording provided</span></td><td><span class="todo done">Sydney Water in hand</span></td></tr>
+        <tr><td>7</td><td>Bayside</td><td>NSW</td><td>7</td><td>8.3%</td><td>Sydney Water</td><td><span class="todo done">recording provided</span></td><td><span class="todo done">Sydney Water in hand</span></td></tr>
       </tbody>
       <tfoot>
         <tr><th colspan="3" style="text-align:right">QLD subtotal</th><th>52</th><th>62%</th><th>3 distinct authorities</th><th colspan="2"><span class="pill bad">0/3 with recordings</span></th></tr>
@@ -441,6 +468,52 @@
   </div>
   </details>
 
+  <!-- ============= PM CAPTURE QUEUE ============= -->
+  <h2 id="capture-queue">☐ PM capture queue — outstanding recordings</h2>
+  <p class="sub">6 audio captures unblock 4 council integrations + 2 water-authority integrations. Listed in the recommended capture order — earliest first.</p>
+  <div class="todo-queue">
+    <h3>Outstanding recordings to obtain</h3>
+    <ol>
+      <li class="partial">
+        <div>
+          <span class="cap-num">1</span><span class="cap-target">Canterbury-Bankstown council</span><span class="cap-tag council">council</span>
+          <span class="cap-meta">Fields already documented (lot/plan + customer reference). Just needs the audio. Unblocks NSW #4. Sydney Water side already covered.</span>
+        </div>
+      </li>
+      <li>
+        <div>
+          <span class="cap-num">2</span><span class="cap-target">Unitywater</span><span class="cap-tag water">water-auth</span>
+          <span class="cap-meta">Documented 24/7 "press 2" balance IVR — capture the menu tree + a representative balance enquiry. Unblocks the first QLD pilot.</span>
+        </div>
+      </li>
+      <li>
+        <div>
+          <span class="cap-num">3</span><span class="cap-target">Moreton Bay Regional Council</span><span class="cap-tag council">council</span>
+          <span class="cap-meta">Council-side rates inquiry call. Pair with #2 — together they unblock Moreton Bay (14 orders).</span>
+        </div>
+      </li>
+      <li>
+        <div>
+          <span class="cap-num">4</span><span class="cap-target">Queensland Urban Utilities (QUU)</span><span class="cap-tag water">water-auth</span>
+          <span class="cap-meta">Brisbane / Ipswich / Lockyer Valley / Scenic Rim / Somerset all sit behind QUU. Capture establishes the QLD pattern at scale.</span>
+        </div>
+      </li>
+      <li>
+        <div>
+          <span class="cap-num">5</span><span class="cap-target">Brisbane City Council</span><span class="cap-tag council">council</span>
+          <span class="cap-meta">BCC steers balance enquiries to its online form — capture is useful only if we commit to the phone-AI path. Otherwise scrape the form. Together with #4, unblocks 29 orders.</span>
+        </div>
+      </li>
+      <li>
+        <div>
+          <span class="cap-num">6</span><span class="cap-target">Gold Coast City Council</span><span class="cap-tag council">council</span>
+          <span class="cap-meta">One recording covers both council and water (same entity). Lowest priority — 9 orders, do last.</span>
+        </div>
+      </li>
+    </ol>
+    <p style="font-size:11px;color:var(--muted);margin-top:10px;margin-bottom:0">Already in hand (no action): Sydney Water · Northern Beaches transcript · Blacktown recording · Bayside recording. Source: <a href="https://infotrack.atlassian.net/wiki/spaces/SET/pages/4293361925/Real+human+call+recording" target="_blank">Confluence — Real human call recording</a>.</p>
+  </div>
+
   <!-- ============= RANKING ============= -->
   <h2 id="ranking">🏆 Final ranking — order &amp; reason</h2>
   <p class="sub">Most recommended → least recommended <em>for the next batch we ship after the locked-in baseline</em>. Composite of: volume, AI-call ease, water-authority reuse, and integration effort.</p>
@@ -454,8 +527,8 @@
           <td><b>Northern Beaches</b></td><td>NSW</td><td>11</td>
           <td><span class="score s4">4</span></td>
           <td><span class="pill good">No</span> (Sydney Water)</td>
-          <td><span class="pill good">✅ transcript</span></td>
-          <td><span class="pill good">✅ Sydney Water</span></td>
+          <td><span class="todo done">transcript</span></td>
+          <td><span class="todo done">Sydney Water</span></td>
           <td>Biggest NSW volume on a free-water-auth integration. <b>Both transcript (council) and Sydney Water recording are in hand</b> — playbook authoring can start immediately, zero capture needed. English-dominant operator pool = lowest ASR risk in set. Single 1300 number, no IVR maze, generous human hours. Cleanest possible first ship.</td>
         </tr>
         <tr>
@@ -463,8 +536,8 @@
           <td><b>Bayside</b></td><td>NSW</td><td>7</td>
           <td><span class="score s4">4</span></td>
           <td><span class="pill good">No</span> (Sydney Water)</td>
-          <td><span class="pill good">✅ recording</span></td>
-          <td><span class="pill good">✅ Sydney Water</span></td>
+          <td><span class="todo done">recording</span></td>
+          <td><span class="todo done">Sydney Water</span></td>
           <td>Same Sydney Water integration as Northern Beaches. <b>Council recording + Sydney Water recording both in hand.</b> Single 24/7 number with documented after-hours behaviour and a secondary direct rates line. Moderate accent risk only. Effectively zero marginal water-auth cost; quick add-on after Northern Beaches.</td>
         </tr>
         <tr>
@@ -472,8 +545,8 @@
           <td>Blacktown City Council</td><td>NSW</td><td>7</td>
           <td><span class="score s3">3</span></td>
           <td><span class="pill good">No</span> (Sydney Water)</td>
-          <td><span class="pill good">✅ recording</span></td>
-          <td><span class="pill good">✅ Sydney Water</span></td>
+          <td><span class="todo done">recording</span></td>
+          <td><span class="todo done">Sydney Water</span></td>
           <td>Already locked in per project-overview (the existing first NSW council); <b>both council and Sydney Water recordings in hand</b>. Two separate numbers (business-hours main + after-hours 1300) means the AI must time-of-day-route. Diverse operator pool. Promoted from #5 → #3 because every audio asset is already captured — zero PM lead time.</td>
         </tr>
         <tr>
@@ -481,8 +554,8 @@
           <td>Canterbury-Bankstown</td><td>NSW</td><td>7</td>
           <td><span class="score s3">3</span></td>
           <td><span class="pill good">No</span> (Sydney Water)</td>
-          <td><span class="pill warn">🟡 fields only · audio needed</span></td>
-          <td><span class="pill good">✅ Sydney Water</span></td>
+          <td><span class="todo partial">Capture audio (fields documented)</span></td>
+          <td><span class="todo done">Sydney Water</span></td>
           <td>Free-water-auth add-on but harder than Bayside/Northern Beaches: 59% of residents non-English-at-home → operator accent pool is the most diverse in the set, highest ASR risk. <b>Required identity fields documented in Confluence</b> (lot/plan + customer reference) but the council audio capture is still outstanding — one PM action item to unblock. Water-auth side already covered by Sydney Water recording.</td>
         </tr>
         <tr>
@@ -490,8 +563,8 @@
           <td><b>Moreton Bay Regional Council</b></td><td>QLD</td><td>14</td>
           <td><span class="score s3">3</span></td>
           <td><span class="pill warn">Yes — Unitywater</span></td>
-          <td><span class="pill bad">❌ none</span></td>
-          <td><span class="pill bad">❌ Unitywater — none</span></td>
+          <td><span class="todo pending">Capture council audio</span></td>
+          <td><span class="todo pending">Capture Unitywater audio</span></td>
           <td><b>The right first QLD pilot once recordings land.</b> Unitywater is the ONLY water authority in this set with a documented 24/7 "press 2" balance IVR — a deterministic automation target. 14 orders is the second-largest single council. <b>Demoted from #3 to #5 because BOTH the council and Unitywater recordings still need to be captured before we can author the playbook</b> (2 fresh PM captures). Worth queuing PMs to capture as soon as NSW is shipped.</td>
         </tr>
         <tr>
@@ -499,8 +572,8 @@
           <td><b>Brisbane City Council</b></td><td>QLD</td><td><b>29</b></td>
           <td><span class="score s2">2</span></td>
           <td><span class="pill warn">Yes — QUU</span></td>
-          <td><span class="pill bad">❌ none</span></td>
-          <td><span class="pill bad">❌ QUU — none</span></td>
+          <td><span class="todo pending">Capture council audio</span></td>
+          <td><span class="todo pending">Capture QUU audio</span></td>
           <td><b>The volume prize, but expensive and risky.</b> 29 orders (35% of the whole 5 Jun release) is the single biggest target — but BCC has no IVR, council policy steers balance enquiries to the online form, and conveyancer balances require a paid search. <b>2 fresh PM captures needed</b> (council + QUU). Realistic path: scrape the web form rather than dial, or invest heavily in a "believable ratepayer" conversational flow with full property auth. Worth the investment <b>only after</b> we have the Moreton Bay QLD template proven and the NSW councils shipped. Don't lead with this.</td>
         </tr>
         <tr>
@@ -508,8 +581,8 @@
           <td>Gold Coast City Council</td><td>QLD</td><td>9</td>
           <td><span class="score s3">3</span></td>
           <td><span class="pill cyan">Yes — but same entity as council</span></td>
-          <td><span class="pill bad">❌ none</span></td>
-          <td><span class="pill muted">— same as council</span></td>
+          <td><span class="todo pending">Capture council audio</span></td>
+          <td><span class="todo na">same entity as council</span></td>
           <td>Lowest single-council volume in the QLD set (9 orders). Routing IVR with unpublished menus → AI must discover live. No automated balance enquiry. <b>1 fresh PM capture needed</b> (council + water are the same entity, so one recording covers both). The "one entity = one integration" upside doesn't overcome the volume disadvantage. Ship last; treat as a "if there's time" inclusion in the 5 Jun cut.</td>
         </tr>
       </tbody>
