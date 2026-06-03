@@ -121,6 +121,16 @@
   .todo-queue .cap-tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;background:var(--code);color:var(--muted);margin-left:6px;text-transform:uppercase;letter-spacing:.04em}
   .todo-queue .cap-tag.council{background:#0d1a2b;color:var(--accent)}
   .todo-queue .cap-tag.water{background:#0e2426;color:var(--cyan)}
+  .todo-queue .queue-divider{display:flex;align-items:center;gap:10px;margin:14px 0 4px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+  .todo-queue .queue-divider::before,.todo-queue .queue-divider::after{content:'';flex:1;border-top:1px dashed var(--line)}
+  .todo-queue li.lastresort{opacity:.55}
+  .todo-queue li.lastresort::before{content:'☐';color:var(--dim)}
+  .todo-queue li.lastresort .cap-target{color:var(--muted);font-weight:600}
+
+  /* Last-resort ranking rows */
+  tr.lastresort td{opacity:.55;color:var(--muted)}
+  tr.lastresort td:first-child{position:relative}
+  tr.lastresort td b{font-weight:600;color:var(--muted)}
 
   @media print{ body{background:#fff;color:#000} .card,.stat{background:#fff;border-color:#bbb;color:#000} main{padding:16px} .stat .v{color:#000!important} }
 </style>
@@ -147,7 +157,7 @@
       <tbody>
         <tr><td><b>1</b></td><td><b>Brisbane City Council</b></td><td>QLD</td><td><b>29</b></td><td>34.5%</td><td>Queensland Urban Utilities (QUU)</td><td><span class="todo pending">Capture council audio</span></td><td><span class="todo pending">Capture QUU audio</span></td></tr>
         <tr><td><b>2</b></td><td><b>Moreton Bay Regional Council</b></td><td>QLD</td><td><b>14</b></td><td>16.7%</td><td>Unitywater</td><td><span class="todo pending">Capture council audio</span></td><td><span class="todo pending">Capture Unitywater audio</span></td></tr>
-        <tr><td><b>3</b></td><td>Northern Beaches</td><td>NSW</td><td>11</td><td>13.1%</td><td>Sydney Water</td><td><span class="todo done">transcript provided</span></td><td><span class="todo done">Sydney Water in hand</span></td></tr>
+        <tr><td><b>3</b></td><td>Northern Beaches</td><td>NSW</td><td>11</td><td>13.1%</td><td>Sydney Water</td><td><span class="todo partial">transcript only · audio later</span></td><td><span class="todo done">Sydney Water in hand</span></td></tr>
         <tr><td><b>4</b></td><td><b>Gold Coast City Council</b></td><td>QLD</td><td><b>9</b></td><td>10.7%</td><td>City of Gold Coast Water (council-owned, same entity)</td><td><span class="todo pending">Capture council audio</span></td><td><span class="todo na">same entity as council</span></td></tr>
         <tr><td>5</td><td>Canterbury-Bankstown</td><td>NSW</td><td>7</td><td>8.3%</td><td>Sydney Water</td><td><span class="todo partial">Capture audio (fields documented)</span></td><td><span class="todo done">Sydney Water in hand</span></td></tr>
         <tr><td>6</td><td>Blacktown City Council</td><td>NSW</td><td>7</td><td>8.3%</td><td>Sydney Water</td><td><span class="todo done">recording provided</span></td><td><span class="todo done">Sydney Water in hand</span></td></tr>
@@ -492,25 +502,30 @@
           <span class="cap-meta">Council-side rates inquiry call. Pair with #2 — together they unblock Moreton Bay (14 orders).</span>
         </div>
       </li>
-      <li>
+    </ol>
+
+    <div class="queue-divider">Last resort · only if 1-3 don't unlock enough volume</div>
+    <ol start="4">
+      <li class="lastresort">
         <div>
           <span class="cap-num">4</span><span class="cap-target">Queensland Urban Utilities (QUU)</span><span class="cap-tag water">water-auth</span>
-          <span class="cap-meta">Brisbane / Ipswich / Lockyer Valley / Scenic Rim / Somerset all sit behind QUU. Capture establishes the QLD pattern at scale.</span>
+          <span class="cap-meta">Brisbane / Ipswich / Lockyer Valley / Scenic Rim / Somerset all sit behind QUU. Capture only if we commit to the Brisbane phone-AI path.</span>
         </div>
       </li>
-      <li>
+      <li class="lastresort">
         <div>
           <span class="cap-num">5</span><span class="cap-target">Brisbane City Council</span><span class="cap-tag council">council</span>
-          <span class="cap-meta">BCC steers balance enquiries to its online form — capture is useful only if we commit to the phone-AI path. Otherwise scrape the form. Together with #4, unblocks 29 orders.</span>
+          <span class="cap-meta">BCC steers balance enquiries to its online form — capture is useful only if we commit to phone-AI. Otherwise scrape the form. Together with #4, unblocks 29 orders.</span>
         </div>
       </li>
-      <li>
+      <li class="lastresort">
         <div>
           <span class="cap-num">6</span><span class="cap-target">Gold Coast City Council</span><span class="cap-tag council">council</span>
-          <span class="cap-meta">One recording covers both council and water (same entity). Lowest priority — 9 orders, do last.</span>
+          <span class="cap-meta">One recording covers both council and water (same entity). Only 9 orders — lowest ROI; do last if at all.</span>
         </div>
       </li>
     </ol>
+
     <p style="font-size:11px;color:var(--muted);margin-top:10px;margin-bottom:0">Already in hand (no action): Sydney Water · Northern Beaches transcript · Blacktown recording · Bayside recording. Source: <a href="https://infotrack.atlassian.net/wiki/spaces/SET/pages/4293361925/Real+human+call+recording" target="_blank">Confluence — Real human call recording</a>.</p>
   </div>
 
@@ -527,9 +542,9 @@
           <td><b>Northern Beaches</b></td><td>NSW</td><td>11</td>
           <td><span class="score s4">4</span></td>
           <td><span class="pill good">No</span> (Sydney Water)</td>
-          <td><span class="todo done">transcript</span></td>
+          <td><span class="todo partial">transcript only</span></td>
           <td><span class="todo done">Sydney Water</span></td>
-          <td>Biggest NSW volume on a free-water-auth integration. <b>Both transcript (council) and Sydney Water recording are in hand</b> — playbook authoring can start immediately, zero capture needed. English-dominant operator pool = lowest ASR risk in set. Single 1300 number, no IVR maze, generous human hours. Cleanest possible first ship.</td>
+          <td>Biggest NSW volume on a free-water-auth integration. <b>Transcript captured + Sydney Water recording in hand</b> — playbook authoring can start immediately. <b>Audio capture is optional polish</b> (transcript is text-only; an audio clip helps tune voice prompts but isn't blocking). English-dominant operator pool = lowest ASR risk in set. Single 1300 number, no IVR maze, generous human hours. Cleanest possible first ship.</td>
         </tr>
         <tr>
           <td><span class="ranknum top">2</span></td>
@@ -567,18 +582,18 @@
           <td><span class="todo pending">Capture Unitywater audio</span></td>
           <td><b>The right first QLD pilot once recordings land.</b> Unitywater is the ONLY water authority in this set with a documented 24/7 "press 2" balance IVR — a deterministic automation target. 14 orders is the second-largest single council. <b>Demoted from #3 to #5 because BOTH the council and Unitywater recordings still need to be captured before we can author the playbook</b> (2 fresh PM captures). Worth queuing PMs to capture as soon as NSW is shipped.</td>
         </tr>
-        <tr>
-          <td><span class="ranknum mid">6</span></td>
-          <td><b>Brisbane City Council</b></td><td>QLD</td><td><b>29</b></td>
+        <tr class="lastresort">
+          <td><span class="ranknum low">6</span></td>
+          <td><b>Brisbane City Council</b> <span class="pill muted" style="margin-left:6px">last resort</span></td><td>QLD</td><td><b>29</b></td>
           <td><span class="score s2">2</span></td>
           <td><span class="pill warn">Yes — QUU</span></td>
           <td><span class="todo pending">Capture council audio</span></td>
           <td><span class="todo pending">Capture QUU audio</span></td>
           <td><b>The volume prize, but expensive and risky.</b> 29 orders (35% of the whole 5 Jun release) is the single biggest target — but BCC has no IVR, council policy steers balance enquiries to the online form, and conveyancer balances require a paid search. <b>2 fresh PM captures needed</b> (council + QUU). Realistic path: scrape the web form rather than dial, or invest heavily in a "believable ratepayer" conversational flow with full property auth. Worth the investment <b>only after</b> we have the Moreton Bay QLD template proven and the NSW councils shipped. Don't lead with this.</td>
         </tr>
-        <tr>
+        <tr class="lastresort">
           <td><span class="ranknum low">7</span></td>
-          <td>Gold Coast City Council</td><td>QLD</td><td>9</td>
+          <td>Gold Coast City Council <span class="pill muted" style="margin-left:6px">last resort</span></td><td>QLD</td><td>9</td>
           <td><span class="score s3">3</span></td>
           <td><span class="pill cyan">Yes — but same entity as council</span></td>
           <td><span class="todo pending">Capture council audio</span></td>
