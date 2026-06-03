@@ -371,6 +371,19 @@
     </div>
   </div>
 
+  <!-- ============= BIGGER PICTURE ============= -->
+  <h2>🚀 Bigger picture — open up direct OpenAI for safe internal workloads</h2>
+  <div class="callout idea">
+    <p style="margin:0 0 8px">The narrow case above (AI-Caller specifically) is real, but the same shape applies to other internal projects we'll build. Codifying a <b>named-workload exception process</b> now is cheaper than re-litigating it each time.</p>
+    <ol style="margin:0;padding-left:18px">
+      <li><b>It's an internal app with no client-sensitive data.</b> AI-Caller sends property address + lot/plan + certificate number — public-record-adjacent data we already type into council websites by hand. No client identifiers, no documents, no credentials. <i>(See the "Why AI-Caller is low-sensitivity" card above for the itemised detail.)</i></li>
+      <li><b>Cloud providers lag the model frontier by 6–18 months, worst on "niche" infra like realtime + STT</b> — exactly what a voice-AI product needs. <code>gpt-realtime</code> has been GA 8 months and still isn't in Azure AU. Right now we have <b>no production STT path</b> and <b>no production access to the best realtime voice model</b>; the blocker is Microsoft's region roadmap, not a safety problem in what we'd send.</li>
+      <li><b>Tech-led companies don't wait for cloud parity.</b> Stripe shipped token-based payments when they were considered risky; Figma built on WebGL/WebAssembly when both were bleeding edge; OpenAI itself ships against direct APIs no hyperscaler resells. The discipline is about <i>what</i> you put through new tech, not avoiding it. InfoTrack should sit on that side of the line for clearly-scoped, low-sensitivity workloads — otherwise engineers spend months building against second-best tools and the product ships degraded.</li>
+      <li><b>Safe-by-construction, not safe-by-blocking.</b> Direct OpenAI under enterprise terms (zero data retention, no training on our payloads) gives us the same audit / logging / data-minimisation controls we'd get through Azure — applied to a payload that was never sensitive to begin with. The Azure-only rule is the right default for sensitive data; it just doesn't earn its keep here.</li>
+    </ol>
+    <p style="font-size:12px;color:var(--muted);margin:8px 0 0"><b>The ask:</b> a <b>named-workload exception process</b> for safe internal AI projects, AI-Caller as the first instance, each future addition reviewed against the same low-sensitivity criteria. <b>Not</b> a blanket bypass of data-residency. Guardrails + auto-revert apply.</p>
+  </div>
+
   <div class="card" style="margin-top:14px">
     <h3>Proposed guardrails (so the exception stays safe)</h3>
     <ul>
