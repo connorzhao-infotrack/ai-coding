@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>📞 Council targeting analysis — top 7 for 5 Jun release</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2230; --line:#30363d;
+    --ink:#e6edf3; --muted:#8b949e; --dim:#6e7681;
+    --accent:#58a6ff; --cyan:#39d0d8; --purple:#bc8cff; --pink:#ff7b9b;
+    --good:#3fb950; --warn:#d29922; --bad:#f85149;
+    --code:#1f242c;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font:14px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  main{max-width:1180px;margin:0 auto;padding:28px 32px}
+  h1{font-size:26px;margin:0 0 4px;letter-spacing:-.01em}
+  h2{font-size:12px;margin:24px 0 10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  h3{font-size:14px;margin:0 0 6px;color:var(--ink)}
+  h4{font-size:13px;margin:10px 0 4px;color:var(--ink)}
+  p{margin:0 0 8px}
+  a{color:var(--accent);text-decoration:none;word-break:break-all}
+  a:hover{text-decoration:underline}
+  .sub{color:var(--muted);margin:0 0 18px}
+  .row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .row.two{grid-template-columns:repeat(2,1fr)}
+  .row.four{grid-template-columns:repeat(4,1fr)}
+  .row.five{grid-template-columns:repeat(5,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:0 0 10px}
+  .card h3 span{font-weight:400;color:var(--muted);font-size:12px}
+  ul,ol{margin:6px 0 0;padding-left:20px}
+  li{margin:3px 0}
+  .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#1f2937;color:var(--accent)}
+  .pill.warn{background:#3b2e0f;color:var(--warn)}
+  .pill.good{background:#0f3320;color:var(--good)}
+  .pill.bad{background:#3b1112;color:var(--bad)}
+  .pill.muted{background:#1f242c;color:var(--muted)}
+  .pill.cyan{background:#0e2426;color:var(--cyan)}
+  .pill.purple{background:#1d1530;color:var(--purple)}
+  .pill.pink{background:#2a1620;color:var(--pink)}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0}
+  th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+  code{font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;background:var(--code);padding:1px 5px;border-radius:4px;color:#e6edf3}
+  .callout{border-left:3px solid var(--warn);background:#1f1a0c;padding:10px 12px;border-radius:0 6px 6px 0;margin:10px 0}
+  .callout.bad{border-left-color:var(--bad);background:#1f0f0f}
+  .callout.good{border-left-color:var(--good);background:#0e1f15}
+  .callout.idea{border-left-color:var(--accent);background:#0d1a2b}
+  .callout.purple{border-left-color:var(--purple);background:#1a1226}
+  footer{margin-top:18px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:10px}
+
+  .hero{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:6px 0 18px}
+  .stat{background:linear-gradient(140deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .stat .ico{font-size:20px;line-height:1}
+  .stat .v{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:6px;color:var(--ink)}
+  .stat .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:2px}
+  .stat.accent .v{color:var(--accent)}
+  .stat.cyan .v{color:var(--cyan)}
+  .stat.purple .v{color:var(--purple)}
+  .stat.pink .v{color:var(--pink)}
+  .stat.warn .v{color:var(--warn)}
+  .stat.good .v{color:var(--good)}
+  .stat.bad .v{color:var(--bad)}
+
+  details{margin:0}
+  details > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;margin-top:18px}
+  details > summary::-webkit-details-marker{display:none}
+  details > summary::before{content:'▾';color:var(--muted);font-size:14px;transition:transform .15s;display:inline-block;width:14px}
+  details:not([open]) > summary::before{content:'▸'}
+  details > summary > h2{margin:0}
+  details > summary > h3{margin:0;font-size:14px}
+  details:not([open]) > summary{margin-bottom:8px}
+  details.nested{margin:6px 0}
+  details.nested > summary{margin-top:6px;background:var(--panel2);border:1px solid var(--line);padding:8px 12px;border-radius:6px}
+
+  .ranknum{display:inline-block;font-weight:700;font-size:18px;color:var(--accent);min-width:28px}
+  .ranknum.top{color:var(--good)}
+  .ranknum.mid{color:var(--warn)}
+  .ranknum.low{color:var(--bad)}
+
+  .score{display:inline-block;font-weight:700;padding:2px 8px;border-radius:4px;font-size:12px;font-family:ui-monospace,Menlo,Consolas,monospace}
+  .score.s5{background:#0f3320;color:var(--good)}
+  .score.s4{background:#0f3320;color:var(--good)}
+  .score.s3{background:#3b2e0f;color:var(--warn)}
+  .score.s2{background:#3b1112;color:var(--bad)}
+  .score.s1{background:#3b1112;color:var(--bad)}
+
+  .phonebox{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;background:var(--code);padding:6px 9px;border-radius:5px;margin:3px 0;border-left:3px solid var(--accent)}
+  .phonebox .num{color:var(--cyan);font-weight:700}
+  .phonebox .purpose{color:var(--muted);font-size:11px;display:block;margin-top:2px}
+
+  .verdict{font-weight:700;font-size:12px}
+  .verdict.held{color:var(--good)}
+  .verdict.refuted{color:var(--bad)}
+
+  @media print{ body{background:#fff;color:#000} .card,.stat{background:#fff;border-color:#bbb;color:#000} main{padding:16px} .stat .v{color:#000!important} }
+</style>
+</head>
+<body>
+<main>
+
+  <h1>📞 Council targeting analysis — top 7 for 5 Jun release</h1>
+  <p class="sub">Ranking the next batch of councils to onboard for the AI-Caller, scored against (1) order volume, (2) ease of AI phone conversation, (3) water-authority reuse. <span class="pill muted">research date: 2026-06-03</span></p>
+
+  <!-- ============= HERO / VOLUME ============= -->
+  <div class="hero">
+    <div class="stat accent"><div class="ico">📦</div><div class="v">84</div><div class="l">total orders · 7 councils · 5 Jun release</div></div>
+    <div class="stat cyan"><div class="ico">🟢</div><div class="v">52 · 62%</div><div class="l">QLD · 3 councils · 3 water authorities</div></div>
+    <div class="stat purple"><div class="ico">🔵</div><div class="v">32 · 38%</div><div class="l">NSW · 4 councils · 1 shared authority (Sydney Water)</div></div>
+    <div class="stat warn"><div class="ico">🏛️</div><div class="v">4 new auths</div><div class="l">QUU · Unitywater · Gold Coast Water · Sydney Water</div></div>
+    <div class="stat good"><div class="ico">🎯</div><div class="v">Brisbane</div><div class="l">single biggest target — 29 orders alone (35% of total)</div></div>
+  </div>
+
+  <h2>📊 Volume snapshot — 5 Jun release, top 7</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>#</th><th>Council</th><th>State</th><th>Orders</th><th>% of 84</th><th>Water authority</th></tr></thead>
+      <tbody>
+        <tr><td><b>1</b></td><td><b>Brisbane City Council</b></td><td>QLD</td><td><b>29</b></td><td>34.5%</td><td>Queensland Urban Utilities (QUU)</td></tr>
+        <tr><td><b>2</b></td><td><b>Moreton Bay Regional Council</b></td><td>QLD</td><td><b>14</b></td><td>16.7%</td><td>Unitywater</td></tr>
+        <tr><td><b>3</b></td><td>Northern Beaches</td><td>NSW</td><td>11</td><td>13.1%</td><td>Sydney Water</td></tr>
+        <tr><td><b>4</b></td><td><b>Gold Coast City Council</b></td><td>QLD</td><td><b>9</b></td><td>10.7%</td><td>City of Gold Coast Water (council-owned, same entity)</td></tr>
+        <tr><td>5</td><td>Canterbury-Bankstown</td><td>NSW</td><td>7</td><td>8.3%</td><td>Sydney Water</td></tr>
+        <tr><td>6</td><td>Blacktown City Council</td><td>NSW</td><td>7</td><td>8.3%</td><td>Sydney Water</td></tr>
+        <tr><td>7</td><td>Bayside</td><td>NSW</td><td>7</td><td>8.3%</td><td>Sydney Water</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><th colspan="3" style="text-align:right">QLD subtotal</th><th>52</th><th>62%</th><th>3 distinct authorities</th></tr>
+        <tr><th colspan="3" style="text-align:right">NSW subtotal</th><th>32</th><th>38%</th><th>1 shared authority</th></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- ============= THE TRADE-OFF ============= -->
+  <h2>⚖️ The trade-off (read this first)</h2>
+  <div class="row two">
+    <div class="card">
+      <h3>The three principles</h3>
+      <ol>
+        <li><b>Higher order volume = better.</b> Onboarding effort is roughly fixed per council/authority, so we want maximum orders per integration.</li>
+        <li><b>Easy phone UX for AI = better.</b> Deterministic IVR or pre-recorded menus &gt; live human handoff. Live humans with diverse accents &gt; nothing, but require natural conversation, identity verification, and tolerate redirects to web forms.</li>
+        <li><b>Authority sharing = better.</b> Every additional water authority we plug in is a new phone number, new IVR, new identity-verification flow, new test rig. Reuse beats one-offs.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>The QLD-vs-NSW tension</h3>
+      <ul>
+        <li><b>QLD wins on raw volume</b> — 52 orders (62%) is in 3 councils.</li>
+        <li><b>NSW wins on authority reuse</b> — all 4 NSW councils share <b>Sydney Water</b> (already locked in / done). Adding the 4 NSW councils is a council-only integration; the water side is free.</li>
+        <li><b>QLD costs 3 new water authorities</b> — QUU (Brisbane), Unitywater (Moreton Bay), Gold Coast Water (which is actually a council business unit, so it's one combined integration for the Gold Coast).</li>
+        <li><b>Brisbane alone (29 orders) ≈ all 4 NSW councils combined (32 orders)</b> — and Brisbane has the hardest phone UX (no IVR, push to online form).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout idea">
+    <b>Headline read:</b> NSW is the cheap, fast win — 4 councils, 1 already-built authority, 32 orders. QLD is where the real volume lives but every QLD council brings a new water authority and Brisbane is genuinely hard to automate over the phone. Recommendation below: <b>ship NSW first, then add Moreton Bay (not Brisbane) as the first QLD pilot</b> because Unitywater has a documented 24/7 self-serve IVR — the only one in this set.
+  </div>
+
+  <!-- ============= QLD DEEP DIVE ============= -->
+  <details open>
+  <summary><h2>🟢 QLD deep-dive (the volume bet)</h2></summary>
+
+  <div class="callout">
+    <b>QLD context:</b> rates and water are split between council and SEQ water retailer, so each property in QLD typically requires <b>two</b> data sources (council rates + water authority). NSW (excluding the Hunter and Central Coast) typically combines water into the council rates certificate. This is why "QLD orders" sound smaller per integration than they really are: each Brisbane order is council + QUU; each Moreton Bay order is council + Unitywater.
+  </div>
+
+  <h3 style="margin-top:14px">QLD councils — at a glance</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th>Council</th><th>Orders</th><th>AI-call ease</th><th>IVR?</th><th>Auto balance line?</th><th>Hours</th><th>Water auth</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Brisbane</b></td><td>29</td>
+          <td><span class="score s2">2 / 5</span></td>
+          <td><span class="pill bad">No</span> — humans only</td>
+          <td><span class="pill bad">No</span> (payment IVR only)</td>
+          <td>24/7</td>
+          <td>QUU</td>
+        </tr>
+        <tr>
+          <td><b>Moreton Bay</b></td><td>14</td>
+          <td><span class="score s3">3 / 5</span></td>
+          <td><span class="pill muted">Unknown</span> (not published)</td>
+          <td><span class="pill bad">No</span></td>
+          <td>~8:30–5 M–F</td>
+          <td>Unitywater <span class="pill good">has 24/7 IVR</span></td>
+        </tr>
+        <tr>
+          <td><b>Gold Coast</b></td><td>9</td>
+          <td><span class="score s3">3 / 5</span></td>
+          <td><span class="pill good">Yes</span> — "follow the prompts"</td>
+          <td><span class="pill bad">No</span> (payment IVR only)</td>
+          <td>7am–6pm M–F</td>
+          <td>Gold Coast Water (same council)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Brisbane -->
+  <details class="nested">
+    <summary><h3>🏙️ Brisbane City Council — 29 orders · <span class="score s2">AI ease 2 / 5</span></h3></summary>
+    <div class="card">
+      <h4>Phone numbers</h4>
+      <div class="phonebox"><span class="num">07 3403 8888</span> — Main Contact Centre · 24/7 · <b>goes straight to a human, no IVR</b>
+        <span class="purpose"><a href="https://www.brisbane.qld.gov.au/about-council/contact-council">brisbane.qld.gov.au/about-council/contact-council</a></span></div>
+      <div class="phonebox"><span class="num">133 263 (133 BNE)</span> — Business Hotline · 24/7 · business services only (not residential rates)
+        <span class="purpose"><a href="https://www.brisbane.qld.gov.au/about-council/governance-and-strategy/business-in-brisbane/information-and-services/business-hotline-133-bne">business-hotline-133-bne</a></span></div>
+      <div class="phonebox"><span class="num">1300 309 311</span> — Automated rates <b>payment</b> IVR (BPOINT-style). $10 min, Mastercard/Visa/Amex. <b>Payment-only, does not read balances.</b>
+        <span class="purpose"><a href="https://www.brisbane.qld.gov.au/online-services/rates-services/pay-your-rates-online">brisbane.qld.gov.au/online-services/rates-services/pay-your-rates-online</a></span></div>
+      <div class="phonebox"><span class="num">13 26 57</span> — Urban Utilities (water) — separate entity, see QUU section
+        <span class="purpose"><a href="https://www.brisbane.qld.gov.au/planning-and-building/buying-selling-and-searches/rates-and-water-balance-enquiries">rates-and-water-balance-enquiries</a></span></div>
+
+      <h4>IVR / automation</h4>
+      <p><b>No IVR on the main contact centre.</b> Per Verint's interview with Shane Hackett (Manager Customer Services, BCC): <em>"Our agents, we have no IVR, so every time they pick up a phone call, answer an email, respond to a social media post, or have a person come in to the counter, it could be on one of those 4,431 enquiry types."</em> Westender confirms BCC "stands out as one of the few contact centres nationally that ensures callers always get to speak to someone." (<a href="https://www.verint.com/blog/in-conversation-with-shane-hackett/">verint.com</a>, <a href="https://westender.com.au/brisbane-city-councils-award-winning-contact-centre-clocks-up-four-million-calls/">westender.com.au</a>)</p>
+      <p><b>Council policy steers rates-balance enquiries to the online form</b>, not phone. The "Check rates balance" page directs users to an online form (free, immediate). Conveyancer-grade balances require a paid "inspection of records search" with documented identity (<a href="https://services.brisbane.qld.gov.au/online-services/conveyancing/conveyance-search-rates">services.brisbane.qld.gov.au/online-services/conveyancing/conveyance-search-rates</a>).</p>
+
+      <h4>Wait times</h4>
+      <p>~180 agents across Chermside and Yeronga centres. Target: answer within 60 seconds; reported ~90% answered within 20s. ~3,300 enquiries/day, ~735,000 phone calls/year (<a href="https://grahamquirk.com.au/council-contact-centre-handles-3300-enquiries-per-day/">grahamquirk.com.au</a>).</p>
+
+      <h4>Why score 2 / 5</h4>
+      <ul>
+        <li>No IVR + no automated balance line → AI must conduct natural Australian-English conversation with a live human.</li>
+        <li>Council policy actively steers rates-balance enquiries to the online form — agents may refuse and redirect.</li>
+        <li>Conveyancer-grade balances require paid online search with verified identity. Not phone-friendly.</li>
+        <li>The one automated path (1300 309 311) is a payments-only IVR.</li>
+        <li>Saving grace: short wait (~20s), 24/7, service-oriented. So it's a 2 (hard, but not impossible) — not a 1.</li>
+      </ul>
+
+      <h4>Volume vs. effort</h4>
+      <p>29 orders is the biggest single prize in the set. <b>But</b> the BCC integration is the hardest of any QLD council to automate over the phone, and the agent will almost certainly redirect the AI to <em>brisbane.qld.gov.au/online-services/rates-services/rates-balance-enquiry</em>. The realistic path here is either (a) web-scrape the online form rather than dial, or (b) operate the AI as a fully-believable ratepayer conversation with account number + property address pre-loaded.</p>
+    </div>
+  </details>
+
+  <!-- Moreton Bay -->
+  <details class="nested">
+    <summary><h3>🏖️ Moreton Bay Regional Council — 14 orders · <span class="score s3">AI ease 3 / 5</span></h3></summary>
+    <div class="card">
+      <h4>Phone numbers</h4>
+      <div class="phonebox"><span class="num">07 3205 0555</span> — Main council contact (rates, general, after-hours emergencies all route here)
+        <span class="purpose"><a href="https://www.moretonbay.qld.gov.au/Contact">moretonbay.qld.gov.au/Contact</a></span></div>
+
+      <h4>IVR / automation</h4>
+      <p><b>Single advertised number for everything — IVR menu structure is not published.</b> Whether there's a "press 1 for rates" tree behind the line or it goes straight to a queue is undocumented. Self-service is pushed to the Moreton Bay Online Services / eServices portal (<a href="https://eservices.moretonbay.qld.gov.au/ePathway/Production/Web/Login/Login.aspx">eservices.moretonbay.qld.gov.au</a>) for balance + payment history. BPAY is the bank-side automated path. <b>No dedicated automated rates-balance phone line.</b></p>
+
+      <h4>Accent / dialect note</h4>
+      <p>South-East Queensland operators, predominantly general Australian English. Local place names a caller will encounter — <b>Caboolture</b> (Aboriginal "Kabul-tur", Place of Carpet Snakes), <b>Burpengary</b>, <b>Narangba</b>, Redcliffe, Strathpine, Bribie Island — are the main ASR risk. Indigenous-origin names most likely to trip Whisper. Build in a confirmation/read-back loop on any address-related field.</p>
+
+      <h4>Why score 3 / 5</h4>
+      <ul>
+        <li><span class="pill good">+</span> Single advertised number, standard hours, English-speaking operators, council pushes most self-service to web (so phone queues are focused).</li>
+        <li><span class="pill bad">−</span> No documented automated rates-balance IVR → AI must reach a human and verbally authenticate.</li>
+        <li><span class="pill bad">−</span> Indigenous place names (Caboolture, Burpengary, Narangba) add ASR/TTS risk.</li>
+        <li><span class="pill bad">−</span> No published IVR map — AI must discover menu live (if one exists).</li>
+      </ul>
+
+      <h4>The big asset: Unitywater has the only documented self-serve IVR in this set</h4>
+      <p>See QUU vs Unitywater vs Gold Coast Water below — Unitywater (Moreton Bay's water authority) is the <b>only</b> SEQ water authority with a published 24/7 "press 2 for balance" IVR. That makes Moreton Bay the most AI-friendly QLD pick for the <em>water</em> half of the workflow.</p>
+    </div>
+  </details>
+
+  <!-- Gold Coast -->
+  <details class="nested">
+    <summary><h3>🏝️ Gold Coast City Council — 9 orders · <span class="score s3">AI ease 3 / 5</span></h3></summary>
+    <div class="card">
+      <h4>Phone numbers</h4>
+      <div class="phonebox"><span class="num">1300 465 326 (1300 GOLDCOAST)</span> — Main switchboard, 7am–6pm M–F, with 24/7 routing for urgent/hazardous
+        <span class="purpose"><a href="https://www.goldcoast.qld.gov.au/Council/About-Council/Contact-us">goldcoast.qld.gov.au/Council/About-Council/Contact-us</a></span></div>
+      <div class="phonebox"><span class="num">07 5629 5629</span> — Same switchboard, landline equivalent (used internationally as +61 7 5629 5629)
+        <span class="purpose"><a href="https://www.goldcoast.qld.gov.au/Council/About-Council/Contact-us">goldcoast.qld.gov.au/Council/About-Council/Contact-us</a></span></div>
+      <div class="phonebox"><span class="num">07 5667 5995</span> — <b>Direct rates &amp; water enquiries</b> (billing, payment plans)
+        <span class="purpose"><a href="https://www.goldcoast.qld.gov.au/Services/Rates-water/Manage-your-rates-water-bills-online">Manage-your-rates-water-bills-online</a></span></div>
+      <div class="phonebox"><span class="num">1300 886 731</span> — 24/7 automated <b>payment</b> line (Visa/Mastercard, 0.68% surcharge). Payment-only, no balance enquiry.
+        <span class="purpose"><a href="https://www.goldcoast.qld.gov.au/Services/Report-pay-apply/Make-a-payment/Pay-your-rates-or-water-bill">Pay-your-rates-or-water-bill</a></span></div>
+
+      <h4>IVR / automation</h4>
+      <p>The main 1300/07 line uses a routing IVR — council's own page literally says <em>"follow the prompts to direct your call to the right area."</em> But the menu options are not published, so the AI must discover them live. <b>No automated balance-enquiry IVR.</b> Balance check requires either My Account online (<a href="https://my.goldcoast.qld.gov.au/">my.goldcoast.qld.gov.au</a>) or a live agent. Call-back queueing is offered when busy.</p>
+
+      <h4>Water authority bonus</h4>
+      <p><b>Gold Coast Water is a business unit of the City of Gold Coast — same entity</b>, same switchboard, same IVR. There is no separate water authority integration for Gold Coast properties — the council and the water utility are one. Property-search (rates + water combined) is ordered via the ePathway portal (cogc.cloud.infor.com/ePathway), in person, or by mail. Not by phone.</p>
+
+      <h4>Why score 3 / 5</h4>
+      <ul>
+        <li><span class="pill good">+</span> Single switchboard, dedicated rates direct-dial (07 5667 5995), 24/7 payment IVR, call-back option.</li>
+        <li><span class="pill good">+</span> Council = water utility, so it's <b>only one integration</b> for both halves of the workflow.</li>
+        <li><span class="pill bad">−</span> No automated balance IVR; menu options unpublished; business-hours only for non-emergency human; property certificates push to ePathway online.</li>
+      </ul>
+    </div>
+  </details>
+
+  <h3 style="margin-top:14px">QLD water authorities</h3>
+
+  <details class="nested">
+    <summary><h3>💧 Queensland Urban Utilities (QUU) — serves Brisbane · <span class="score s4">AI ease 4 / 5</span></h3></summary>
+    <div class="card">
+      <h4>Serves</h4>
+      <p>Brisbane City Council, Ipswich, Lockyer Valley, Scenic Rim, Somerset.</p>
+
+      <h4>Phone numbers</h4>
+      <div class="phonebox"><span class="num">13 26 57</span> — General enquiries / account / billing · 7am–7pm weekdays (some pages say 8am–6pm)
+        <span class="purpose"><a href="https://www.urbanutilities.com.au/contact-us">urbanutilities.com.au/contact-us</a></span></div>
+      <div class="phonebox"><span class="num">13 23 64</span> — Faults &amp; emergencies · <b>24/7</b>
+        <span class="purpose"><a href="https://www.urbanutilities.com.au/faults-and-interruptions">urbanutilities.com.au/faults-and-interruptions</a></span></div>
+      <div class="phonebox"><span class="num">1300 276 468 (1300 BPOINT)</span> — Commonwealth Bank BPOINT card payment IVR (payment-only)
+        <span class="purpose"><a href="https://www.bpoint.com.au/pay/qldurbanutilities/Pages/ExtraInfo">bpoint.com.au/pay/qldurbanutilities</a></span></div>
+
+      <h4>IVR / automation</h4>
+      <p><b>No self-service touch-tone IVR on the main line</b> (per available public documentation). Calls go to a human agent during business hours. Account self-service is pushed to MyAccount (<a href="https://myaccount.urbanutilities.com.au/">myaccount.urbanutilities.com.au</a>). The only automated phone path is BPOINT (payment-only).</p>
+
+      <h4>Property certificates</h4>
+      <p><b>Not available by phone IVR.</b> Channels: (a) conveyancers order via CITEC Confirm (<a href="https://www.confirm.com.au/support/land/qld-conveyancing/overview/">confirm.com.au</a>); (b) "Research my land" / engineering search lodged online via the Developer Services Portal (<a href="https://www.urbanutilities.com.au/development/developer-services-portal">developerportal.urbanutilities.com.au</a>) — basic 5 business days, complex 20; (c) settlement billing via online forms (<a href="https://www.qlsproctor.com.au/2021/02/property-settlements-urban-utilities-simplifies-billing/">qlsproctor.com.au 2021</a>).</p>
+
+      <h4>Why score 4 / 5</h4>
+      <ul>
+        <li><span class="pill good">+</span> Clean two-number setup (13 26 57 general, 13 23 64 faults 24/7) — no DTMF maze.</li>
+        <li><span class="pill good">+</span> Goes straight to a human → easier target for a conversational AI than a deep IVR tree.</li>
+        <li><span class="pill bad">−</span> Property certificates are online-only — AI cannot order one via voice (it can chase status of an existing one).</li>
+        <li><span class="pill bad">−</span> ProductReview score 2.1/5 — customers report long resolution times and "brick wall" service. Hold queues may be long.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="nested">
+    <summary><h3>💧 Unitywater — serves Moreton Bay · <span class="score s3">AI ease 3 / 5</span> · <b style="color:var(--good)">has documented 24/7 IVR self-service</b></h3></summary>
+    <div class="card">
+      <h4>Serves</h4>
+      <p>City of Moreton Bay, Sunshine Coast Regional Council, Noosa Shire Council.</p>
+
+      <h4>Phone numbers</h4>
+      <div class="phonebox"><span class="num">1300 086 489</span> — Main contact · 8am–5pm M–F human · faults 24/7 · <b>press option 2 for 24-hour automated self-serve (balance + 7-day extension)</b>
+        <span class="purpose"><a href="https://www.unitywater.com/about-us/contact-us">unitywater.com/about-us/contact-us</a> · <a href="https://www.unitywater.com/7-day-extension">/7-day-extension</a></span></div>
+      <div class="phonebox"><span class="num">1300 664 389</span> — Customer Support (payment difficulty)
+        <span class="purpose"><a href="https://www.unitywater.com/about-us/contact-us">unitywater.com/about-us/contact-us</a></span></div>
+      <div class="phonebox"><span class="num">+61 7 5431 8333</span> — International callers</div>
+
+      <h4>IVR / automation</h4>
+      <p><b>This is the headline feature.</b> Unitywater's main line has a documented 24/7 self-service IVR. From the council page verbatim: <em>"Use the 24-hour self-serve option by calling 1300 086 489. Select option 2 and follow the prompts."</em> The IVR plays automated balance and can set up a 7-day extension. This is the <b>only</b> SEQ water authority in our set with a published deterministic IVR path to balance data — exactly what principle (2) optimises for.</p>
+
+      <h4>Property certificates</h4>
+      <p>Water Search Certificates <b>not</b> available via phone IVR. Online only via My Account "My Requests" (<a href="https://www.unitywater.com/residential/buying-selling-moving/request-a-water-search-certificate">/residential/buying-selling-moving/request-a-water-search-certificate</a>), 10 business day turnaround.</p>
+
+      <h4>Why score 3 / 5 (despite the IVR)</h4>
+      <ul>
+        <li><span class="pill good">+</span> <b>Single number with documented "press 2" path to 24/7 balance and extension.</b> Best-in-set for principle (2).</li>
+        <li><span class="pill bad">−</span> Human hours narrow (8am–5pm M–F, weekdays only).</li>
+        <li><span class="pill bad">−</span> Water Search Certificates online-only — IVR is great for balances but not for the certificate workflow itself.</li>
+        <li>Net: ideal for balance/extension automation, weaker for full property-certificate ordering.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="nested">
+    <summary><h3>💧 City of Gold Coast Water — serves Gold Coast · <span class="score s3">AI ease 3 / 5</span></h3></summary>
+    <div class="card">
+      <p><b>Same entity as Gold Coast City Council</b> — it's a council business unit, not a separate authority. All numbers route through the council switchboard (see Gold Coast section above). 1300 GOLDCOAST has a routing IVR ("follow the prompts") but no published balance-enquiry IVR. Rates/water search is via ePathway (<a href="https://www.goldcoast.qld.gov.au/Planning-building/Buying-researching-property/Rates-water-searches">/Rates-water-searches</a>), in person, or mail. From an integration standpoint this is <b>one combined integration</b> for both council and water — the only place in QLD where that's true. Sources: <a href="https://www.goldcoast.qld.gov.au/Council/About-Council/Contact-us">Contact us</a>, <a href="https://www.goldcoast.qld.gov.au/Services/Rates-water/Manage-your-rates-water-bills-online">Manage rates/water online</a>.</p>
+    </div>
+  </details>
+
+  </details><!-- end QLD deep dive -->
+
+  <!-- ============= NSW CONTEXT ============= -->
+  <details>
+  <summary><h2>🔵 NSW context (4 councils, Sydney Water already done)</h2></summary>
+
+  <div class="callout good">
+    <b>Why NSW is the cheap win:</b> all 4 NSW councils in this set use Sydney Water, which is already in scope (Blacktown is already locked in per project-overview). The next 3 NSW councils — Northern Beaches, Canterbury-Bankstown, Bayside — add zero new water-authority work. Each is a council-only integration: customer-service phone line, identity verification, rates-balance flow.
+  </div>
+
+  <h3 style="margin-top:14px">NSW councils — at a glance</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th>Council</th><th>Orders</th><th>AI-call ease</th><th>Phone</th><th>IVR?</th><th>Operator-pool accent risk</th></tr></thead>
+      <tbody>
+        <tr><td><b>Northern Beaches</b></td><td>11</td><td><span class="score s4">4 / 5</span></td><td>1300 434 434</td><td>Unknown (none documented)</td><td>Low — affluent English-dominant LGA</td></tr>
+        <tr><td>Canterbury-Bankstown</td><td>7</td><td><span class="score s3">3 / 5</span></td><td>02 9707 9000</td><td>Unknown</td><td>High — 59.1% non-English at home (Arabic 17%, Vietnamese 7%, Greek 5%, Mandarin 5%)</td></tr>
+        <tr><td>Blacktown</td><td>7</td><td><span class="score s3">3 / 5</span></td><td>02 9839 6000 + 1300 133 491 after-hours</td><td>Unknown</td><td>Moderate — Punjabi/Hindi/Arabic/Tagalog operator pool</td></tr>
+        <tr><td>Bayside</td><td>7</td><td><span class="score s4">4 / 5</span></td><td>1300 581 299 + 02 9562 1666</td><td>Unknown</td><td>Moderate</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="margin-top:14px">Sydney Water (shared authority — already in scope)</h3>
+  <div class="card">
+    <h4>Phone numbers</h4>
+    <div class="phonebox"><span class="num">13 20 92</span> — General · accounts &amp; billing · <b>6-option IVR</b> (accounts / faults / plumbing-dev / backflow / education / other) · Mon–Fri 8:00–17:30
+      <span class="purpose"><a href="https://www.sydneywater.com.au/contact-us.html">sydneywater.com.au/contact-us</a></span></div>
+    <div class="phonebox"><span class="num">13 20 90</span> — Faults, leaks, outages · <b>24/7</b></div>
+    <div class="phonebox"><span class="num">1300 123 458</span> — 24/7 automated card-payment IVR (Visa/Mastercard, 0.4% surcharge)</div>
+
+    <h4>IVR / property certificates</h4>
+    <p>Sydney Water has a real IVR but it <b>routes to humans rather than exposing property data</b>. No "enter account number for balance" path. Property certificates (Section 66, Section 88G, Service Location Print, Sewer Service Diagram, etc.) are <b>broker-only</b> via InfoTrack / Hazlett Information Services / Dye & Durham — no phone path at all. Sources: <a href="https://www.sydneywater.com.au/accounts-billing/managing-your-account/buying-and-selling-a-property/certificates-documents-diagrams.html">Certificates page</a>, <a href="https://www.sydneywater.com.au/accounts-billing/paying-your-bill/help-with-your-bill.html">Help with your bill</a>.</p>
+    <p><b>AI-call ease 3 / 5</b> — easy to reach (well-documented IVR + 24/7 faults + 24/7 payment IVR), hard to self-serve property-specific data by phone (humans-only for rates lookups; brokers-only for certificates).</p>
+  </div>
+
+  </details>
+
+  <!-- ============= ADVERSARIAL VERIFICATION ============= -->
+  <details>
+  <summary><h2>🔍 Adversarial verification — which claims held up</h2></summary>
+  <p class="sub" style="margin-top:8px">Each headline claim from the council/authority deep dive was independently re-verified against primary sources. Result: <b>5 / 5 held</b>, with minor nuance noted on three.</p>
+
+  <div class="card">
+    <table>
+      <thead><tr><th>Claim</th><th>Verdict</th><th>Counter-evidence / nuance</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Brisbane City Council — AI ease 2 / 5</b>: no IVR, no automated balance line, council policy pushes rates-balance to online form, conveyancer balances require paid search.</td>
+          <td><span class="verdict held">HELD</span></td>
+          <td>None substantive. One snippet notes phone is offered as a fallback when the online form fails — fully consistent (human reachable, still requires account/bill verification).</td>
+        </tr>
+        <tr>
+          <td><b>Moreton Bay — AI ease 3 / 5</b>: single number, English-speaking ops, online portal for self-service, no documented balance IVR, Indigenous-origin place names add ASR risk.</td>
+          <td><span class="verdict held">HELD</span></td>
+          <td>Some AI-summarised search results referenced alt numbers (1300 522 192, 1300 477 161). These could not be verified from authoritative council pages (council site returned 403). Authoritative source business.gov.au lists 07 3205 0555 as the single primary.</td>
+        </tr>
+        <tr>
+          <td><b>Gold Coast — AI ease 3 / 5</b>: 1300 GOLDCOAST / 07 5629 5629, 7am–6pm M–F, explicit "follow the prompts" IVR, separate 24/7 payment line 1300 886 731, no automated balance.</td>
+          <td><span class="verdict held">HELD</span></td>
+          <td>One third-party listing (goldcoastaustralia.com) gave hours as 9am–5pm — contradicted by the council's own page (7am–6pm) which is authoritative. Treated as stale third-party listing.</td>
+        </tr>
+        <tr>
+          <td><b>QUU — AI ease 4 / 5</b>: two clean numbers (13 26 57 general, 13 23 64 faults 24/7), no DTMF maze, property certificates online-only, mixed/long-hold customer reviews.</td>
+          <td><span class="verdict held">HELD</span></td>
+          <td>"No IVR on main line" rests on absence of public documentation — cannot be definitively confirmed without dialling. Hours published vary across QUU pages (8am–6pm vs 7am–7pm vs 8am–5pm) — messier than the claim suggested. "Friendly staff" sub-claim weak: ProductReview is 75% negative, praise was for the Wanda chatbot not phone agents.</td>
+        </tr>
+        <tr>
+          <td><b>Unitywater — AI ease 3 / 5</b>: single number 1300 086 489, documented "press 2" for 24/7 balance + 7-day extension, narrow human hours, Water Search Certificate online-only.</td>
+          <td><span class="verdict held">HELD</span></td>
+          <td>Minor: complaints can be lodged via email/web form, not exclusively via phone — but actual resolution still goes through a human service review officer (3 business days), so practical implication for AI caller is unchanged.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  </details>
+
+  <!-- ============= RANKING ============= -->
+  <h2 id="ranking">🏆 Final ranking — order &amp; reason</h2>
+  <p class="sub">Most recommended → least recommended <em>for the next batch we ship after the locked-in baseline</em>. Composite of: volume, AI-call ease, water-authority reuse, and integration effort.</p>
+
+  <div class="card">
+    <table>
+      <thead><tr><th>#</th><th>Council</th><th>State</th><th>Orders</th><th>AI ease</th><th>New auth?</th><th>Priority reason</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="ranknum top">1</span></td>
+          <td><b>Northern Beaches</b></td><td>NSW</td><td>11</td>
+          <td><span class="score s4">4</span></td>
+          <td><span class="pill good">No</span> (Sydney Water)</td>
+          <td>Biggest NSW volume on a free-water-auth integration. English-dominant operator pool = lowest ASR risk in set. Single 1300 number, no IVR maze, generous human hours. Cleanest possible first ship.</td>
+        </tr>
+        <tr>
+          <td><span class="ranknum top">2</span></td>
+          <td><b>Bayside</b></td><td>NSW</td><td>7</td>
+          <td><span class="score s4">4</span></td>
+          <td><span class="pill good">No</span> (Sydney Water)</td>
+          <td>Same Sydney Water integration as Northern Beaches. Single 24/7 number with documented after-hours behaviour and a secondary direct rates line. Moderate accent risk only. Effectively zero marginal water-auth cost; quick add-on after Northern Beaches.</td>
+        </tr>
+        <tr>
+          <td><span class="ranknum top">3</span></td>
+          <td><b>Moreton Bay Regional Council</b></td><td>QLD</td><td>14</td>
+          <td><span class="score s3">3</span></td>
+          <td><span class="pill warn">Yes — Unitywater</span></td>
+          <td><b>The right first QLD pilot.</b> Unitywater is the ONLY water authority in this set with a documented 24/7 "press 2" balance IVR — a deterministic automation target, exactly what principle (2) optimises for. 14 orders is the second-largest single council. Lets us prove the QLD model on the easiest QLD authority before tackling Brisbane.</td>
+        </tr>
+        <tr>
+          <td><span class="ranknum mid">4</span></td>
+          <td>Canterbury-Bankstown</td><td>NSW</td><td>7</td>
+          <td><span class="score s3">3</span></td>
+          <td><span class="pill good">No</span> (Sydney Water)</td>
+          <td>Free-water-auth add-on but harder than Bayside/Northern Beaches: 59% of residents non-English-at-home → operator accent pool is the most diverse in the set, highest ASR risk. Worth including but ship after the two easier NSW councils.</td>
+        </tr>
+        <tr>
+          <td><span class="ranknum mid">5</span></td>
+          <td>Blacktown City Council</td><td>NSW</td><td>7</td>
+          <td><span class="score s3">3</span></td>
+          <td><span class="pill good">No</span> (Sydney Water)</td>
+          <td>Already locked in per project-overview (the existing first NSW council). Two separate numbers (business-hours main + after-hours 1300) means the AI must time-of-day-route. Diverse operator pool. Keep in the batch but treat as already-budgeted work.</td>
+        </tr>
+        <tr>
+          <td><span class="ranknum mid">6</span></td>
+          <td><b>Brisbane City Council</b></td><td>QLD</td><td><b>29</b></td>
+          <td><span class="score s2">2</span></td>
+          <td><span class="pill warn">Yes — QUU</span></td>
+          <td><b>The volume prize, but expensive and risky.</b> 29 orders (35% of the whole 5 Jun release) is the single biggest target — but BCC has no IVR, council policy steers balance enquiries to the online form, and conveyancer balances require a paid search. Realistic path: scrape the web form rather than dial, or invest heavily in a "believable ratepayer" conversational flow with full property auth. Worth the investment <b>only after</b> we have the Moreton Bay QLD template proven and the NSW councils shipped. Don't lead with this.</td>
+        </tr>
+        <tr>
+          <td><span class="ranknum low">7</span></td>
+          <td>Gold Coast City Council</td><td>QLD</td><td>9</td>
+          <td><span class="score s3">3</span></td>
+          <td><span class="pill cyan">Yes — but same entity as council</span></td>
+          <td>Lowest single-council volume in the QLD set (9 orders). Routing IVR with unpublished menus → AI must discover live. No automated balance enquiry. The one upside — council and water are the same entity, so it's one integration not two — doesn't overcome the volume disadvantage. Ship last; treat as a "if there's time" inclusion in the 5 Jun cut.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 style="margin-top:18px">📦 Three trade-off scenarios</h2>
+  <div class="row">
+    <div class="card">
+      <h3>Scenario A — "NSW-only" <span class="pill good">cheapest</span></h3>
+      <p><b>Ship:</b> Northern Beaches → Bayside → C-Bankstown → Blacktown.</p>
+      <p><b>Volume:</b> 32 orders (38% of release).</p>
+      <p><b>New water authorities:</b> 0. All Sydney Water.</p>
+      <p><b>Risk:</b> low. Worst case: 1 council slips, we still ship 3.</p>
+      <p><b>When to pick:</b> if engineering capacity is tight or we want a clean demo of "1 authority, N councils" reuse for the exec story.</p>
+    </div>
+    <div class="card">
+      <h3>Scenario B — "NSW + Moreton Bay" <span class="pill warn">recommended</span></h3>
+      <p><b>Ship:</b> all 4 NSW (32 orders) + Moreton Bay (14 orders) = 46 orders, 55% of release.</p>
+      <p><b>New water authorities:</b> 1 (Unitywater) — and it's the only one in the set with a documented IVR self-serve path.</p>
+      <p><b>Risk:</b> moderate. Unitywater is a clean integration target. Establishes the QLD template.</p>
+      <p><b>When to pick:</b> <b>default recommendation</b>. Best ratio of orders shipped to authorities integrated.</p>
+    </div>
+    <div class="card">
+      <h3>Scenario C — "All 7 / full release" <span class="pill bad">aggressive</span></h3>
+      <p><b>Ship:</b> all 7 councils = 84 orders, 100% of release.</p>
+      <p><b>New water authorities:</b> 3 (Unitywater + QUU + Gold Coast Water).</p>
+      <p><b>Risk:</b> high. Brisbane is the hardest phone-UX target in the set and represents 29 of the 84 orders — if BCC slips, we still only have Scenario B at best.</p>
+      <p><b>When to pick:</b> only if BCC web-scrape path is decoupled from the phone path and can ship in parallel.</p>
+    </div>
+  </div>
+
+  <div class="callout idea">
+    <b>Concrete proposed sequence:</b> (1) Northern Beaches, (2) Bayside, (3) Moreton Bay + Unitywater, (4) Canterbury-Bankstown, (5) Blacktown (already in flight), (6) Brisbane + QUU as a stretch goal — and treat Brisbane's <em>balance-enquiry</em> path as a <b>web-scrape</b> rather than a phone call, given the council's explicit policy of routing rates-balance to its online form. (7) Gold Coast if time permits.
+  </div>
+
+  <!-- ============= LANDSCAPE NOTE ============= -->
+  <details>
+  <summary><h2>📡 Landscape notes (IVR + accent + tech stack)</h2></summary>
+  <div class="card">
+    <h4>IVR commonality across Australian councils</h4>
+    <p>Per ACXPA (Australian Customer Experience Professionals Association) mystery-shopping research, councils have the <b>simplest IVR experiences of any sector</b> benchmarked: average ~1.0 menu options vs national average 1.9, average depth 0.6 layers (banks average 3.2). 36% of councils have <b>no IVR at all</b> — calls go straight to a human queue. Only one council in their study (City of Sydney) had two layers of IVR. (<a href="https://acxpa.com.au/australian-call-centre-rankings-q4-2023/">ACXPA Q4 2023</a>, <a href="https://acxpa.com.au/australian-call-centre-industry-q4-2024-call-centre-rankings/">Q4 2024</a>)</p>
+    <p><b>Implication:</b> our AI must be tuned for natural-language conversation with humans, not DTMF traversal. Water authorities (Sydney Water, QUU, Unitywater) tend to have slightly deeper IVRs because they segment developer/customer/faults — Unitywater's 24/7 self-serve "press 2" is the standout.</p>
+
+    <h4>Accent / ASR risk</h4>
+    <p>Peer-reviewed evaluation of OpenAI Whisper (JASA Express Letters) and independent benchmarks (Mozilla Data Collective, HuggingFace) consistently find British and Australian English produce <b>~30% higher word error rate</b> than American English. The newer gpt-realtime model is claimed to handle accents better, but OpenAI's own docs explicitly tell developers to test against target accents. Main failure modes: AU vowel shifts (FACE/PRICE/MOUTH diphthongs), high-rising terminal intonation, rapid street/suburb name speech. Recommendation: neutral or mild AU TTS voice, post-process for AU place names + currency, build read-back confirmation loops on numerics, DTMF fallback when recogniser fails twice. (<a href="https://pubs.aip.org/asa/jel/article/4/2/025206/3267247/Evaluating-OpenAI-s-Whisper-ASR-Performance">JASA</a>, <a href="https://community.mozilladatacollective.com/why-whisper-still-struggles-with-australian-english-and-what-we-did-about-it/">Mozilla DC</a>, <a href="https://huggingface.co/blog/Steveeeeeeen/how-biaised-is-whisper">HuggingFace</a>, <a href="https://openai.com/index/introducing-gpt-realtime/">OpenAI gpt-realtime</a>)</p>
+
+    <h4>Tech stack — Genesys Cloud is dominant</h4>
+    <p>Genesys Cloud underpins NSW's whole-of-government Virtual Contact Centre (GTP VCC) via Digital NSW, is resold by Telstra Enterprise as "Telstra Contact Centre", and has named local-government case studies. Avaya is being migrated off. Practical implications for our AI: expect Genesys-style "this call may be recorded" prompts, standard queue music, and ANI/CLI-driven agent screen-pops — our AI's caller-ID will likely be associated with a CRM record after the first call. Most councils ride hosted/cloud telephony, so G.711/Opus audio quality should be acceptable. (<a href="https://www.digital.nsw.gov.au/delivery/government-technology-platforms/platforms/virtual-contact-centre">Digital NSW VCC</a>, <a href="https://cxdirectory.com.au/technology/call-centre/genesys-partners-apac">CX Directory</a>)</p>
+  </div>
+  </details>
+
+  <!-- ============= SOURCES ============= -->
+  <details>
+  <summary><h2>📚 Sources (deduplicated)</h2></summary>
+  <div class="card">
+    <h4>Brisbane City Council</h4>
+    <ul>
+      <li><a href="https://www.brisbane.qld.gov.au/about-council/contact-council">brisbane.qld.gov.au — Contact council</a></li>
+      <li><a href="https://www.brisbane.qld.gov.au/online-services/rates-services/rates-balance-enquiry">brisbane.qld.gov.au — Rates balance enquiry</a></li>
+      <li><a href="https://www.brisbane.qld.gov.au/online-services/rates-services/pay-your-rates-online">brisbane.qld.gov.au — Pay your rates online</a></li>
+      <li><a href="https://www.brisbane.qld.gov.au/about-council/rates-and-payments/manage-your-property-rates">brisbane.qld.gov.au — Manage your property rates</a></li>
+      <li><a href="https://www.brisbane.qld.gov.au/about-council/rates-and-payments/bills-renewals-and-other-payments">brisbane.qld.gov.au — Bills renewals and other payments</a></li>
+      <li><a href="https://www.brisbane.qld.gov.au/planning-and-building/buying-selling-and-searches/rates-and-water-balance-enquiries">brisbane.qld.gov.au — Rates and water balance enquiries</a></li>
+      <li><a href="https://www.brisbane.qld.gov.au/about-council/governance-and-strategy/business-in-brisbane/information-and-services/business-hotline-133-bne">brisbane.qld.gov.au — Business hotline 133 BNE</a></li>
+      <li><a href="https://services.brisbane.qld.gov.au/online-services/conveyancing/conveyance-search-rates">services.brisbane.qld.gov.au — Conveyance search rates</a></li>
+      <li><a href="https://www.verint.com/blog/in-conversation-with-shane-hackett/">verint.com — Shane Hackett interview</a></li>
+      <li><a href="https://westender.com.au/brisbane-city-councils-award-winning-contact-centre-clocks-up-four-million-calls/">westender.com.au — BCC contact centre</a></li>
+      <li><a href="https://grahamquirk.com.au/council-contact-centre-handles-3300-enquiries-per-day/">grahamquirk.com.au — 3300 enquiries per day</a></li>
+      <li><a href="https://data.brisbane.qld.gov.au/explore/dataset/contact-centre-customer-enquiries/">data.brisbane.qld.gov.au — Contact centre dataset</a></li>
+    </ul>
+
+    <h4>Moreton Bay City Council</h4>
+    <ul>
+      <li><a href="https://www.moretonbay.qld.gov.au/Contact">moretonbay.qld.gov.au — Contact</a></li>
+      <li><a href="https://www.moretonbay.qld.gov.au/Services/Property-Ownership/Rates">moretonbay.qld.gov.au — Rates</a></li>
+      <li><a href="https://www.moretonbay.qld.gov.au/Services/Property-Ownership/Rates/Pay-Rates">moretonbay.qld.gov.au — Pay rates</a></li>
+      <li><a href="https://www.moretonbay.qld.gov.au/Services/Property-Ownership/Moreton-Bay-Online-Services">moretonbay.qld.gov.au — Online services</a></li>
+      <li><a href="https://eservices.moretonbay.qld.gov.au/ePathway/Production/Web/Login/Login.aspx">eservices.moretonbay.qld.gov.au — eServices portal</a></li>
+      <li><a href="https://business.gov.au/expertise-and-advice/moreton-bay-regional-council">business.gov.au — Moreton Bay listing</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/City_of_Moreton_Bay">Wikipedia — City of Moreton Bay</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/Narangba,_Queensland">Wikipedia — Narangba</a></li>
+      <li><a href="https://4510tv.com/about-caboolture/">4510tv.com — Caboolture etymology</a></li>
+      <li><a href="https://www.aussietowns.com.au/town/caboolture-qld">aussietowns.com.au — Caboolture</a></li>
+    </ul>
+
+    <h4>Gold Coast City Council</h4>
+    <ul>
+      <li><a href="https://www.goldcoast.qld.gov.au/Council/About-Council/Contact-us">goldcoast.qld.gov.au — Contact us</a></li>
+      <li><a href="https://www.goldcoast.qld.gov.au/Services/Report-pay-apply/Make-a-payment/Pay-your-rates-or-water-bill">goldcoast.qld.gov.au — Pay rates or water</a></li>
+      <li><a href="https://www.goldcoast.qld.gov.au/Council/About-Council/Contact-us/Make-a-complaint-or-provide-feedback">goldcoast.qld.gov.au — Complaints</a></li>
+      <li><a href="https://www.goldcoast.qld.gov.au/Services/Rates-water">goldcoast.qld.gov.au — Rates &amp; water</a></li>
+      <li><a href="https://www.goldcoast.qld.gov.au/Services/Rates-water/Manage-your-rates-water-bills-online">goldcoast.qld.gov.au — Manage online</a></li>
+      <li><a href="https://www.goldcoast.qld.gov.au/Planning-building/Buying-researching-property/Rates-water-searches">goldcoast.qld.gov.au — Rates &amp; water searches</a></li>
+      <li><a href="https://www.goldcoast.qld.gov.au/Services/Water-sewerage">goldcoast.qld.gov.au — Water &amp; sewerage</a></li>
+      <li><a href="https://my.goldcoast.qld.gov.au/">my.goldcoast.qld.gov.au — My Account</a></li>
+      <li><a href="https://sniip.com/pay-gold-coast-city-council/">sniip.com — Pay Gold Coast Council</a></li>
+    </ul>
+
+    <h4>Queensland Urban Utilities (QUU)</h4>
+    <ul>
+      <li><a href="https://www.urbanutilities.com.au/contact-us">urbanutilities.com.au — Contact us</a></li>
+      <li><a href="https://www.urbanutilities.com.au/faults-and-interruptions">urbanutilities.com.au — Faults &amp; interruptions</a></li>
+      <li><a href="https://www.urbanutilities.com.au/residential/accounts-and-billing">urbanutilities.com.au — Accounts &amp; billing</a></li>
+      <li><a href="https://www.urbanutilities.com.au/residential/accounts-and-billing/payment-options">urbanutilities.com.au — Payment options</a></li>
+      <li><a href="https://www.urbanutilities.com.au/development/our-services/research-my-land">urbanutilities.com.au — Research my land</a></li>
+      <li><a href="https://www.urbanutilities.com.au/development/developer-services-portal">urbanutilities.com.au — Developer Services Portal</a></li>
+      <li><a href="https://myaccount.urbanutilities.com.au/">myaccount.urbanutilities.com.au</a></li>
+      <li><a href="https://www.bpoint.com.au/pay/qldurbanutilities/Pages/ExtraInfo">bpoint.com.au — QUU BPOINT</a></li>
+      <li><a href="https://www.confirm.com.au/support/land/qld-conveyancing/overview/">confirm.com.au — QLD conveyancing</a></li>
+      <li><a href="https://www.qlsproctor.com.au/2021/02/property-settlements-urban-utilities-simplifies-billing/">qlsproctor.com.au — QUU settlement billing</a></li>
+      <li><a href="https://www.productreview.com.au/listings/queensland-urban-utilities">productreview.com.au — QUU</a></li>
+      <li><a href="https://www.urbanutilities.com.au/contact-us/complaints">urbanutilities.com.au — Complaints</a></li>
+      <li><a href="https://explorer.water.qld.gov.au/provider?id=URBAU">explorer.water.qld.gov.au — QUU provider record</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/Queensland_Urban_Utilities">Wikipedia — QUU</a></li>
+    </ul>
+
+    <h4>Unitywater</h4>
+    <ul>
+      <li><a href="https://www.unitywater.com/about-us/contact-us">unitywater.com — Contact us</a></li>
+      <li><a href="https://www.unitywater.com/about-us/contact-us/compliments-and-complaints">unitywater.com — Compliments &amp; complaints</a></li>
+      <li><a href="https://www.unitywater.com/7-day-extension">unitywater.com — 7-day extension (IVR confirmation)</a></li>
+      <li><a href="https://www.unitywater.com/residential/accounts-and-billing">unitywater.com — Accounts &amp; billing</a></li>
+      <li><a href="https://www.unitywater.com/residential/buying-selling-moving/request-a-water-search-certificate">unitywater.com — Request a Water Search Certificate</a></li>
+      <li><a href="https://www.unitywater.com/residential/buying-selling-moving/request-a-water-search-certificate/water-search-certificate-online-form">unitywater.com — Water Search Certificate form</a></li>
+      <li><a href="https://www.unitywater.com/about-us/our-business">unitywater.com — Our business</a></li>
+      <li><a href="https://www.unitywater.com/about-us/publications-and-reports/participation-agreement">unitywater.com — Participation agreement</a></li>
+      <li><a href="https://www.unitywater.com/support">unitywater.com — Support</a></li>
+      <li><a href="https://www.ewoq.com.au/home">ewoq.com.au — EWOQ</a></li>
+    </ul>
+
+    <h4>Sydney Water (NSW)</h4>
+    <ul>
+      <li><a href="https://www.sydneywater.com.au/contact-us.html">sydneywater.com.au — Contact us</a></li>
+      <li><a href="https://www.sydneywater.com.au/accounts-billing.html">sydneywater.com.au — Accounts &amp; billing</a></li>
+      <li><a href="https://www.sydneywater.com.au/accounts-billing/paying-your-bill/help-with-your-bill.html">sydneywater.com.au — Help with your bill</a></li>
+      <li><a href="https://www.sydneywater.com.au/accounts-billing/paying-your-bill/payment-options.html">sydneywater.com.au — Payment options</a></li>
+      <li><a href="https://www.sydneywater.com.au/accounts-billing/managing-your-account/buying-and-selling-a-property/certificates-documents-diagrams.html">sydneywater.com.au — Certificates, documents &amp; diagrams</a></li>
+      <li><a href="https://www.sydneywater.com.au/accounts-billing/managing-your-account/buying-and-selling-a-property.html">sydneywater.com.au — Buying &amp; selling a property</a></li>
+      <li><a href="https://www.sydneywater.com.au/plumbing-building-developing/developing/section-73-compliance-certificates.html">sydneywater.com.au — Section 73 compliance certificates</a></li>
+      <li><a href="https://www.sydneywater.com.au/plumbing-building-developing/developing/sydney-water-developer-direct.html">sydneywater.com.au — Developer Direct</a></li>
+      <li><a href="https://www.sydneywater.com.au/content/dam/sydneywater/documents/complaint-policy.pdf">sydneywater.com.au — Complaint policy (PDF)</a></li>
+      <li><a href="https://www.service.nsw.gov.au/nswgovdirectory/sydney-water-corporation">service.nsw.gov.au — Sydney Water Corporation</a></li>
+      <li><a href="https://www.service.nsw.gov.au/referral/get-help-with-sydney-water-bills">service.nsw.gov.au — Sydney Water bill help</a></li>
+      <li><a href="https://www.ewon.com.au/page/making-a-complaint">ewon.com.au — EWON complaint</a></li>
+      <li><a href="https://www.infotrack.com.au/products/property-certificates/sydney-water/">infotrack.com.au — Sydney Water certificates</a></li>
+    </ul>
+
+    <h4>NSW councils</h4>
+    <ul>
+      <li><a href="https://www.northernbeaches.nsw.gov.au/services/customer-services/contact-us">northernbeaches.nsw.gov.au — Contact us</a></li>
+      <li><a href="https://www.northernbeaches.nsw.gov.au/council/rates-and-council-fees/pay-your-rates">northernbeaches.nsw.gov.au — Pay your rates</a></li>
+      <li><a href="https://www.northernbeaches.nsw.gov.au/services/customer-services/customer-service-charter">northernbeaches.nsw.gov.au — Customer Service Charter</a></li>
+      <li><a href="https://www.northernbeaches.nsw.gov.au/council/rates-and-council-fees/section-603-certificates">northernbeaches.nsw.gov.au — Section 603 certificates</a></li>
+      <li><a href="https://www.ajust.com.au/businesses/northern-beaches-council-complaints">ajust.com.au — Northern Beaches complaints</a></li>
+      <li><a href="https://www.cbcity.nsw.gov.au/your-council/contact-us">cbcity.nsw.gov.au — Contact us</a></li>
+      <li><a href="https://www.cbcity.nsw.gov.au/residents/your-rates">cbcity.nsw.gov.au — Your rates</a></li>
+      <li><a href="https://www.cbcity.nsw.gov.au/residents/make-payment">cbcity.nsw.gov.au — Make a payment</a></li>
+      <li><a href="https://profile.id.com.au/canterbury-bankstown/language">profile.id.com.au — Canterbury-Bankstown languages</a></li>
+      <li><a href="https://www.ajust.com.au/businesses/canterbury-bankstown-council-complaints">ajust.com.au — Canterbury-Bankstown complaints</a></li>
+      <li><a href="https://auspost.com.au/money-travel/banking-and-paying-bills/pay-bills-with-post-billpay">auspost.com.au — Post Billpay</a></li>
+      <li><a href="https://www.blacktown.nsw.gov.au/About-Council/Your-rates">blacktown.nsw.gov.au — Your rates</a></li>
+      <li><a href="https://www.blacktown.nsw.gov.au/About-Council/Your-rates/Make-a-payment">blacktown.nsw.gov.au — Make a payment</a></li>
+      <li><a href="https://www.blacktown.nsw.gov.au/files/assets/public/v/1/contact-us/blacktown-city-council-customer-service-charter.pdf">blacktown.nsw.gov.au — Customer Service Charter (PDF)</a></li>
+      <li><a href="https://www.blacktown.nsw.gov.au/Plan-build/Stage-4-apply/Apply-for-a-certificate/Rates-certificates-Section-603">blacktown.nsw.gov.au — Section 603 certificates</a></li>
+      <li><a href="https://au.showmelocal.com/profile.aspx?bid=17181652">showmelocal.com — Blacktown listing</a></li>
+      <li><a href="https://www.whitepages.com.au/blacktown-city-council-10387966/blacktown-nsw-10387994B">whitepages.com.au — Blacktown listing</a></li>
+      <li><a href="https://www.bingoindustries.com.au/getattachment/30c1ce2d-9c50-42e4-bc58-b10bbfdccb80/LOCAL-GOVERNMENT-AREAS.pdf">bingoindustries.com.au — LGA list (PDF)</a></li>
+      <li><a href="https://profile.id.com.au/blacktown/language">profile.id.com.au — Blacktown languages</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/Blacktown">Wikipedia — Blacktown</a></li>
+      <li><a href="https://www.bayside.nsw.gov.au/your-council/contact-us">bayside.nsw.gov.au — Contact us</a></li>
+      <li><a href="https://www.bayside.nsw.gov.au/services/rates/pay-my-rates">bayside.nsw.gov.au — Pay my rates</a></li>
+    </ul>
+
+    <h4>NSW certificate ordering channels (Section 603 etc.)</h4>
+    <ul>
+      <li><a href="https://www.waverley.nsw.gov.au/planning/application_forms_and_certificates/section_603_rating_certificate">waverley.nsw.gov.au — Section 603</a></li>
+      <li><a href="https://www.randwick.nsw.gov.au/services/rates-fees-and-charges/apply-for-a-section-603-certificate">randwick.nsw.gov.au — Section 603</a></li>
+      <li><a href="https://www.cumberland.nsw.gov.au/section-603-certificates-outstanding-rates">cumberland.nsw.gov.au — Section 603</a></li>
+      <li><a href="https://www.cityofsydney.nsw.gov.au/development-applications/apply-property-certificate-zoning-rates">cityofsydney.nsw.gov.au — Property certificate</a></li>
+      <li><a href="https://eservices.cessnock.nsw.gov.au/eservice/councilLink.do?resource=certol.html&amp;nodeNum=8689">eservices.cessnock.nsw.gov.au — Section 603</a></li>
+      <li><a href="https://www.infotrack.com.au/products/property-searches/nsw/section-603-certificate/">infotrack.com.au — NSW Section 603</a></li>
+      <li><a href="https://www.maitland.nsw.gov.au/sites/default/files/documents/document/603_application_form_1.pdf">maitland.nsw.gov.au — 603 form (PDF)</a></li>
+      <li><a href="https://www.centralcoast.nsw.gov.au/sites/default/files/2025-07/2025-26-certificate-application-form.pdf">centralcoast.nsw.gov.au — Certificate form (PDF)</a></li>
+    </ul>
+
+    <h4>QLD certificate ordering channels</h4>
+    <ul>
+      <li><a href="https://www.ipswich.qld.gov.au/services/searches-and-enquiries/property_and_rates_search">ipswich.qld.gov.au — Property &amp; rates search</a></li>
+      <li><a href="https://www.townsville.qld.gov.au/payments-rates-and-permits/online-reports-and-searches">townsville.qld.gov.au — Online reports &amp; searches</a></li>
+      <li><a href="https://www.sunshinecoast.qld.gov.au/development/searches/rate-and-valuation-search">sunshinecoast.qld.gov.au — Rate &amp; valuation search</a></li>
+      <li><a href="https://www.logan.qld.gov.au/residents/rates/rates-portal">logan.qld.gov.au — Rates portal</a></li>
+      <li><a href="https://explorer.water.qld.gov.au/provider">explorer.water.qld.gov.au — QLD water providers</a></li>
+      <li><a href="https://www.somerset.qld.gov.au/Our-Services/Public-Amenities-and-Services/Water-Supply-and-Sewerage">somerset.qld.gov.au — Water supply &amp; sewerage</a></li>
+      <li><a href="https://www.brisbane.qld.gov.au/environment-and-water/water-and-air-quality/water-supply-and-sewerage">brisbane.qld.gov.au — Water supply &amp; sewerage</a></li>
+    </ul>
+
+    <h4>IVR / accent / tech-stack landscape</h4>
+    <ul>
+      <li><a href="https://acxpa.com.au/glossary/ivr/">acxpa.com.au — IVR glossary</a></li>
+      <li><a href="https://acxpa.com.au/member-bytes/ivr-best-practices/">acxpa.com.au — IVR best practices</a></li>
+      <li><a href="https://acxpa.com.au/australian-call-centre-rankings-q4-2023/">acxpa.com.au — Q4 2023 rankings</a></li>
+      <li><a href="https://acxpa.com.au/australian-call-centre-industry-q4-2024-call-centre-rankings/">acxpa.com.au — Q4 2024 rankings</a></li>
+      <li><a href="https://www.digital.nsw.gov.au/delivery/government-technology-platforms/platforms/virtual-contact-centre">digital.nsw.gov.au — Virtual Contact Centre (GTP VCC)</a></li>
+      <li><a href="https://www.genesys.com/en-gb/solutions/government">genesys.com — Government solutions</a></li>
+      <li><a href="https://cxdirectory.com.au/technology/call-centre/genesys-partners-apac">cxdirectory.com.au — Genesys partners APAC</a></li>
+      <li><a href="https://www.telstra.com.au/business-enterprise/products/unified-communications/customer-contact/cloud">telstra.com.au — Telstra Contact Centre cloud</a></li>
+      <li><a href="https://www.genesys.com/en-sg/customer-stories/anglicare-sydney">genesys.com — Anglicare Sydney case study</a></li>
+      <li><a href="https://openai.com/index/introducing-gpt-realtime/">openai.com — gpt-realtime</a></li>
+      <li><a href="https://developers.openai.com/api/docs/guides/realtime">developers.openai.com — Realtime guide</a></li>
+      <li><a href="https://developers.openai.com/api/docs/guides/realtime-models-prompting">developers.openai.com — Realtime models prompting</a></li>
+      <li><a href="https://pubs.aip.org/asa/jel/article/4/2/025206/3267247/Evaluating-OpenAI-s-Whisper-ASR-Performance">JASA — Whisper ASR performance</a></li>
+      <li><a href="https://community.mozilladatacollective.com/why-whisper-still-struggles-with-australian-english-and-what-we-did-about-it/">Mozilla Data Collective — Whisper + AU English</a></li>
+      <li><a href="https://huggingface.co/blog/Steveeeeeeen/how-biaised-is-whisper">HuggingFace — Whisper bias</a></li>
+    </ul>
+
+    <h4>Misc third-party listings used for cross-checking</h4>
+    <ul>
+      <li><a href="https://www.whitepages.com.au/moreton-bay-regional-council-10147112/redcliffe-qld-10147110B">whitepages.com.au — Moreton Bay listing</a></li>
+      <li><a href="http://www.reverseaustralia.com/lookup/0732050555/">reverseaustralia.com — 07 3205 0555 lookup</a></li>
+      <li><a href="https://www.moretonbay.qld.gov.au/files/assets/public/v/2/services/rates-property/understanding-your-rates-information-sheet.pdf">moretonbay.qld.gov.au — Understanding your rates (PDF)</a></li>
+    </ul>
+  </div>
+  </details>
+
+  <footer>
+    Research compiled 2026-06-03. AI-call-ease scores 1–5 (1 = unworkable, 5 = fully deterministic IVR self-serve). All claims independently re-verified — see Adversarial Verification section above.
+  </footer>
+
+</main>
+</body>
+</html>
