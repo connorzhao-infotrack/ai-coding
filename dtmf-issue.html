@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DTMF Reliability Investigation — Sydney Water IVR</title>
+<style>
+  :root{
+    --ink:#1a1f2b; --ink-2:#5b6472; --paper:#fbfaf7; --card:#ffffff;
+    --line:#e5e2da; --accent:#1d4ed8; --good:#15803d; --bad:#b91c1c; --warn:#b45309;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
+  }
+  html,body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+  .wrap{max-width:960px;margin:0 auto;padding:48px 24px 96px}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2)}
+  h1{font-size:clamp(30px,5vw,46px);line-height:1.1;margin:10px 0 8px;letter-spacing:-.02em}
+  .lede{font-size:18px;color:var(--ink-2);max-width:760px;margin:0 0 8px}
+  h2{font-size:22px;margin:44px 0 12px;padding-top:18px;border-top:1px solid var(--line)}
+  h3{font-size:16px;margin:22px 0 8px}
+  p{max-width:780px}
+  table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:14px}
+  th,td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+  th{background:#f3f1ea;font-weight:600}
+  code,.mono{font-family:var(--mono);font-size:.92em;background:#f1efe8;padding:1px 5px;border-radius:4px}
+  pre{background:#14181f;color:#e6e9ef;padding:14px 16px;border-radius:8px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.55}
+  pre .hl{color:#7dd3fc}
+  .pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 9px;border-radius:99px;border:1px solid var(--line);margin-right:6px}
+  .ok{color:var(--good);border-color:#bbe3c8;background:#f0faf3}
+  .fail{color:var(--bad);border-color:#efc1c1;background:#fdf2f2}
+  .open{color:var(--warn);border-color:#ecd3ae;background:#fdf8ee}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:16px 0}
+  .muted{color:var(--ink-2)}
+  ol li,ul li{margin:6px 0}
+  a{color:var(--accent)}
+  .verdict{font-weight:600}
+  .footer{margin-top:56px;border-top:1px solid var(--line);padding-top:14px;font-size:13px;color:var(--ink-2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="kicker">InfoDialer · SETTLEIT-10349 · investigation log · 10 June 2026</div>
+<h1>DTMF Reliability — Sydney Water IVR</h1>
+<p class="lede">The AI presses the right digits, the IVR receives <em>something</em>, and answers
+"the property number you have entered is invalid". A human on a phone always succeeds.
+This page records what we know, what we ruled out, where the fix stands, and the exact
+experiments still to run.</p>
+
+<h2>1 · The symptom</h2>
+<table>
+  <tr><th>Caller</th><th>Authority</th><th>Result</th></tr>
+  <tr><td>Human on a real phone</td><td>Sydney Water</td><td><span class="pill ok">works, every time</span></td></tr>
+  <tr><td>AI via Telnyx <code>send_dtmf</code></td><td>Blacktown Council</td><td><span class="pill ok">works</span></td></tr>
+  <tr><td>AI via Telnyx <code>send_dtmf</code></td><td>Sydney Water</td><td><span class="pill fail">mostly fails — "invalid" or "not able to record"</span></td></tr>
+</table>
+<p>Two distinct failure messages appear in the transcripts, and they mean different things:</p>
+<ul>
+  <li><b>"The property number you have entered is invalid"</b> — the IVR <em>collected</em> an entry, but the digits were wrong (corrupted/merged/doubled in transit, or a split entry).</li>
+  <li><b>"We have not been able to record your property number"</b> — the IVR collected <em>nothing or too little</em>.</li>
+</ul>
+<p>Both appear across attempts, so digits are sometimes corrupted and sometimes (partially) lost.</p>
+
+<h2>2 · Key evidence (stage data, 9–10 June)</h2>
+<table>
+  <tr><th>Property number</th><th>Attempts</th><th>Got a balance</th><th>Note</th></tr>
+  <tr><td class="mono">5561466</td><td>23</td><td>7 (~30%)</td><td>valid number — intermittent success</td></tr>
+  <tr><td class="mono">1234567</td><td>5</td><td>3</td><td></td></tr>
+  <tr><td class="mono">6440089</td><td>9</td><td>1</td><td></td></tr>
+  <tr><td class="mono">4059094</td><td>11</td><td>0</td><td><b>manually verified valid</b> — yet 0/11 via the AI</td></tr>
+</table>
+<p>A representative failure (call 253) — the AI dials the right digits, three times:</p>
+<pre>[04:28:38] IVR : Please enter the first seven digits of your property number, then press the hash key.
+[04:28:51] AI  : [AI dialed: 4059094#]
+[04:28:53] IVR : Please enter the first…                <span class="hl">&lt;- re-prompt ~2s into the dial</span>
+[04:29:00] IVR : The property number you have entered is invalid. Please try again. …
+[04:29:17] AI  : [AI dialed: 4059094#]
+[04:29:24] AI  : [AI dialed: 4059094#]
+[04:29:26] IVR : We have not been able to record your property number.</pre>
+<p>Important counter-evidence supplied by manual testing: when a person dials, it
+<b>does not matter</b> if the key presses overlap the IVR's voice prompt — entry still
+succeeds. So "the IVR restarts collection when interrupted" is <b>not</b> the mechanism.</p>
+
+<h2>3 · What we tried, in order</h2>
+<table>
+  <tr><th>#</th><th>Change</th><th>Where</th><th>Outcome</th></tr>
+  <tr><td>1</td><td>Pause tokens between digits (<code>w</code> = 0.5 s) so the detector sees separated tones</td><td>PR #117</td><td><span class="pill fail">still intermittent</span></td></tr>
+  <tr><td>2</td><td>Explicit <code>duration_millis: 400</code> (was unset → ~250 ms default) + leading pause; all config-tunable</td><td>PR #123</td><td><span class="pill fail">still intermittent</span></td></tr>
+  <tr><td>3</td><td>In-band synthesized tones over the media stream (v1)</td><td>PR #121, reverted in #122</td><td><span class="pill fail">failed — but see below</span></td></tr>
+  <tr><td>4</td><td>Stream codec fix: encode outbound audio with the call's <b>negotiated</b> codec (was hard-coded µ-law; PCMA calls got garbage)</td><td>PR #124</td><td><span class="pill open">retroactively explains #121's failure</span></td></tr>
+  <tr><td>5</td><td>Telnyx portal: DTMF type = RFC 2833, codecs = G.711 only (G.729/Opus off)</td><td>Mission Control</td><td><span class="pill fail">confirmed correct; still intermittent</span></td></tr>
+  <tr><td>6</td><td>Faster pacing for send_dtmf (back-to-back digits)</td><td>PR #128, closed unmerged</td><td><span class="pill open">theory weakened by manual barge-in evidence</span></td></tr>
+  <tr><td>7</td><td><b>In-band tones v2 — codec-aware</b> + live tuning console</td><td>PR #131 (merged), #133</td><td><span class="pill open">current approach, awaiting stage testing</span></td></tr>
+</table>
+
+<div class="card">
+<h3>The pivotal realisation</h3>
+<p style="margin:6px 0 0">The first in-band attempt (#121) was judged "not working" while the outbound
+stream encoder was <b>hard-coded to µ-law</b>. On calls where Telnyx negotiated PCMA, every
+synthesized tone decoded as noise at the far end. That bug was fixed for AI speech in #124 —
+<b>after</b> the revert — meaning the in-band approach was never fairly tested. Since in-band tones
+are exactly what a human keypad produces (the one thing that works 100% at Sydney Water),
+it earned a properly-engineered second attempt.</p>
+</div>
+
+<h2>4 · Where we are now</h2>
+<p><b>PR #131 (merged)</b> reinstated in-band DTMF with the fixes the first attempt lacked, plus full live tunability:</p>
+<ul>
+  <li><b>Codec-aware</b>: tones are encoded with the call's negotiated G.711 variant (<code>connection.Codec</code>), the same path as AI speech.</li>
+  <li><b>Realistic signal</b>: standard dual-tone pairs with <b>2 dB forward twist</b> (real handsets emit the high frequency ~2 dB louder; some detectors validate the ratio), 120 ms tones / 80 ms gaps — quick human keying.</li>
+  <li><b>Live tuning console</b>: every knob is runtime-tweakable on stage. The provider reads the effective settings <b>at every dial</b>, so a change applies to the AI's very next key press — no redeploy, even mid-call between the IVR's retry prompts.</li>
+  <li><b>Per-dial config stamp</b> (PR #133): each dial line in the transcript records the exact settings used —
+    <code>[AI dialed: 4059094# — in-band tone=120ms gap=80ms peak=0.35 twist=2dB lead=0ms]</code> —
+    so outcomes correlate with knob values without guesswork.</li>
+  <li><b>Audition before dialing</b>: a Play button renders the exact waveform (same generator, same settings) in the browser.</li>
+</ul>
+
+<h3>The knobs</h3>
+<table>
+  <tr><th>Knob</th><th>Transport</th><th>Default</th><th>Meaning</th></tr>
+  <tr><td class="mono">transport</td><td>—</td><td class="mono">InBandTones</td><td>switch between in-band tones and carrier-side <code>send_dtmf</code></td></tr>
+  <tr><td class="mono">toneMs / gapMs</td><td>in-band</td><td class="mono">120 / 80</td><td>per-digit tone length / silence between digits</td></tr>
+  <tr><td class="mono">tonePeak</td><td>in-band</td><td class="mono">0.35</td><td>amplitude of the louder (high) tone, 0.05–0.5 of full scale</td></tr>
+  <tr><td class="mono">twistDb</td><td>in-band</td><td class="mono">2.0</td><td>high band louder than low by this many dB (handset spec ≈ 2 ± 1.5)</td></tr>
+  <tr><td class="mono">leadingSilenceMs</td><td>in-band</td><td class="mono">0</td><td>settle time before the first tone</td></tr>
+  <tr><td class="mono">durationMs</td><td>send_dtmf</td><td class="mono">400</td><td>per-digit tone length, 100–500 (Telnyx range)</td></tr>
+  <tr><td class="mono">interDigitPause</td><td>send_dtmf</td><td class="mono">w</td><td><code>""</code> = none (back-to-back), <code>w</code> = 0.5 s, <code>W</code> = 1 s</td></tr>
+  <tr><td class="mono">leadingPauses</td><td>send_dtmf</td><td class="mono">1</td><td>pause tokens before the first digit</td></tr>
+</table>
+<p class="muted">Console: the <b>DTMF live tuning</b> panel on the dashboard Test Call page (and the dev harness).
+API: <code>GET/PUT /api/dev/dtmf/settings</code>, <code>POST /api/dev/dtmf/settings/reset</code> — DevTools-gated, in-memory
+(per replica, resets on restart). Winning values get baked into <code>Telnyx:*</code> appsettings.</p>
+
+<h2>5 · The experiment plan — things to try, in order</h2>
+<ol>
+  <li><b>In-band defaults</b> (tone 120 / gap 80 / peak 0.35 / twist 2): 4–5 calls each to
+      <code>4059094</code> and <code>5561466</code>. The per-dial stamp in the transcript ties every attempt to its settings.</li>
+  <li><b>Pacing sweep</b> if misses persist: <code>100/100</code>, <code>180/120</code>, <code>250/250</code> — longer tones and gaps are easier to detect, at the cost of entry time.</li>
+  <li><b>Leading silence</b> 300–500 ms — rules out first-digit clipping while the line settles.</li>
+  <li><b>Level sweep</b>: peak 0.45 (louder), then twist 0 (equal bands) — some detectors are sensitive to absolute level or ratio.</li>
+  <li><b>Cross-check send_dtmf</b>: duration 400 with pause <code>""</code> (back-to-back) vs <code>w</code> — now that pacing is tunable, the carrier path gets a fair sweep too.</li>
+  <li><b>Portal variant</b>: switch the Voice API application's DTMF type to <i>Inband</i> (codecs already G.711-only) and re-test <code>send_dtmf</code> — removes the RFC 2833 → PSTN conversion step.</li>
+  <li><b>Blacktown regression check</b> after any winning configuration — it must keep working.</li>
+</ol>
+
+<h3>If everything above still fails</h3>
+<ul>
+  <li><b>Inbound-only media streaming for IVR calls</b> (code change): today the app owns the outbound
+      media leg (<code>stream_bidirectional_mode: rtp</code>), and <code>send_dtmf</code> injection has to race that
+      stream. Streaming inbound-only hands the outbound leg back to Telnyx so carrier DTMF injection is
+      conflict-free. Realtime calls keep bidirectional.</li>
+  <li><b>Telnyx Mission Control → Debugging</b>: pull the SIP/RTP trace for one success and one failure
+      and compare — was DTMF emitted, when, and as RFC 2833 vs in-band? This is wire-level ground truth.</li>
+  <li><b>Record and inspect</b>: with in-band, the dialed tones travel the recorded media path — a failed
+      call's recording can be spectrum-checked to see literally what Sydney Water heard.</li>
+  <li><b>Engage Telnyx support</b> with call IDs: they can see the PSTN gateway leg we cannot.</li>
+</ul>
+
+<h2>6 · Reference</h2>
+<table>
+  <tr><th>Artifact</th><th>Link / location</th></tr>
+  <tr><td>In-band v2 + live tuning console</td><td><a href="https://github.com/InfoTrackGlobal/InfoDialer/pull/131">PR #131</a> (merged)</td></tr>
+  <tr><td>Test Call page panel + per-dial stamp</td><td><a href="https://github.com/InfoTrackGlobal/InfoDialer/pull/133">PR #133</a></td></tr>
+  <tr><td>send_dtmf tuning (duration/pauses)</td><td><a href="https://github.com/InfoTrackGlobal/InfoDialer/pull/123">PR #123</a> (merged)</td></tr>
+  <tr><td>Stream codec fix (negotiated G.711)</td><td><a href="https://github.com/InfoTrackGlobal/InfoDialer/pull/124">PR #124</a> (merged)</td></tr>
+  <tr><td>In-band v1 + revert</td><td><a href="https://github.com/InfoTrackGlobal/InfoDialer/pull/121">PR #121</a> / <a href="https://github.com/InfoTrackGlobal/InfoDialer/pull/122">#122</a></td></tr>
+  <tr><td>Tuning console</td><td>Dashboard → Test Call → "DTMF live tuning" (stage; DevTools-gated)</td></tr>
+  <tr><td>Per-dial log line</td><td><code>Playing in-band DTMF for call {id} … [tone=… gap=… peak=… twist=… lead=…]</code></td></tr>
+</table>
+
+<div class="footer">
+InfoDialer · SETTLEIT-10349 · last updated 10 June 2026 · maintained alongside the
+<a href="https://github.com/connorzhao-infotrack/ai-coding">ai-coding</a> notes.
+</div>
+
+</div>
+</body>
+</html>
