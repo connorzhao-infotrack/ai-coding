@@ -154,7 +154,7 @@
   <!-- ============= HERO ============= -->
   <div class="hero">
     <div class="stat accent">  <div class="ico">🚀</div><div class="v">Prod live</div><div class="l">stage Fri 29 May · prod Fri 5 Jun — both shipped on the committed dates</div></div>
-    <div class="stat pink">    <div class="ico">🗣️</div><div class="v">12 Jun</div><div class="l">first fully successful human-agent call (Blacktown) — figures confirmed, agent never realised it was AI</div></div>
+    <div class="stat pink">    <div class="ico">🗣️</div><div class="v">12 Jun</div><div class="l">successful human-agent call (Blacktown) — end-to-end on production · test order, real property details, real agent</div></div>
     <div class="stat cyan">    <div class="ico">📟</div><div class="v">~90%</div><div class="l">Sydney Water IVR reliability — file handlers start using it NOW</div></div>
     <div class="stat purple">  <div class="ico">🏘️</div><div class="v">2 live · 3 staged</div><div class="l">SW + Blacktown proven · Nthn Beaches / Bayside / C-Bankstown playbooks created (enable Mon) · Moreton Bay pending</div></div>
     <div class="stat warn">    <div class="ico">🏁</div><div class="v">0 / 5</div><div class="l">top-5 milestone (Jun 30) · babysit 5 real orders — pilot starts week of 15 Jun</div></div>
@@ -162,16 +162,16 @@
 
   <!-- ============= 0 · STATUS 12 JUN ============= -->
   <details class="collapsible" data-section="s0" open>
-  <summary><h2>🟢 0 · Status — Thu 12 Jun (stage testing session)</h2></summary>
+  <summary><h2>🟢 0 · Status — Thu 12 Jun (testing session)</h2></summary>
   <div class="callout good">
-    🎉 <b>Blacktown human-agent call succeeded end-to-end on stage.</b> The AI ("Stephanie") navigated the IVR, held through the queue, spoke with a real council agent, and confirmed the figures — <b>no balance outstanding, all paid</b> — using real certificate data Shayla supplied. The agent never realised it was AI ("we got a nice old lady this time… she didn't realise"). Voice judged very natural; only quirk was the AI asking to end the call twice (prompt tweak queued). Recording shared in the dev chat. <b>This is the first full human-agent proof on stage</b> — the morning attempt the same day died mid-hold (suspected Gemini quota, see issues below).
+    🎉 <b>Blacktown human-agent call succeeded end-to-end on production</b> — a test order, but with real property details and a real council agent on the line. The AI ("Stephanie") navigated the IVR, held through the queue, spoke with the agent, and confirmed the figures — <b>no balance outstanding, all paid</b> — using real certificate data Shayla supplied. Voice judged very natural; only quirk was the AI asking to end the call twice (prompt tweak queued). Recording shared in the dev chat. The morning attempt the same day died mid-hold (suspected Gemini quota, see issues below).
   </div>
   <div class="row two">
     <div class="card" style="border-color:var(--good)">
       <h3>✅ What's working</h3>
       <ul>
         <li><b>Sydney Water IVR</b> — ~90% reliable. <b>File handlers start using it now.</b></li>
-        <li><b>Blacktown human-agent</b> — first full success 12 Jun (figures returned, disclosure aside — see issues).</li>
+        <li><b>Blacktown human-agent</b> — success 12 Jun, end-to-end on production (test order, real property details; figures returned — disclosure aside, see issues).</li>
         <li><b>Prod</b> — released Fri 5 Jun on schedule (stage 29 May). Running 1 pod (intentional, see listen-in).</li>
         <li><b>3 new council playbooks created</b> — Northern Beaches, Bayside, Canterbury-Bankstown (Jerold, 12 Jun). Not yet enabled in DB / SettleIT — Monday job. Moreton Bay still to author.</li>
         <li><b>SettleIT Clerk Alert root-caused</b> (Prem) — ① record inserted <i>after</i> the save it should precede (backend fix), ② test red herring: alerts filter by LDM login ID and the order was assigned to a different clerk than the logged-in user. Fix understood; PR + cherry-pick to release branch next.</li>
@@ -820,7 +820,7 @@
   </div>
 
   <footer>
-    🕐 Last updated <b>Thu 12 Jun 2026</b> — stage-testing session notes (Blacktown first human-agent success).<br>
+    🕐 Last updated <b>Thu 12 Jun 2026</b> — testing-session notes (Blacktown human-agent success on production).<br>
     📚 Sources: <a href="../plan.md">plan.md</a> · <a href="./api-contracts-plan.md">api-contracts-plan.md</a> · <a href="./playbookplna.md">playbookplna.md</a> · <a href="./infrastructure.md">infrastructure.md</a> · <a href="./telephony-comparison.html">telephony-comparison.html</a> ·
     Jira: <a href="https://infotrack.atlassian.net/browse/SETTLEIT-9878">SETTLEIT-9878</a> + children 9961–9969, 10127, 10145, 10297, 10298, 10299 · GLOBALIT 4159 / 4160 / 4162 / 4163 / 4466 / 4504 / 4506.
   </footer>
