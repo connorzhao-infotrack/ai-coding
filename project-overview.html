@@ -153,12 +153,70 @@
 
   <!-- ============= HERO ============= -->
   <div class="hero">
-    <div class="stat accent">  <div class="ico">🎯</div><div class="v">4 working days</div><div class="l">to INTERNAL RELEASE (Wed 3 Jun) · Fri 29 → Wed 3</div></div>
-    <div class="stat cyan">    <div class="ico">🚀</div><div class="v">6 working days</div><div class="l">to EXEC DEADLINE (Fri 5 Jun) · Fri 29 → Fri 5</div></div>
-    <div class="stat purple">  <div class="ico">👥</div><div class="v">5</div><div class="l">Jerold · Marcus · Ivy · Nav · Prem</div></div>
-    <div class="stat pink">    <div class="ico">🏘️</div><div class="v">1 auth · 5 councils</div><div class="l">Sydney Water + Blacktown locked · proposing Nthn Beaches / C-Bankstown / Bayside next (all SW)</div></div>
-    <div class="stat warn">    <div class="ico">🏁</div><div class="v">Jun 30</div><div class="l">top-5 milestone · 5 real orders</div></div>
+    <div class="stat accent">  <div class="ico">🚀</div><div class="v">Prod live</div><div class="l">stage Fri 29 May · prod Fri 5 Jun — both shipped on the committed dates</div></div>
+    <div class="stat pink">    <div class="ico">🗣️</div><div class="v">12 Jun</div><div class="l">first fully successful human-agent call (Blacktown) — figures confirmed, agent never realised it was AI</div></div>
+    <div class="stat cyan">    <div class="ico">📟</div><div class="v">~90%</div><div class="l">Sydney Water IVR reliability — file handlers start using it NOW</div></div>
+    <div class="stat purple">  <div class="ico">🏘️</div><div class="v">2 live · 3 staged</div><div class="l">SW + Blacktown proven · Nthn Beaches / Bayside / C-Bankstown playbooks created (enable Mon) · Moreton Bay pending</div></div>
+    <div class="stat warn">    <div class="ico">🏁</div><div class="v">0 / 5</div><div class="l">top-5 milestone (Jun 30) · babysit 5 real orders — pilot starts week of 15 Jun</div></div>
   </div>
+
+  <!-- ============= 0 · STATUS 12 JUN ============= -->
+  <details class="collapsible" data-section="s0" open>
+  <summary><h2>🟢 0 · Status — Thu 12 Jun (stage testing session)</h2></summary>
+  <div class="callout good">
+    🎉 <b>Blacktown human-agent call succeeded end-to-end on stage.</b> The AI ("Stephanie") navigated the IVR, held through the queue, spoke with a real council agent, and confirmed the figures — <b>no balance outstanding, all paid</b> — using real certificate data Shayla supplied. The agent never realised it was AI ("we got a nice old lady this time… she didn't realise"). Voice judged very natural; only quirk was the AI asking to end the call twice (prompt tweak queued). Recording shared in the dev chat. <b>This is the first full human-agent proof on stage</b> — the morning attempt the same day died mid-hold (suspected Gemini quota, see issues below).
+  </div>
+  <div class="row two">
+    <div class="card" style="border-color:var(--good)">
+      <h3>✅ What's working</h3>
+      <ul>
+        <li><b>Sydney Water IVR</b> — ~90% reliable. <b>File handlers start using it now.</b></li>
+        <li><b>Blacktown human-agent</b> — first full success 12 Jun (figures returned, disclosure aside — see issues).</li>
+        <li><b>Prod</b> — released Fri 5 Jun on schedule (stage 29 May). Running 1 pod (intentional, see listen-in).</li>
+        <li><b>3 new council playbooks created</b> — Northern Beaches, Bayside, Canterbury-Bankstown (Jerold, 12 Jun). Not yet enabled in DB / SettleIT — Monday job. Moreton Bay still to author.</li>
+        <li><b>SettleIT Clerk Alert root-caused</b> (Prem) — ① record inserted <i>after</i> the save it should precede (backend fix), ② test red herring: alerts filter by LDM login ID and the order was assigned to a different clerk than the logged-in user. Fix understood; PR + cherry-pick to release branch next.</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:var(--warn)">
+      <h3>⚠️ Open issues</h3>
+      <ul>
+        <li><b>Live listen-in lags / overlaps audio.</b> Cause: multiple pods — SignalR events land on a different pod than the call. Hack fix = pin to 1 pod (prod already is); <b>stage pin + overlap fix Mon (Jerold)</b>. Proper multi-pod fix (backplane / sticky routing) later — acceptable while max ~3 parallel calls.</li>
+        <li><b>Gemini quota / resource exhaustion — unconfirmed.</b> Morning Blacktown call dropped mid-hold. Stage confirmed on the <i>company</i> key (not Connor's personal). Root cause still open — <b>investigate next week</b>.</li>
+        <li><b>Disclaimer missing</b> from the playbook used in the live call — must be baked into all new playbooks before file-handler use.</li>
+        <li><b>Ivy's timeout-fix PR</b> — merged copy showed 0 commits; re-raised. Needs proper review + test (high-severity alert flagged, possibly false alarm) — Prem.</li>
+        <li><b>SettleIT release pending</b> — Prem's Clerk-Alert fix to be cherry-picked to the release branch; release slipped past Thu (team event).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout idea">
+    🚢 <b>Shipped since the 5 Jun prod release</b> (AI-Caller <code>main</code>): DTMF reliability saga closed out — in-band codec-aware DTMF + tuning console + persisted tuning sets (SETTLEIT-10349) · Gemini voice → <b>Sulafat</b> · <b>operator jump-in</b> (patch browser mic into a live call, take over from the AI) · browser test as a first-class call + AI reasoning log · base prompts stored in DB, editable from settings · honest call status + audio recovery of missed fields · IVR max-duration drain bounded (50–60s hang-up) · prod pods → 1.
+  </div>
+  </details>
+
+  <!-- ============= 0b · NEXT WEEK PLAN ============= -->
+  <details class="collapsible" data-section="s0b" open>
+  <summary><h2>📅 0b · Plan — week of Mon 15 Jun (top-5 pilot)</h2></summary>
+  <p style="font-size:13px;color:var(--muted);margin:0 0 10px">
+    Goal: <b>5 successfully babysat real orders = top-5 milestone (due Jun 30)</b>. Sydney Water is the near-guaranteed leg; councils are enabled <b>one by one, babysat, not generic</b> — watch for edge cases, tweak the playbook, retry on non-miserable failures.
+  </p>
+  <table>
+    <thead><tr><th>Who</th><th>Commitment</th><th>When</th></tr></thead>
+    <tbody>
+      <tr><td><b>🗣️ Jerold</b></td><td>Pin stage to 1 pod + fix listen-in audio overlap · enable Northern Beaches / Bayside / C-Bankstown playbooks in DB + SettleIT side · add disclaimers to all new playbooks · author Moreton Bay</td><td>Mon</td></tr>
+      <tr><td><b>🧠 Connor</b></td><td>Investigate Gemini quota / resource-exhaustion drop on the company key · prompt tweak (end-call once, not twice)</td><td>Mon–Tue</td></tr>
+      <tr><td><b>🔄 Prem</b></td><td>Raise Clerk-Alert fix PR → cherry-pick to release branch → SettleIT release · properly review + test Ivy's timeout PR (possible false-alarm high alert)</td><td>Mon</td></tr>
+      <tr><td><b>🎨 Shayla</b></td><td>Check with Sarah re upcoming Sydney Water + Blacktown orders · per-council test data in Confluence, formatted per order (e.g. Bankstown = rate amount + certificate number) · coordinate file handlers</td><td>Mon →</td></tr>
+      <tr><td><b>👥 Together</b></td><td><b>Babysit real orders:</b> build a call-listing (~30 SW-council orders, ~6 file handlers, ordered by time) → confirm with Sarah → ping the file handler before their call → jump on a Teams call → babysit → tweak / retry on failure. Start with <b>Sydney Water + Blacktown</b>; Newcastle unlikely (low volume).</td><td>all week</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    🛤️ <b>Sequence:</b> Mon fixes land (listen-in, disclaimers, playbook enable, Clerk-Alert release) → babysat pilot calls from mid-week → 5 successes = milestone. Listen-in is wanted for babysitting (Shayla's ask) but recording playback + post-call verification is the fallback, so the pilot isn't gated on it.
+  </div>
+  </details>
+
+  <!-- ============= ARCHIVE DIVIDER ============= -->
+  <h2 style="margin-top:30px;border-top:1px solid var(--line);padding-top:18px">🗄️ Archive — MVP build sprint (22 May → 5 Jun) · kept as history</h2>
+  <p style="font-size:12px;color:var(--muted);margin:0 0 6px">Everything below documents the build-up to the 3 Jun internal release and 5 Jun exec deadline (both hit). Still-useful reference: <b>§7 decisions</b>, <b>§7b external approvals</b>, <b>§8b council coverage</b>.</p>
 
   <!-- ============= ARCH ============= -->
   <details class="collapsible" data-section="arch">
@@ -762,6 +820,7 @@
   </div>
 
   <footer>
+    🕐 Last updated <b>Thu 12 Jun 2026</b> — stage-testing session notes (Blacktown first human-agent success).<br>
     📚 Sources: <a href="../plan.md">plan.md</a> · <a href="./api-contracts-plan.md">api-contracts-plan.md</a> · <a href="./playbookplna.md">playbookplna.md</a> · <a href="./infrastructure.md">infrastructure.md</a> · <a href="./telephony-comparison.html">telephony-comparison.html</a> ·
     Jira: <a href="https://infotrack.atlassian.net/browse/SETTLEIT-9878">SETTLEIT-9878</a> + children 9961–9969, 10127, 10145, 10297, 10298, 10299 · GLOBALIT 4159 / 4160 / 4162 / 4163 / 4466 / 4504 / 4506.
   </footer>
@@ -778,7 +837,7 @@
   all.forEach(d => {
     const id = d.dataset.section;
     if (!id) return;
-    d.open = !!stored[id]; // collapsed by default; restore if previously opened
+    d.open = (id in stored) ? !!stored[id] : d.open; // respect HTML default (status sections ship open); restore user choice
     d.addEventListener('toggle', () => {
       stored[id] = d.open;
       localStorage.setItem(KEY, JSON.stringify(stored));
