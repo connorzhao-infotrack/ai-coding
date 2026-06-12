@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>InfoDialer — Team Update · 12 Jun 2026</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --line:#30363d;
+    --ink:#e6edf3; --muted:#8b949e;
+    --accent:#58a6ff; --cyan:#39d0d8; --pink:#ff7b9b;
+    --good:#3fb950; --warn:#d29922;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font:15px/1.65 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  main{max-width:760px;margin:0 auto;padding:36px 28px}
+  h1{font-size:24px;margin:0 0 2px;letter-spacing:-.01em}
+  h2{font-size:16px;margin:26px 0 8px}
+  p{margin:0 0 12px}
+  ul{margin:6px 0 12px;padding-left:22px}
+  li{margin:5px 0}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  b{color:var(--ink)}
+  .sub{color:var(--muted);margin:0 0 22px;font-size:13px}
+  .callout{border-left:3px solid var(--good);background:#0e1f15;padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .callout.warn{border-left-color:var(--warn);background:#1f1a0c}
+  .callout.plan{border-left-color:var(--accent);background:#0d1a2b}
+  footer{margin-top:28px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:12px}
+</style>
+</head>
+<body>
+<main>
+
+  <h1>📞 InfoDialer — Team Update</h1>
+  <p class="sub">Thursday 12 June 2026 · Connor</p>
+
+  <div class="callout">
+    <p style="margin:0"><b>Big news: a successful human-agent call, end-to-end on production.</b> 🎉 The AI called Blacktown Council on a test order with real property details, held through the queue, spoke with a real agent and confirmed the figures. Recording's in the dev chat — worth a listen. 🗣️</p>
+  </div>
+
+  <h2>Where we're at</h2>
+  <ul>
+    <li>✅ <b>Live on production — Sydney Water enabled for file handlers now</b> (~90% reliable)</li>
+    <li>✅ Blacktown human-agent call proven; more council playbooks ready to enable Monday</li>
+    <li>⚠️ A few fixes in flight: listen-in audio lag, a Gemini quota drop, SettleIT Clerk Alert</li>
+  </ul>
+
+  <h2>Next week — the top-5 pilot 🏁</h2>
+  <div class="callout plan">
+    <p>We've verified Sydney Water and councils separately — now we test them <b>together on real orders</b>. Shayla sets up a shared order tracker and lines up file handlers; we babysit the council calls one by one over Teams, tweaking as we go. Fixes and pilot calls run in parallel from Monday.</p>
+    <p style="margin:0"><b>On the goal:</b> the order pool is small (&lt;30), but retries on the same order are fine — an order counts once InfoDialer has delivered <b>both</b> its water rate and council rate figures, even if a flaky attempt means trying the water leg or council leg more than once. That makes <b>5 successful orders by Jun 30</b> well within reach — and we'll keep hardening the system so each order needs as few retries as possible. Let's get those 5. 💪</p>
+  </div>
+
+  <footer>
+    Full detail — status, open issues, the order-tracker template and the council-call flow diagram — on the <a href="./project-overview.html">project overview</a>.
+  </footer>
+
+</main>
+</body>
+</html>
