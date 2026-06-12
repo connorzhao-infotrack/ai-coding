@@ -200,7 +200,7 @@
     <thead><tr><th>Who</th><th>Commitment</th><th>When</th></tr></thead>
     <tbody>
       <tr><td><b>🗣️ Jerold</b></td><td>Fix listen-in audio overlap · enable Northern Beaches / Bayside / C-Bankstown playbooks in DB + SettleIT side · author Moreton Bay</td><td>Mon</td></tr>
-      <tr><td><b>🧠 Connor</b></td><td>Investigate Gemini quota / resource-exhaustion drop on the company key · prompt tweak (end-call once, not twice)</td><td>Mon–Tue</td></tr>
+      <tr><td><b>🧠 Connor</b></td><td>Go through the order list — identify which orders we can hit, and communicate clearly with the file handlers: <b>hold off on manual verification, InfoDialer tries first</b> · investigate Gemini quota / resource-exhaustion drop on the company key · prompt tweak (end-call once, not twice)</td><td>Mon–Tue</td></tr>
       <tr><td><b>🔄 Prem</b></td><td>Raise Clerk-Alert fix PR → cherry-pick to release branch → SettleIT release</td><td>Mon</td></tr>
       <tr><td><b>🎨 Shayla</b></td><td><b>Set up the shared order-tracker Excel</b> (template below) — find a dev to pull the order list from the DB (ground truth), then confirm with each file handler one by one · check with Sarah re upcoming Sydney Water + Blacktown orders · per-council test data in Confluence, formatted per order (e.g. Bankstown = rate amount + certificate number)</td><td>Mon →</td></tr>
       <tr><td><b>👥 Together</b></td><td><b>Babysit real orders:</b> work through the shared tracker order by order (see flow diagram below) — ping the file handler ahead of their call → jump on a Teams call → babysit → tweak / retry on failure. Start with <b>Sydney Water + Blacktown</b>; Newcastle unlikely (low volume).</td><td>all week</td></tr>
@@ -208,6 +208,9 @@
   </table>
   <div class="callout">
     🛤️ <b>Two tracks in parallel from Mon:</b> fixes (listen-in, playbook enable, Clerk-Alert release) and babysat pilot calls don't wait on each other — Shayla starts the tracker Mon and calls begin as soon as orders are confirmed. Listen-in is wanted for babysitting (Shayla's ask) but recording playback + post-call verification is the fallback, so the pilot isn't gated on it.
+  </div>
+  <div class="callout warn" style="border-left-color:var(--bad);background:#1f0f0f">
+    ⛔ <b>Every order is valuable — don't let them be verified manually.</b> The pool is small, so each order is a shot at the milestone. Once we identify the pilot orders on Monday, <b>InfoDialer gets at least one attempt at every one of them before any manual verification</b>. Connor reviews the order list Monday, picks the orders we can hit, and communicates this clearly to the file handlers — manual checking is the fallback only after InfoDialer has tried.
   </div>
   <div class="callout good">
     🎯 <b>How a success is counted — and why 5 is achievable.</b> The order pool is small (&lt;30 orders), but <b>retries on the same order are fine</b> — a one-off flaky attempt doesn't burn the order. An order counts toward the top-5 once InfoDialer has delivered <b>both</b> its figures: the water rate (Sydney Water) <i>and</i> the council rate. If that takes, say, 3 attempts on the Sydney Water leg and 2 on the council leg, it still counts as one success. So the milestone is well within reach — and in parallel we keep hardening the system so each order needs as few retries as possible.
