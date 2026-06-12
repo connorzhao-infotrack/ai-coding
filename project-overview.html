@@ -171,7 +171,7 @@
       <h3>✅ What's working</h3>
       <ul>
         <li><b>Sydney Water IVR</b> — ~90% reliable. <b>File handlers start using it now.</b></li>
-        <li><b>Blacktown human-agent</b> — success 12 Jun, end-to-end on production (test order, real property details; figures returned — disclosure aside, see issues).</li>
+        <li><b>Blacktown human-agent</b> — success 12 Jun, end-to-end on production (test order, real property details; figures returned).</li>
         <li><b>Prod</b> — released Fri 5 Jun on schedule (stage 29 May). Running 1 pod (intentional, see listen-in).</li>
         <li><b>3 new council playbooks created</b> — Northern Beaches, Bayside, Canterbury-Bankstown (Jerold, 12 Jun). Not yet enabled in DB / SettleIT — Monday job. Moreton Bay still to author.</li>
         <li><b>SettleIT Clerk Alert root-caused</b> (Prem) — ① record inserted <i>after</i> the save it should precede (backend fix), ② test red herring: alerts filter by LDM login ID and the order was assigned to a different clerk than the logged-in user. Fix understood; PR + cherry-pick to release branch next.</li>
@@ -180,10 +180,8 @@
     <div class="card" style="border-color:var(--warn)">
       <h3>⚠️ Open issues</h3>
       <ul>
-        <li><b>Live listen-in lags / overlaps audio.</b> Cause: multiple pods — SignalR events land on a different pod than the call. Hack fix = pin to 1 pod (prod already is); <b>stage pin + overlap fix Mon (Jerold)</b>. Proper multi-pod fix (backplane / sticky routing) later — acceptable while max ~3 parallel calls.</li>
+        <li><b>Live listen-in lags / overlaps audio.</b> Cause: multiple pods — SignalR events land on a different pod than the call. Hack fix already applied: <b>prod reduced to 1 pod</b> (can be improved later with a backplane / sticky routing — acceptable while max ~3 parallel calls). <b>Audio-overlap fix Mon (Jerold)</b>.</li>
         <li><b>Gemini quota / resource exhaustion — unconfirmed.</b> Morning Blacktown call dropped mid-hold. Stage confirmed on the <i>company</i> key (not Connor's personal). Root cause still open — <b>investigate next week</b>.</li>
-        <li><b>Disclaimer missing</b> from the playbook used in the live call — must be baked into all new playbooks before file-handler use.</li>
-        <li><b>Ivy's timeout-fix PR</b> — merged copy showed 0 commits; re-raised. Needs proper review + test (high-severity alert flagged, possibly false alarm) — Prem.</li>
         <li><b>SettleIT release pending</b> — Prem's Clerk-Alert fix to be cherry-picked to the release branch; release slipped past Thu (team event).</li>
       </ul>
     </div>
@@ -202,16 +200,123 @@
   <table>
     <thead><tr><th>Who</th><th>Commitment</th><th>When</th></tr></thead>
     <tbody>
-      <tr><td><b>🗣️ Jerold</b></td><td>Pin stage to 1 pod + fix listen-in audio overlap · enable Northern Beaches / Bayside / C-Bankstown playbooks in DB + SettleIT side · add disclaimers to all new playbooks · author Moreton Bay</td><td>Mon</td></tr>
+      <tr><td><b>🗣️ Jerold</b></td><td>Fix listen-in audio overlap · enable Northern Beaches / Bayside / C-Bankstown playbooks in DB + SettleIT side · author Moreton Bay</td><td>Mon</td></tr>
       <tr><td><b>🧠 Connor</b></td><td>Investigate Gemini quota / resource-exhaustion drop on the company key · prompt tweak (end-call once, not twice)</td><td>Mon–Tue</td></tr>
-      <tr><td><b>🔄 Prem</b></td><td>Raise Clerk-Alert fix PR → cherry-pick to release branch → SettleIT release · properly review + test Ivy's timeout PR (possible false-alarm high alert)</td><td>Mon</td></tr>
-      <tr><td><b>🎨 Shayla</b></td><td>Check with Sarah re upcoming Sydney Water + Blacktown orders · per-council test data in Confluence, formatted per order (e.g. Bankstown = rate amount + certificate number) · coordinate file handlers</td><td>Mon →</td></tr>
-      <tr><td><b>👥 Together</b></td><td><b>Babysit real orders:</b> build a call-listing (~30 SW-council orders, ~6 file handlers, ordered by time) → confirm with Sarah → ping the file handler before their call → jump on a Teams call → babysit → tweak / retry on failure. Start with <b>Sydney Water + Blacktown</b>; Newcastle unlikely (low volume).</td><td>all week</td></tr>
+      <tr><td><b>🔄 Prem</b></td><td>Raise Clerk-Alert fix PR → cherry-pick to release branch → SettleIT release</td><td>Mon</td></tr>
+      <tr><td><b>🎨 Shayla</b></td><td><b>Set up the shared order-tracker Excel</b> (template below) — find a dev to pull the order list from the DB (ground truth), then confirm with each file handler one by one · check with Sarah re upcoming Sydney Water + Blacktown orders · per-council test data in Confluence, formatted per order (e.g. Bankstown = rate amount + certificate number)</td><td>Mon →</td></tr>
+      <tr><td><b>👥 Together</b></td><td><b>Babysit real orders:</b> work through the shared tracker order by order (see flow diagram below) — ping the file handler ahead of their call → jump on a Teams call → babysit → tweak / retry on failure. Start with <b>Sydney Water + Blacktown</b>; Newcastle unlikely (low volume).</td><td>all week</td></tr>
     </tbody>
   </table>
   <div class="callout">
-    🛤️ <b>Sequence:</b> Mon fixes land (listen-in, disclaimers, playbook enable, Clerk-Alert release) → babysat pilot calls from mid-week → 5 successes = milestone. Listen-in is wanted for babysitting (Shayla's ask) but recording playback + post-call verification is the fallback, so the pilot isn't gated on it.
+    🛤️ <b>Sequence:</b> Mon fixes land (listen-in, playbook enable, Clerk-Alert release) + Shayla starts the tracker → babysat pilot calls from mid-week → 5 successes = milestone. Listen-in is wanted for babysitting (Shayla's ask) but recording playback + post-call verification is the fallback, so the pilot isn't gated on it.
   </div>
+
+  <h3 style="margin-top:18px;font-size:13px;color:var(--ink)">📋 Shared order-tracker — Excel template for Shayla</h3>
+  <p style="font-size:12px;color:var(--muted);margin:0 0 8px">One row per real order. The <b>DB is the ground truth</b> for which orders exist (a dev helps pull the list — upcoming orders on Sydney Water councils, ~30 rows / ~6 file handlers); Shayla then validates row by row with the file handler. Good start — columns will be tweaked as the pilot runs.</p>
+  <div style="overflow-x:auto">
+  <table style="font-size:11px;min-width:1100px">
+    <thead><tr>
+      <th>Order #</th><th>Council</th><th>Water authority</th><th>File handler</th><th>Settlement date</th><th>Planned call window</th><th>Property no.</th><th>Address</th><th>Certificate no.</th><th>Rate amount</th><th>Handler confirmed?</th><th>Call status</th><th>Figures verified?</th><th>Notes</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><i>e.g.</i> 123456</td><td>Blacktown</td><td>Sydney Water</td><td>Olivia</td><td>26 Jun</td><td>Tue 17 Jun, 10–11am</td><td>418999</td><td>426/4 Taupe Glade, Schofields</td><td>…-08771</td><td>$—</td><td>✅ Y</td><td>🟢 babysat — success</td><td>✅ from recording</td><td>Agent confirmed all paid</td>
+      </tr>
+      <tr>
+        <td>123457</td><td>Northern Beaches</td><td>Sydney Water</td><td>—</td><td>30 Jun</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>⬜ N</td><td>⚪ pending</td><td>—</td><td>Playbook enabled Mon; needs handler confirmation</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="font-size:11px;color:var(--muted);margin-top:4px"><b>Call status values:</b> ⚪ pending · 📅 scheduled · 🟢 babysat — success · 🔴 failed — retry (tweak playbook first) · ⚫ skipped. <b>Per-council inputs vary</b> (e.g. Bankstown needs rate amount + certificate number) — Shayla's Confluence test-certificate page highlights what each council requires.</p>
+
+  <h3 style="margin-top:18px;font-size:13px;color:var(--ink)">🔁 How an order flows through the pilot</h3>
+  <svg class="diag" viewBox="0 0 1100 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pilot order flow">
+    <defs>
+      <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#8b949e"/>
+      </marker>
+      <style>
+        .pf{fill:#161b22;stroke:#30363d}
+        .pfAccent{fill:#0d1a2b;stroke:#58a6ff}
+        .pfCyan{fill:#0e2426;stroke:#39d0d8}
+        .pfGood{fill:#0e1f15;stroke:#3fb950}
+        .pfWarn{fill:#1f1a0c;stroke:#d29922}
+        .pfT{fill:#e6edf3;font:600 12px -apple-system,Segoe UI,Roboto,sans-serif}
+        .pfS{fill:#8b949e;font:10px -apple-system,Segoe UI,Roboto,sans-serif}
+        .pfL{fill:#8b949e;font:600 10px -apple-system,Segoe UI,Roboto,sans-serif}
+        .pfA{stroke:#8b949e;stroke-width:1.4;fill:none}
+        .pfD{stroke:#d29922;stroke-width:1.4;stroke-dasharray:4 4;fill:none}
+      </style>
+    </defs>
+    <!-- row 1: prepare the list -->
+    <rect class="pfAccent" x="20" y="25" width="190" height="62" rx="9"/>
+    <text class="pfT" x="115" y="50" text-anchor="middle">🗄️ DB query</text>
+    <text class="pfS" x="115" y="66" text-anchor="middle">dev helps Shayla pull ~30</text>
+    <text class="pfS" x="115" y="78" text-anchor="middle">upcoming SW-council orders</text>
+    <path class="pfA" d="M210 56 L 240 56" marker-end="url(#arr2)"/>
+    <rect class="pfAccent" x="240" y="25" width="190" height="62" rx="9"/>
+    <text class="pfT" x="335" y="50" text-anchor="middle">📋 Shared Excel</text>
+    <text class="pfS" x="335" y="66" text-anchor="middle">one row per order</text>
+    <text class="pfS" x="335" y="78" text-anchor="middle">(template above)</text>
+    <path class="pfA" d="M430 56 L 460 56" marker-end="url(#arr2)"/>
+    <rect class="pf" x="460" y="25" width="180" height="62" rx="9"/>
+    <text class="pfT" x="550" y="50" text-anchor="middle">✅ Check with Sarah</text>
+    <text class="pfS" x="550" y="66" text-anchor="middle">OK to involve these</text>
+    <text class="pfS" x="550" y="78" text-anchor="middle">orders / handlers</text>
+    <path class="pfA" d="M640 56 L 670 56" marker-end="url(#arr2)"/>
+    <rect class="pf" x="670" y="25" width="190" height="62" rx="9"/>
+    <text class="pfT" x="765" y="50" text-anchor="middle">🙋 Confirm with handler</text>
+    <text class="pfS" x="765" y="66" text-anchor="middle">one by one — Shayla</text>
+    <text class="pfS" x="765" y="78" text-anchor="middle">fills the row</text>
+    <path class="pfA" d="M860 56 L 890 56" marker-end="url(#arr2)"/>
+    <rect class="pf" x="890" y="25" width="190" height="62" rx="9"/>
+    <text class="pfT" x="985" y="50" text-anchor="middle">📅 Schedule window</text>
+    <text class="pfS" x="985" y="66" text-anchor="middle">ordered by time; ping the</text>
+    <text class="pfS" x="985" y="78" text-anchor="middle">handler before their call</text>
+    <!-- down to row 2 -->
+    <path class="pfA" d="M985 87 L 985 130" marker-end="url(#arr2)"/>
+    <!-- row 2: run the call (right to left) -->
+    <rect class="pfCyan" x="890" y="130" width="190" height="62" rx="9"/>
+    <text class="pfT" x="985" y="155" text-anchor="middle">👥 Teams babysit call</text>
+    <text class="pfS" x="985" y="171" text-anchor="middle">handler + Shayla + dev</text>
+    <text class="pfS" x="985" y="183" text-anchor="middle">listen-in / recording</text>
+    <path class="pfA" d="M890 161 L 860 161" marker-end="url(#arr2)"/>
+    <rect class="pfCyan" x="670" y="130" width="190" height="62" rx="9"/>
+    <text class="pfT" x="765" y="155" text-anchor="middle">🤖 AI calls authority</text>
+    <text class="pfS" x="765" y="171" text-anchor="middle">IVR + hold + agent —</text>
+    <text class="pfS" x="765" y="183" text-anchor="middle">figures extracted</text>
+    <path class="pfA" d="M670 161 L 640 161" marker-end="url(#arr2)"/>
+    <text class="pfL" x="652" y="152" text-anchor="middle">ok</text>
+    <rect class="pfGood" x="460" y="130" width="180" height="62" rx="9"/>
+    <text class="pfT" x="550" y="155" text-anchor="middle">✔️ Verify figures</text>
+    <text class="pfS" x="550" y="171" text-anchor="middle">against the recording</text>
+    <text class="pfS" x="550" y="183" text-anchor="middle">before paying anything</text>
+    <path class="pfA" d="M460 161 L 430 161" marker-end="url(#arr2)"/>
+    <rect class="pfGood" x="240" y="130" width="190" height="62" rx="9"/>
+    <text class="pfT" x="335" y="155" text-anchor="middle">💰 Apply in SettleIT</text>
+    <text class="pfS" x="335" y="171" text-anchor="middle">figure updated · Clerk Alert</text>
+    <text class="pfS" x="335" y="183" text-anchor="middle">+ file note fire</text>
+    <path class="pfA" d="M240 161 L 210 161" marker-end="url(#arr2)"/>
+    <rect class="pfGood" x="20" y="130" width="190" height="62" rx="9"/>
+    <text class="pfT" x="115" y="155" text-anchor="middle">🏁 Counts toward top-5</text>
+    <text class="pfS" x="115" y="171" text-anchor="middle">5 babysat successes</text>
+    <text class="pfS" x="115" y="183" text-anchor="middle">= milestone (Jun 30)</text>
+    <!-- failure loop -->
+    <path class="pfD" d="M765 192 L 765 235" marker-end="url(#arr2)"/>
+    <text class="pfL" x="800" y="218" text-anchor="middle" fill="#d29922">failed (not miserably)</text>
+    <rect class="pfWarn" x="670" y="235" width="190" height="62" rx="9"/>
+    <text class="pfT" x="765" y="260" text-anchor="middle">🔧 Tweak playbook</text>
+    <text class="pfS" x="765" y="276" text-anchor="middle">adjust prompt / inputs,</text>
+    <text class="pfS" x="765" y="288" text-anchor="middle">then retry the order</text>
+    <path class="pfD" d="M860 266 C 1010 266, 1040 230, 1005 192" marker-end="url(#arr2)"/>
+    <text class="pfL" x="1010" y="248" text-anchor="middle" fill="#d29922">retry</text>
+    <!-- expansion note -->
+    <rect class="pf" x="20" y="235" width="430" height="62" rx="9"/>
+    <text class="pfT" x="235" y="260" text-anchor="middle">🏘️ Councils enabled one by one</text>
+    <text class="pfS" x="235" y="276" text-anchor="middle">babysat, not generic — watch for edge cases per council,</text>
+    <text class="pfS" x="235" y="288" text-anchor="middle">prove it, then enable the next (4–5 councils max for now)</text>
+  </svg>
   </details>
 
   <!-- ============= ARCHIVE DIVIDER ============= -->
