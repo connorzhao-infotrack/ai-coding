@@ -152,12 +152,11 @@
   <p class="sub">AI calls councils &amp; water authorities on behalf of SettleIT (and other consumers later) and returns figures + status humans dial for today. <button id="toggle-all" type="button" class="reset-btn" style="margin-left:6px">📂 Expand all</button></p>
 
   <!-- ============= HERO ============= -->
-  <div class="hero">
-    <div class="stat accent">  <div class="ico">🚀</div><div class="v">Prod live</div><div class="l">stage Fri 29 May · prod Fri 5 Jun — both shipped on the committed dates</div></div>
+  <div class="hero" style="grid-template-columns:repeat(4,1fr)">
+    <div class="stat accent">  <div class="ico">🚀</div><div class="v">On prod</div><div class="l">live in production — Sydney Water enabled for file handlers to use now</div></div>
     <div class="stat pink">    <div class="ico">🗣️</div><div class="v">12 Jun</div><div class="l">successful human-agent call (Blacktown) — end-to-end on production · test order, real property details, real agent</div></div>
-    <div class="stat cyan">    <div class="ico">📟</div><div class="v">~90%</div><div class="l">Sydney Water IVR reliability — file handlers start using it NOW</div></div>
-    <div class="stat purple">  <div class="ico">🏘️</div><div class="v">2 live · 3 staged</div><div class="l">SW + Blacktown proven · Nthn Beaches / Bayside / C-Bankstown playbooks created (enable Mon) · Moreton Bay pending</div></div>
-    <div class="stat warn">    <div class="ico">🏁</div><div class="v">0 / 5</div><div class="l">top-5 milestone (Jun 30) · babysit 5 real orders — pilot starts week of 15 Jun</div></div>
+    <div class="stat cyan">    <div class="ico">📟</div><div class="v">~90%</div><div class="l">Sydney Water IVR reliability</div></div>
+    <div class="stat warn">    <div class="ico">🏁</div><div class="v">0 / 5</div><div class="l">top-5 milestone (Jun 30) — SW + councils verified separately; next week: test them together on real orders, babysat</div></div>
   </div>
 
   <!-- ============= 0 · STATUS 12 JUN ============= -->
@@ -230,7 +229,8 @@
   </div>
   <p style="font-size:11px;color:var(--muted);margin-top:4px"><b>Call status values:</b> ⚪ pending · 📅 scheduled · 🟢 babysat — success · 🔴 failed — retry (tweak playbook first) · ⚫ skipped. <b>Per-council inputs vary</b> (e.g. Bankstown needs rate amount + certificate number) — Shayla's Confluence test-certificate page highlights what each council requires.</p>
 
-  <h3 style="margin-top:18px;font-size:13px;color:var(--ink)">🔁 How an order flows through the pilot</h3>
+  <h3 style="margin-top:18px;font-size:13px;color:var(--ink)">🔁 How a council order flows through the pilot</h3>
+  <p style="font-size:12px;color:var(--muted);margin:0 0 8px">This flow is for the <b>council calls only</b> — the Sydney Water leg is pretty much solved and runs without babysitting. So far Sydney Water and some councils have been verified <i>separately</i>; next week is about testing them <b>together on real orders</b>.</p>
   <svg class="diag" viewBox="0 0 1100 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pilot order flow">
     <defs>
       <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -283,8 +283,8 @@
     <text class="pfS" x="985" y="183" text-anchor="middle">listen-in / recording</text>
     <path class="pfA" d="M890 161 L 860 161" marker-end="url(#arr2)"/>
     <rect class="pfCyan" x="670" y="130" width="190" height="62" rx="9"/>
-    <text class="pfT" x="765" y="155" text-anchor="middle">🤖 AI calls authority</text>
-    <text class="pfS" x="765" y="171" text-anchor="middle">IVR + hold + agent —</text>
+    <text class="pfT" x="765" y="155" text-anchor="middle">🤖 AI calls the council</text>
+    <text class="pfS" x="765" y="171" text-anchor="middle">hold queue + human agent —</text>
     <text class="pfS" x="765" y="183" text-anchor="middle">figures extracted</text>
     <path class="pfA" d="M670 161 L 640 161" marker-end="url(#arr2)"/>
     <text class="pfL" x="652" y="152" text-anchor="middle">ok</text>
