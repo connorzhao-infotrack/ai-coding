@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SettleIT KPI — Private Pages fetch() test</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230e0f1a'/%3E%3Crect x='3' y='8' width='2.4' height='5' fill='%23f2c23e'/%3E%3Crect x='6.8' y='5' width='2.4' height='8' fill='%2334b39a'/%3E%3Crect x='10.6' y='3' width='2.4' height='10' fill='%233f7fd1'/%3E%3C/svg%3E" />
+  <style>
+    :root{
+      --bg:#0e0f1a; --panel:#1a1b2b; --panel2:#11121f; --border:#2a2c42;
+      --text:#e8e9f0; --muted:#9aa0b5; --good:#34b39a; --warn:#f2a73b;
+      --bad:#e0455e; --accent:#3f7fd1;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);
+      font-family:"Segoe UI",Roboto,system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.55}
+    .wrap{max-width:860px;margin:0 auto;padding:26px 22px 60px}
+    h1{font-size:22px;font-weight:800;margin:0 0 2px;
+      background:linear-gradient(90deg,#6ea8ff,#34b39a);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .sub{color:var(--muted);font-size:13px;margin-bottom:20px}
+    code{background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:12.5px;color:var(--text)}
+    h1 code{-webkit-text-fill-color:var(--text);color:var(--text)}
+
+    .banner{border-radius:12px;padding:18px 20px;margin-bottom:20px;border:1px solid var(--border);
+      display:flex;gap:14px;align-items:flex-start}
+    .banner .ic{font-size:26px;line-height:1}
+    .banner .t{font-size:18px;font-weight:800}
+    .banner .d{color:var(--muted);font-size:13px;margin-top:3px}
+    .banner.ok{background:linear-gradient(180deg,#16241d,#141a16);border-color:var(--good)}
+    .banner.ok .t{color:var(--good)}
+    .banner.bad{background:linear-gradient(180deg,#27161b,#1c1418);border-color:var(--bad)}
+    .banner.bad .t{color:#ff8ea0}
+    .banner.wait{background:var(--panel)}
+
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+    .card h2{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+    table.kv{width:100%;border-collapse:collapse}
+    table.kv td{padding:6px 8px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:top}
+    table.kv td:first-child{color:var(--muted);width:170px;white-space:nowrap}
+    table.kv tr:last-child td{border-bottom:none}
+    .mono{font-family:ui-monospace,"Cascadia Code",Consolas,monospace;font-size:12.5px;word-break:break-all}
+    .ok-x{color:var(--good);font-weight:700} .bad-x{color:#ff8ea0;font-weight:700}
+
+    pre{background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:14px;
+      overflow:auto;font-size:12.5px;margin:0;max-height:340px}
+    .pillrow{display:flex;gap:18px;flex-wrap:wrap;margin-top:4px}
+    .stat{background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:10px 14px;min-width:120px}
+    .stat .n{font-size:20px;font-weight:800} .stat .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+
+    button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;
+      font-weight:600;cursor:pointer;margin-top:4px}
+    button:hover{filter:brightness(1.1)}
+    .chk{margin:0;padding-left:20px} .chk li{margin:7px 0;font-size:13px;color:var(--muted)}
+    .chk b{color:var(--text)}
+    footer{margin-top:26px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);padding-top:14px}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Private Pages — <code>fetch()</code> verification</h1>
+  <div class="sub">This page loads <code>./data.json</code> from the same origin and reports exactly what happened. If it shows <b>PASS</b>, the real KPI dashboard can read its data the same way behind GitHub Pages access control.</div>
+
+  <div id="banner" class="banner wait">
+    <div class="ic">⏳</div>
+    <div><div class="t">Running test…</div><div class="d">Fetching <code>./data.json</code></div></div>
+  </div>
+
+  <div class="card">
+    <h2>Diagnostics</h2>
+    <table class="kv">
+      <tr><td>Page URL</td><td class="mono" id="d-page">—</td></tr>
+      <tr><td>Page origin</td><td class="mono" id="d-origin">—</td></tr>
+      <tr><td>Fetch target</td><td class="mono" id="d-target">—</td></tr>
+      <tr><td>HTTP status</td><td class="mono" id="d-status">—</td></tr>
+      <tr><td>Content-Type</td><td class="mono" id="d-ctype">—</td></tr>
+      <tr><td>Parsed as JSON</td><td class="mono" id="d-parsed">—</td></tr>
+      <tr><td>Tested at</td><td class="mono" id="d-time">—</td></tr>
+    </table>
+    <button onclick="runTest()">Run test again</button>
+  </div>
+
+  <div class="card" id="data-card" style="display:none">
+    <h2>Data loaded from data.json</h2>
+    <div class="pillrow" id="stats"></div>
+    <p style="color:var(--muted);font-size:13px;margin:14px 0 8px" id="note"></p>
+    <pre id="raw"></pre>
+  </div>
+
+  <div class="card">
+    <h2>What a PASS confirms</h2>
+    <ul class="chk">
+      <li><b>Same-origin fetch works behind auth</b> — the session that let you open this private page also authorized the data request (no CORS, no second login).</li>
+      <li><b>The dashboard pattern is valid</b> — the real app fetches its JSON exactly like this.</li>
+      <li><b>To prove the data is actually private</b>, also open this URL in an <b>incognito window</b> (signed out) or from an account <b>without</b> repo access — GitHub should block it before this page ever loads.</li>
+    </ul>
+  </div>
+
+  <footer>SettleIT KPI · private GitHub Pages proof-of-concept · delete this repo/page once verified.</footer>
+</div>
+
+<script>
+  function setBanner(kind, icon, title, detail){
+    var b = document.getElementById('banner');
+    b.className = 'banner ' + kind;
+    b.innerHTML = '<div class="ic">'+icon+'</div><div><div class="t">'+title+'</div><div class="d">'+detail+'</div></div>';
+  }
+  function esc(s){ return String(s).replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+
+  async function runTest(){
+    var target = './data.json?t=' + Date.now();   // cache-buster so we always see the latest commit
+    document.getElementById('d-page').textContent   = location.href;
+    document.getElementById('d-origin').textContent = location.origin;
+    document.getElementById('d-target').textContent = new URL(target, location.href).href;
+    document.getElementById('d-time').textContent   = new Date().toString();
+    document.getElementById('d-status').textContent = '…';
+    document.getElementById('d-ctype').textContent  = '…';
+    document.getElementById('d-parsed').textContent = '…';
+    document.getElementById('data-card').style.display = 'none';
+    setBanner('wait','⏳','Running test…','Fetching ./data.json');
+
+    try {
+      var res = await fetch(target, { cache: 'no-store', credentials: 'same-origin' });
+      document.getElementById('d-status').innerHTML = res.ok
+        ? '<span class="ok-x">'+res.status+' '+res.statusText+'</span>'
+        : '<span class="bad-x">'+res.status+' '+res.statusText+'</span>';
+      var ctype = res.headers.get('content-type') || '(none)';
+      document.getElementById('d-ctype').textContent = ctype;
+
+      var text = await res.text();
+      var data;
+      try { data = JSON.parse(text); }
+      catch (e) {
+        document.getElementById('d-parsed').innerHTML = '<span class="bad-x">No — not JSON</span>';
+        var looksHtml = /^\s*<(!doctype|html)/i.test(text);
+        setBanner('bad','❌','FAIL — response was not JSON',
+          looksHtml
+            ? 'Got an HTML page instead of JSON — likely an auth/login redirect. The fetch was not authorized as same-origin.'
+            : 'The response could not be parsed as JSON. First bytes shown below.');
+        document.getElementById('data-card').style.display = 'block';
+        document.getElementById('raw').textContent = text.slice(0, 600);
+        document.getElementById('stats').innerHTML = '';
+        document.getElementById('note').textContent = '';
+        return;
+      }
+
+      document.getElementById('d-parsed').innerHTML = '<span class="ok-x">Yes</span>';
+      if (!res.ok) {
+        setBanner('bad','❌','FAIL — HTTP '+res.status,'The file was reachable but returned an error status.');
+      } else {
+        setBanner('ok','✅','PASS — data.json loaded via same-origin fetch()',
+          'The private page successfully read its data. The dashboard can do exactly this.');
+      }
+
+      // render
+      document.getElementById('data-card').style.display = 'block';
+      document.getElementById('raw').textContent = JSON.stringify(data, null, 2);
+      document.getElementById('note').textContent = data.note || '';
+      var s = data.sample || {};
+      var stats = [
+        ['Releases', s.releases], ['Hotfixes', s.hotfixes],
+        ['Support wks', s.supportWeeks], ['CFR %', s.changeFailureRatePct]
+      ].filter(function(x){ return x[1] !== undefined; });
+      document.getElementById('stats').innerHTML = stats.map(function(x){
+        return '<div class="stat"><div class="n">'+esc(x[1])+'</div><div class="l">'+esc(x[0])+'</div></div>';
+      }).join('');
+    } catch (err) {
+      document.getElementById('d-status').innerHTML = '<span class="bad-x">network error</span>';
+      setBanner('bad','❌','FAIL — fetch threw an error', esc(err && err.message ? err.message : String(err)));
+    }
+  }
+  runTest();
+</script>
+</body>
+</html>

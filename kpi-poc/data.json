@@ -1,0 +1,18 @@
+{
+  "demo": true,
+  "generatedAt": "2026-06-15T09:00:00+10:00",
+  "note": "If you can see these values rendered on the page, a same-origin fetch() of this file succeeded behind GitHub Pages access control. That proves the real dashboard can load its data.json the same way.",
+  "sample": {
+    "dataThrough": "2026-06-05",
+    "releases": 1343,
+    "hotfixes": 50,
+    "supportWeeks": 247,
+    "changeFailureRatePct": 1.24,
+    "supportByCategory": {
+      "systemIssues": 34.4,
+      "supportTasks": 29.6,
+      "userIssues": 20.4,
+      "otherSystemIssues": 15.6
+    }
+  }
+}
