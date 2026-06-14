@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SettleIT KPI — Automation Plan (three routes)</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230e0f1a'/%3E%3Crect x='3' y='8' width='2.4' height='5' fill='%23f2c23e'/%3E%3Crect x='6.8' y='5' width='2.4' height='8' fill='%2334b39a'/%3E%3Crect x='10.6' y='3' width='2.4' height='10' fill='%233f7fd1'/%3E%3C/svg%3E" />
+  <style>
+    :root{
+      --bg:#0e0f1a; --panel:#1a1b2b; --panel2:#15162a; --border:#2a2c42;
+      --text:#e8e9f0; --muted:#9aa0b5; --good:#34b39a; --warn:#f2a73b;
+      --bad:#e0455e; --accent:#3f7fd1; --amber:#f2c23e; --purple:#a98be0;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);
+      font-family:"Segoe UI",Roboto,system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.5}
+    a{color:#6ea8ff}
+    .wrap{max-width:1320px;margin:0 auto;padding:26px 26px 60px}
+
+    header.top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;
+      border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:20px;flex-wrap:wrap}
+    .h-title{font-size:26px;font-weight:800;letter-spacing:.3px;
+      background:linear-gradient(90deg,#6ea8ff,#34b39a);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .h-sub{color:var(--muted);font-size:13.5px;margin-top:4px;max-width:780px}
+    .navlinks{display:flex;gap:8px;flex-wrap:wrap}
+    .back{font-size:13px;text-decoration:none;border:1px solid var(--border);
+      padding:8px 12px;border-radius:8px;color:var(--text);white-space:nowrap}
+
+    /* goal banner */
+    .goal{background:linear-gradient(180deg,#1d2616,#171a12);border:1px solid var(--good);
+      border-radius:12px;padding:16px 18px;margin-bottom:18px;display:flex;gap:14px;align-items:flex-start}
+    .goal .ic{font-size:22px;line-height:1}
+    .goal .lbl{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--good);font-weight:700}
+    .goal .q{font-size:17px;font-weight:700;color:var(--text);margin-top:3px}
+    .goal .sub{color:var(--muted);font-size:12.5px;margin-top:5px}
+
+    .lead{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:15px 18px;margin-bottom:22px}
+    .lead .flow-line{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:10px}
+    .pill{background:#11121f;border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12.5px;white-space:nowrap}
+    .pill.hot{border-color:var(--amber);color:var(--amber)}
+    .pill.keep{border-color:var(--good);color:#8fe0cd}
+    .arr{color:var(--muted);font-weight:700}
+
+    h2.sec{font-size:13px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);
+      margin:30px 0 12px;border-bottom:1px solid var(--border);padding-bottom:8px}
+
+    .cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+    @media (max-width:1040px){.cols3{grid-template-columns:1fr}}
+
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:17px;position:relative;overflow:hidden}
+    .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+    .card.r1::before{background:var(--good)} .card.r2::before{background:var(--purple)} .card.r3::before{background:var(--accent)}
+    .tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.5px;padding:3px 9px;border-radius:20px;margin-bottom:6px}
+    .tag.r1{background:rgba(52,179,154,.16);color:var(--good)}
+    .tag.r2{background:rgba(169,139,224,.18);color:#c7b3f0}
+    .tag.r3{background:rgba(63,127,209,.18);color:#7fb2ff}
+    .fav{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.4px;padding:3px 8px;border-radius:20px;margin-left:6px;background:rgba(242,194,62,.16);color:var(--amber)}
+    .card h3{margin:5px 0 4px;font-size:18px}
+    .card .one{color:var(--muted);font-size:12.8px;margin-bottom:13px;min-height:54px}
+
+    .flow{display:flex;flex-direction:column;gap:6px;background:#11121f;border:1px solid var(--border);
+      border-radius:9px;padding:11px;margin-bottom:13px}
+    .frow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:11.5px}
+    .node{background:#1f2034;border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:11.5px}
+    .node.k{border-color:var(--amber);color:var(--amber)}
+    .node.ai{border-color:var(--good);color:var(--good)}
+    .node.ms{border-color:var(--purple);color:#c7b3f0}
+    .node.api{border-color:#7fb2ff;color:#7fb2ff}
+    .node.out{border-color:var(--muted)}
+    .down{color:var(--muted)}
+
+    .kv{margin:0;padding:0;list-style:none}
+    .kv li{display:flex;gap:8px;margin:7px 0;font-size:12.6px}
+    .kv .k{flex:0 0 64px;color:var(--muted);text-transform:uppercase;font-size:10.5px;letter-spacing:.5px;padding-top:1px}
+    .kv .v{flex:1}
+    .kv .v.good{color:#8fe0cd} .kv .v.warn{color:#f2c98a}
+
+    table.cmp{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+    table.cmp th,table.cmp td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--border);font-size:12.6px;vertical-align:top}
+    table.cmp thead th{background:#11121f;color:var(--muted);text-transform:uppercase;font-size:10.5px;letter-spacing:.5px}
+    table.cmp td:first-child{color:var(--muted);width:150px}
+    table.cmp th.c1{color:var(--good)} table.cmp th.c2{color:#c7b3f0} table.cmp th.c3{color:#7fb2ff}
+    table.cmp tr:last-child td{border-bottom:none}
+    .yes{color:var(--good);font-weight:600} .meh{color:var(--warn)} .nope{color:#ff8ea0}
+    table.cmp td.r{text-align:center;white-space:nowrap;color:var(--amber);font-size:13px;width:74px}
+    table.cmp td.cmt{color:var(--muted);font-size:12.3px}
+    table.cmp td.num{text-align:center;font-weight:700;width:74px}
+    .overall{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0 4px}
+    .obadge{flex:1;min-width:150px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+    .obadge .rank{font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+    .obadge .score{font-size:22px;font-weight:800;margin-top:2px}
+    .obadge.win{border-color:var(--good)} .obadge.win .score{color:var(--good)}
+    .obadge .lbl{font-size:12.5px;color:var(--muted);margin-top:2px}
+
+    .notes{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media (max-width:860px){.notes{grid-template-columns:1fr}}
+    .note{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px}
+    .note b{color:var(--text)} .note p{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+    .rec{background:linear-gradient(180deg,#18233a,#161a2c);border:1px solid var(--accent);border-radius:12px;padding:18px 20px}
+    .rec h3{margin:0 0 6px;font-size:18px}
+    .rec ol{margin:10px 0 0;padding-left:20px} .rec li{margin:7px 0}
+    .blocker{margin-top:16px;background:rgba(52,179,154,.10);border:1px solid var(--good);border-radius:10px;padding:13px 15px}
+    .blocker b{color:var(--good)}
+    footer{margin-top:30px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);padding-top:14px}
+    .em{color:var(--text);font-weight:600}
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <div class="h-title">Automation Plan — three routes to the same goal</div>
+      <div class="h-sub">How to make the dashboard refresh itself every week, keep the written support summary you produce today, and still let you enter &amp; fix records by hand. The routes differ only in <span class="em">how much AI does vs. how much you build</span>.</div>
+    </div>
+    <div class="navlinks">
+      <a class="back" href="index.html">← Dashboard</a>
+      <a class="back" href="phase2.html">Original Phase 2 notes</a>
+    </div>
+  </header>
+
+  <!-- GOAL -->
+  <div class="goal">
+    <div class="ic">🎯</div>
+    <div>
+      <div class="lbl">The objective driving this</div>
+      <div class="q">"Leverage AI to fully automate tracking &amp; reporting for at least two key business metrics."</div>
+      <div class="sub">The two metrics: <span class="em">Releases</span> (deployment / DORA) and <span class="em">Support</span> (inbox volume + the weekly summary). Win condition = <span class="em">maximum automation</span> with no human typing for the parts AI can do — while never losing what the report gives you today.</div>
+    </div>
+  </div>
+
+  <!-- what all routes deliver -->
+  <div class="lead">
+    <b>What every route must deliver</b> (no regression on today's output)
+    <div class="flow-line">
+      <span class="pill">⏱ Weekly auto-refresh</span><span class="arr">+</span>
+      <span class="pill">Releases from Azure DevOps</span><span class="arr">+</span>
+      <span class="pill hot">Connect to Outlook → all emails</span><span class="arr">→</span>
+      <span class="pill keep">Counts + the written weekly summary</span><span class="arr">+</span>
+      <span class="pill">✍ Manual add/edit (hotfixes &amp; fixes)</span>
+    </div>
+    <div style="color:var(--muted);font-size:12.5px;margin-top:11px">
+      The summary is <span class="em">not</span> just counts — it reads the full email content and condenses it with your taxonomy &amp; chain-dedup, exactly like your current <code>…-summary.md</code>. That is why every route includes an <span class="em">AI step</span>, not just a tally.
+    </div>
+  </div>
+
+  <!-- three routes -->
+  <h2 class="sec">The three routes</h2>
+  <div class="cols3">
+
+    <!-- ROUTE 1: Claude routine -->
+    <div class="card r1">
+      <span class="tag r1">ROUTE 1 · CLAUDE ROUTINE</span><span class="fav">★ YOUR LEAN PICK</span>
+      <h3>AI does it end-to-end</h3>
+      <div class="one">A scheduled Claude routine wakes weekly, reads the inbox &amp; Azure DevOps, and writes the counts <span class="em">and the same written summary you make today</span> — reusing your existing skills. The AI <span class="em">is</span> the classifier &amp; summariser.</div>
+      <div class="flow">
+        <div class="frow"><span class="node k">⏱ Claude routine · weekly</span></div>
+        <div class="frow"><span class="down">reads</span><span class="node ai">Outlook → full emails</span><span class="node">Azure DevOps → releases</span></div>
+        <div class="frow"><span class="down">→</span><span class="node ai">classify + write summary (your skill)</span></div>
+        <div class="frow"><span class="down">→</span><span class="node out">counts + summary → store → dashboard</span></div>
+      </div>
+      <ul class="kv">
+        <li><span class="k">Best</span><span class="v good">Most automation, least rebuild. Highest-fidelity summary — it's literally your current one.</span></li>
+        <li><span class="k">Watch</span><span class="v warn">Runs on Claude cloud; authorise the inbox connection once; weekly token cost; check run history vs. code-level determinism.</span></li>
+        <li><span class="k">IT ask</span><span class="v">Tiny — authorise the mailbox connection + a place to store output. No app reg / DB / CI-CD.</span></li>
+      </ul>
+    </div>
+
+    <!-- ROUTE 2: Power Platform -->
+    <div class="card r2">
+      <span class="tag r2">ROUTE 2 · POWER PLATFORM</span>
+      <h3>Lean, all-Microsoft</h3>
+      <div class="one">A SharePoint List is the store &amp; edit screen. Power Automate refreshes weekly via built-in connectors (no app registration); <span class="em">AI Builder / Azure OpenAI</span> writes the summary from the pulled emails.</div>
+      <div class="flow">
+        <div class="frow"><span class="node k">⏱ Power Automate · weekly</span></div>
+        <div class="frow"><span class="down">connectors</span><span class="node ms">Outlook → all emails</span><span class="node ms">Azure DevOps → releases</span></div>
+        <div class="frow"><span class="down">→</span><span class="node ai">AI Builder / Azure OpenAI → summary</span></div>
+        <div class="frow"><span class="down">→</span><span class="node out">SharePoint List → Power BI / HTML</span></div>
+      </div>
+      <ul class="kv">
+        <li><span class="k">Best</span><span class="v good">100% inside Microsoft; built-in auth like Power BI; List forms give free manual CRUD.</span></li>
+        <li><span class="k">Watch</span><span class="v warn">Clicky not code; AI summary more generic &amp; likely a premium licence; rebuild taxonomy as a prompt.</span></li>
+        <li><span class="k">IT ask</span><span class="v">Small — SharePoint site + service account + Power Automate/AI licence check. No app reg / DB / CI-CD.</span></li>
+      </ul>
+    </div>
+
+    <!-- ROUTE 3: Azure -->
+    <div class="card r3">
+      <span class="tag r3">ROUTE 3 · AZURE-NATIVE</span>
+      <h3>Owned &amp; most robust</h3>
+      <div class="one">An Azure Function on a timer pulls + classifies (Claude API), upserts to a small store and publishes JSON; a purpose-built Admin UI does manual CRUD. A <span class="em">service principal</span> means no tokens that expire.</div>
+      <div class="flow">
+        <div class="frow"><span class="node k">⏱ Timer Function · weekly</span></div>
+        <div class="frow"><span class="down">calls</span><span class="node api">DevOps</span><span class="node api">Graph → emails</span><span class="node ai">Claude API</span></div>
+        <div class="frow"><span class="down">→</span><span class="node out">upsert DB → publish JSON</span></div>
+        <div class="frow"><span class="down">edit</span><span class="node">Admin UI → API (CRUD)</span><span class="down">→</span><span class="node out">dashboard</span></div>
+      </div>
+      <ul class="kv">
+        <li><span class="k">Best</span><span class="v good">SLAs, App Insights logs/retries/alerts; handles untagged emails; fully yours; tokens never expire.</span></li>
+        <li><span class="k">Watch</span><span class="v warn">Most to build; biggest IT ask; code + prompt to maintain; small Claude API cost.</span></li>
+        <li><span class="k">IT ask</span><span class="v">Service principal + Graph admin consent + an Azure subscription / resource group.</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- comparison table -->
+  <h2 class="sec">Side by side</h2>
+  <table class="cmp">
+    <thead><tr><th></th><th class="c1">1 · Claude routine</th><th class="c2">2 · Power Platform</th><th class="c3">3 · Azure-native</th></tr></thead>
+    <tbody>
+      <tr><td>Serves "AI fully automates"</td><td class="yes">Directly — AI runs it all</td><td>Yes — AI in the flow</td><td>Yes — AI in code</td></tr>
+      <tr><td>Connect to Outlook (full emails)</td><td>Connector / MCP, authorised once</td><td>Office 365 connector</td><td>Microsoft Graph</td></tr>
+      <tr><td>Written weekly summary</td><td class="yes">Your existing skill — unchanged</td><td>AI Builder / Azure OpenAI</td><td>Claude API</td></tr>
+      <tr><td>App registration?</td><td class="yes">No</td><td class="yes">No — built-in connectors</td><td class="meh">Yes</td></tr>
+      <tr><td>Database?</td><td class="yes">No — file / List</td><td class="yes">No — SharePoint List</td><td class="meh">Yes — small table</td></tr>
+      <tr><td>CI/CD?</td><td class="yes">No</td><td class="yes">No</td><td class="meh">Light — one deploy</td></tr>
+      <tr><td>Manual add / edit</td><td>File / List, or skill-assisted</td><td>SharePoint List forms</td><td>Purpose-built Admin UI</td></tr>
+      <tr><td>"Token expired" problem</td><td>Connection re-auth (rare)</td><td class="yes">None — platform auth</td><td class="yes">None — service principal</td></tr>
+      <tr><td>Observability</td><td>Routine run history</td><td>Flow run history</td><td class="yes">App Insights + alerts</td></tr>
+      <tr><td>View layer</td><td>HTML dashboard</td><td>Power BI or HTML</td><td>HTML dashboard</td></tr>
+      <tr><td>Effort / time-to-value</td><td class="yes">Days — reuse skills</td><td>Days–weeks — mostly clicks</td><td>Weeks — build</td></tr>
+      <tr><td>Ongoing cost</td><td>Weekly agent tokens</td><td>M365 (± a licence)</td><td>~free Azure + API tokens</td></tr>
+      <tr><td>Best when…</td><td>You want max automation, fast, reusing what works</td><td>You must stay inside Microsoft governance</td><td>You need SLAs &amp; untagged-email handling</td></tr>
+    </tbody>
+  </table>
+
+  <!-- metrics & cost -->
+  <h2 class="sec">Metrics &amp; cost — ratings and comments</h2>
+  <div style="color:var(--muted);font-size:12.5px;margin-bottom:12px">
+    Ratings out of 5 ★, weighted to your priorities (<span class="em" style="color:var(--text)">max automation · lean IT · keep the summary</span>). Cost rows assume <span class="em" style="color:var(--text)">~60 support emails/week</span>; token pricing is current Claude API — Opus 4.8 $5/$25, Sonnet 4.6 $3/$15, Haiku 4.5 $1/$5 per 1M in/out tokens.
+  </div>
+  <table class="cmp">
+    <thead><tr><th>Metric</th><th class="c1">R1 Claude</th><th class="c2">R2 Power Plat.</th><th class="c3">R3 Azure</th><th>Reading &amp; comment</th></tr></thead>
+    <tbody>
+      <tr><td>AI automation depth</td><td class="r">★★★★★</td><td class="r">★★★★</td><td class="r">★★★★★</td><td class="cmt">R1/R3 — AI runs it end-to-end. R2's AI is bolted into a no-code flow: capable, less native.</td></tr>
+      <tr><td>AI help / build effort needed</td><td class="r">★★★★★</td><td class="r">★★★</td><td class="r">★★</td><td class="cmt">R1 reuses your existing skill — almost nothing to build. R2 = clicking flows + a prompt. R3 = real software (Function + admin app + classifier).</td></tr>
+      <tr><td>Maintenance effort</td><td class="r">★★★★</td><td class="r">★★★</td><td class="r">★★★</td><td class="cmt">R1: edit skill markdown. R2: flows are clicky / opaque to debug. R3: code + prompt to own, but the best logs.</td></tr>
+      <tr><td>Lean / low IT ask</td><td class="r">★★★★½</td><td class="r">★★★★</td><td class="r">★★</td><td class="cmt">R1/R2 need no app reg / DB / CI-CD. R3 needs a service principal + Graph consent + Azure subscription.</td></tr>
+      <tr><td>Summary fidelity (no regression)</td><td class="r">★★★★★</td><td class="r">★★★</td><td class="r">★★★★½</td><td class="cmt">R1 <i>is</i> your current summary. R2 (AI Builder / Azure OpenAI) is more generic + a prompt rebuild. R3 (Claude API) can match it with effort.</td></tr>
+      <tr><td>Manual entry / edit</td><td class="r">★★★½</td><td class="r">★★★★★</td><td class="r">★★★★★</td><td class="cmt">R2 SharePoint List forms + R3 custom admin = free, full CRUD. R1 leans on a file / List — less polished.</td></tr>
+      <tr><td>Reliability / observability</td><td class="r">★★★</td><td class="r">★★★½</td><td class="r">★★★★★</td><td class="cmt">R1/R2 = run history only. R3 = App Insights, retries, alerts, SLAs.</td></tr>
+      <tr><td>💰 Cost — AI token fee</td><td class="r">★★★½</td><td class="r">★★★★</td><td class="r">★★★★★</td><td class="cmt">R1 ≈ <b style="color:var(--text)">$5–15/mo</b> metered, or <b style="color:var(--text)">$0 marginal</b> on a Claude subscription you already have. R3 ≈ <b style="color:var(--text)">$1/mo</b>. R2 token cost ≈ $1/mo <i>if</i> using Azure OpenAI. See the token math below.</td></tr>
+      <tr><td>💰 Cost — licensing / infra</td><td class="r">★★★★</td><td class="r">★★½</td><td class="r">★★★★½</td><td class="cmt">R1: no infra (storage on SharePoint you have). R3: Azure ~free at this volume. R2 <b style="color:var(--text)">— the risk:</b> Power Automate Premium (Azure DevOps connector) ≈ <b style="color:var(--text)">$15/user/mo</b>, and AI Builder may need a credit add-on unless your licence seeds enough.</td></tr>
+      <tr><td>Time to value</td><td class="r">★★★★★</td><td class="r">★★★★</td><td class="r">★★½</td><td class="cmt">R1 days. R2 days–weeks. R3 weeks.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="overall">
+    <div class="obadge win"><div class="rank">🥇 #1 · weighted</div><div class="score">8.9 / 10</div><div class="lbl">R1 Claude routine — most automation, leanest, keeps your summary</div></div>
+    <div class="obadge"><div class="rank">🥈 #2</div><div class="score">8.1 / 10</div><div class="lbl">R3 Azure — most robust &amp; owned; biggest IT ask</div></div>
+    <div class="obadge"><div class="rank">🥉 #3</div><div class="score">7.8 / 10</div><div class="lbl">R2 Power Platform — all-Microsoft; cost hinges on licensing</div></div>
+  </div>
+
+  <h2 class="sec">Cost reading — the token math (so it's not hand-wavy)</h2>
+  <div style="color:var(--muted);font-size:12.5px;margin-bottom:12px">
+    The weekly support job ≈ <span class="em" style="color:var(--text)">35K input tokens</span> (60 emails + taxonomy rules) + <span class="em" style="color:var(--text)">~3K output</span> for the summary. As a single API call:
+  </div>
+  <table class="cmp">
+    <thead><tr><th>Model</th><th class="num">Per run</th><th class="num">Per month</th><th>Comment</th></tr></thead>
+    <tbody>
+      <tr><td>Opus 4.8</td><td class="num">~$0.25</td><td class="num">~$1.10</td><td class="cmt">Best summary quality</td></tr>
+      <tr><td>Sonnet 4.6</td><td class="num">~$0.15</td><td class="num">~$0.65</td><td class="cmt">Great balance — plenty for this job</td></tr>
+      <tr><td>Haiku 4.5</td><td class="num">~$0.05</td><td class="num">~$0.22</td><td class="cmt">Fine for counting; thinner narrative</td></tr>
+    </tbody>
+  </table>
+  <div class="notes" style="margin-top:14px">
+    <div class="note"><b>R3 Azure — cheapest to run</b><p>Pays roughly the single-call number above → <span class="em">~$1/month</span> in AI, plus ~free Azure compute. But you build &amp; own the software.</p></div>
+    <div class="note"><b>R1 Claude routine — cheapest to start</b><p>An <i>agentic</i> run uses 5–10× raw tokens (tool calls, reasoning) → <span class="em">~$5–15/mo</span> metered — or <span class="em">$0 marginal</span> if it draws from a Max/Team plan you already pay for (counts against quota + a daily routine cap a weekly job never hits).</p></div>
+    <div class="note"><b>R2 Power Platform — least predictable</b><p>Token fee is tiny (~$1/mo on Azure OpenAI), but the real cost is <span class="em">fixed licensing</span> — Power Automate Premium and possibly AI Builder credits — not tokens.</p></div>
+    <div class="note"><b>Billing model for R1</b><p>A routine run consumes tokens like any session. On a Claude <span class="em">subscription</span> it's included in your usage allowance; on <span class="em">API/Console</span> it's metered per-token. Never free, never on Anthropic.</p></div>
+  </div>
+
+  <!-- shared principles -->
+  <h2 class="sec">Rules that apply to all three (so manual + auto never fight)</h2>
+  <div class="notes">
+    <div class="note"><b>Hotfixes are yours</b><p>Change-failures are entered by hand. Mark them <code>manual + locked</code>; the weekly job <span class="em">never</span> writes hotfixes — it's your primary input for them.</p></div>
+    <div class="note"><b>A manual edit always wins</b><p>Every row carries <code>source</code> (auto / manual) and <code>locked</code>. Correct a number and the next refresh leaves it alone — or flags a mismatch — instead of overwriting you.</p></div>
+    <div class="note"><b>Keep the summary, don't shrink it</b><p>The summary reads full email content + your taxonomy + chain-dedup — same as today's <code>…-summary.md</code>. Counts feed the charts; the narrative is kept as a file and can also show as a dashboard panel.</p></div>
+    <div class="note"><b>Routes can combine</b><p>Not all-or-nothing: e.g. Power Automate can do the Outlook pull (no app reg) and hand the emails to the Claude skill for the summary. Same data model underneath, so mixing — or moving up later — isn't a rebuild.</p></div>
+  </div>
+
+  <!-- recommendation -->
+  <h2 class="sec">Recommendation</h2>
+  <div class="rec">
+    <h3>Start with Route 1 (Claude routine) — it's the most direct path to "AI fully automates it," reuses the skill that already writes your summary, and asks IT for almost nothing.</h3>
+    <ol>
+      <li><b>Schedule the existing skills</b> as a weekly Claude routine: pull releases from Azure DevOps + read the support inbox, classify, and write <span class="em">both</span> the counts and your weekly summary.</li>
+      <li><b>Drop the output where the dashboard reads it</b> (a JSON file + the summary markdown) — and add a "Latest support summary" panel so the narrative shows alongside the charts.</li>
+      <li><b>Add manual entry</b> for hotfixes &amp; corrections (a simple form or List) — locked so the routine never overwrites them.</li>
+      <li><b>Stay flexible:</b> if governance requires all-Microsoft, the same outputs come from <span class="em">Route 2</span>; if you later need SLAs or untagged-email handling, graduate to <span class="em">Route 3</span>. Same data model, so it's an engine swap, not a rebuild.</li>
+    </ol>
+    <div class="blocker"><b>✓ Why Route 1 fits the goal:</b> it makes AI do the tracking <span class="em">and</span> the reporting for both metrics, keeps your summary at full quality, needs no app registration / database / CI-CD, and is live in days.</div>
+  </div>
+
+  <footer>
+    SettleIT KPI Dashboard · Automation plan · Route 1 Claude routine · Route 2 Power Platform · Route 3 Azure · All three keep the weekly summary, connect to Outlook for full emails, and support manual entry · 2026-06-14
+  </footer>
+
+</div>
+</body>
+</html>

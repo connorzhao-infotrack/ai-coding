@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SettleIT — DORA Metrics & Support KPIs</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230e0f1a'/%3E%3Crect x='3' y='8' width='2.4' height='5' fill='%23f2c23e'/%3E%3Crect x='6.8' y='5' width='2.4' height='8' fill='%2334b39a'/%3E%3Crect x='10.6' y='3' width='2.4' height='10' fill='%233f7fd1'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- ===== Header ===== -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-title">SettleIT</div>
+      <div class="brand-sub">DORA Metrics &amp; Support KPIs <span class="powered">powered by InfoTrack</span></div>
+    </div>
+
+    <div class="filters">
+      <label class="fld">
+        <span>Range</span>
+        <select id="presetSelect">
+          <option value="8">Last 8 weeks</option>
+          <option value="13">Last 13 weeks</option>
+          <option value="26" selected>Last 26 weeks</option>
+          <option value="52">Last 52 weeks</option>
+          <option value="third">This Third</option>
+          <option value="fy">This FY</option>
+          <option value="all">All time</option>
+        </select>
+      </label>
+      <label class="fld">
+        <span>From</span>
+        <input type="date" id="fromDate" />
+      </label>
+      <label class="fld">
+        <span>To</span>
+        <input type="date" id="toDate" />
+      </label>
+    </div>
+  </header>
+
+  <!-- ===== Tabs ===== -->
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-page="overview">Overview</button>
+    <button class="tab" data-page="deployments">Deployments</button>
+    <button class="tab" data-page="support">Support</button>
+    <button class="tab" data-page="unittests">Unit Tests</button>
+    <a class="doc-link" href="phase2.html">Phase 2 plan ↗</a>
+  </nav>
+
+  <div id="loadError" class="load-error" hidden></div>
+
+  <!-- ===== Pages ===== -->
+  <main id="pages">
+
+    <!-- Overview -->
+    <section class="page active" id="page-overview">
+      <div class="kpi-row" id="kpiRow"></div>
+      <div class="grid grid-2">
+        <div class="panel">
+          <div class="panel-title">Deployments &amp; Change Failures <span class="panel-sub">per week ending</span></div>
+          <div class="chart" id="ovDeployChart"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Support Conversations <span class="panel-sub">per week ending</span></div>
+          <div class="chart" id="ovSupportChart"></div>
+        </div>
+      </div>
+      <div class="grid grid-2">
+        <div class="panel">
+          <div class="panel-title">Deployments by Application</div>
+          <div class="chart chart-sm" id="ovDeployPie"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Support by Category</div>
+          <div class="chart chart-sm" id="ovSupportPie"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Deployments -->
+    <section class="page" id="page-deployments">
+      <div class="panel">
+        <div class="panel-title">Deployments <span class="panel-sub">per month, by application</span></div>
+        <div class="chart chart-lg" id="depByAppChart"></div>
+      </div>
+      <div class="grid grid-2">
+        <div class="panel">
+          <div class="panel-title">Change Failure Rate <span class="panel-sub">per month, vs DORA thresholds</span></div>
+          <div class="chart" id="cfrLineChart"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Failed Deployments (Hotfixes) <span class="panel-sub">per month</span></div>
+          <div class="chart" id="failedDepChart"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Support -->
+    <section class="page" id="page-support">
+      <div class="grid grid-support">
+        <div class="panel">
+          <div class="panel-title">Support Conversations <span class="panel-sub">per month</span></div>
+          <div class="chart chart-lg" id="supByMonthChart"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Category Split</div>
+          <div class="chart chart-lg" id="supPie"></div>
+        </div>
+      </div>
+      <div class="grid grid-2">
+        <div class="panel">
+          <div class="panel-title">System Issues Breakdown <span class="panel-sub">per month</span></div>
+          <div class="chart" id="sysIssuesChart"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Category Definitions</div>
+          <div class="defs" id="catDefs"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Unit Tests -->
+    <section class="page" id="page-unittests">
+      <div class="panel">
+        <div class="panel-title">
+          Line &amp; Branch Coverage by Pipeline
+          <span class="seed-badge" title="Seed data from screenshot — wired to Azure DevOps in Phase 2">SEED DATA</span>
+        </div>
+        <div class="chart chart-lg" id="coverageChart"></div>
+      </div>
+      <div class="panel note-panel" id="coverageNote"></div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer" id="appFooter"></footer>
+
+  <script src="vendor/echarts.min.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

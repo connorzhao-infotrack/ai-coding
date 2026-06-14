@@ -1,0 +1,96 @@
+{
+  "meta": {
+    "title": "SettleIT",
+    "subtitle": "DORA Metrics & Support KPIs",
+    "poweredBy": "InfoTrack",
+    "notes": [
+      "Thresholds and targets below are taken from the Power BI screenshots; edit freely.",
+      "leadTime.seedValue and coverage are SEED data (not in the workbooks) — wired to Azure DevOps in Phase 2.",
+      "Rates and coverage are stored as fractions 0..1 and formatted as % in the UI."
+    ]
+  },
+
+  "palette": {
+    "pageBg": "#0e0f1a",
+    "panelBg": "#1a1b2b",
+    "panelBg2": "#15162400",
+    "border": "#2a2c42",
+    "text": "#e8e9f0",
+    "muted": "#9aa0b5",
+    "grid": "#2a2c42",
+    "good": "#34b39a",
+    "warn": "#f2a73b",
+    "bad": "#e0455e",
+    "accent": "#3f7fd1",
+    "deployment": "#f2c23e",
+    "changeFailure": "#e0553f"
+  },
+
+  "support": {
+    "categories": [
+      { "key": "systemIssues",      "label": "System Issues",       "color": "#e0455e",
+        "definition": "Reported issue with the system, and it's within SettleIT's control to rectify. e.g. a bug, system unstable, or an outage." },
+      { "key": "tasks",             "label": "Support Tasks",       "color": "#f2a73b",
+        "definition": "Not an issue, but an action required from the support team. e.g. revert an order status, enable client for manual service." },
+      { "key": "userIssues",        "label": "User Issues",         "color": "#34b39a",
+        "definition": "Not an issue with the system — a training issue, the user is unaware of behaviour, or a misdirected email. e.g. email to the wrong inbox, feature request." },
+      { "key": "otherSystemIssues", "label": "Other System Issues", "color": "#3f7fd1",
+        "definition": "An integrated/external system not working as expected. e.g. InfoTrackID / EAM / PEXA outage, LEAP, Smokeball." }
+    ],
+    "systemIssueBreakdown": [
+      { "key": "peSync",         "label": "P.E. Sync Issues",  "color": "#e0455e" },
+      { "key": "agentDashboard", "label": "Agent Dashboard",   "color": "#f2a73b" },
+      { "key": "leap",           "label": "LEAP",              "color": "#34b39a" },
+      { "key": "pexaSync",       "label": "PEXA Sync",         "color": "#3f7fd1" },
+      { "key": "other",          "label": "Other",             "color": "#9b6cd1" }
+    ]
+  },
+
+  "applications": {
+    "order": [
+      "SettleIT", "SettleIT-Back End", "SettleIT-Front End", "SettleIT-Maestro",
+      "SettleIT-Background Processor", "ElnoService", "OrderUpdates", "DocumentTransformationService"
+    ],
+    "colors": {
+      "SettleIT": "#f2c23e",
+      "SettleIT-Back End": "#f2a73b",
+      "SettleIT-Front End": "#3f7fd1",
+      "SettleIT-Maestro": "#e0455e",
+      "SettleIT-Background Processor": "#9b6cd1",
+      "ElnoService": "#34b39a",
+      "OrderUpdates": "#5ec8e0",
+      "DocumentTransformationService": "#c0d14a"
+    }
+  },
+
+  "dora": {
+    "deploymentFrequency": {
+      "label": "Avg Deployments / Week", "unit": "/wk",
+      "gaugeMin": 0, "gaugeMax": 14, "target": 10, "higherIsBetter": true
+    },
+    "leadTime": {
+      "label": "Lead Time for Changes", "unit": "days",
+      "gaugeMin": 0, "gaugeMax": 7,
+      "seedValue": 2.1, "seed": true,
+      "thresholds": { "elite": 1, "high": 7, "medium": 30 }, "higherIsBetter": false
+    },
+    "changeFailureRate": {
+      "label": "Change Failure Rate", "unit": "%",
+      "thresholds": { "elite": 0.05, "high": 0.10, "medium": 0.15 }, "higherIsBetter": false
+    },
+    "failedDeploymentRecovery": {
+      "label": "Failed Dep' Recovery Time", "unit": "days",
+      "gaugeMin": 0, "gaugeMax": 7,
+      "thresholds": { "elite": 0.04, "high": 1, "medium": 7 }, "higherIsBetter": false
+    }
+  },
+
+  "coverage": { "currentTarget": 0.60, "eliteTarget": 0.80 },
+
+  "calendar": {
+    "fyStartMonth": 7,
+    "weekEndsOn": "Friday",
+    "thirds": { "1": "Jul–Oct", "2": "Nov–Feb", "3": "Mar–Jun" },
+    "comment": "InfoTrack FY starts in July; the year is split into Thirds (T1 Jul–Oct, T2 Nov–Feb, T3 Mar–Jun)."
+  }
+}

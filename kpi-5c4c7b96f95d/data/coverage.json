@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-05-24T00:00:00",
+  "source": "SEED from 'unit test.png' screenshot — NOT in the workbooks. Replace with Azure DevOps code-coverage in Phase 2.",
+  "seed": true,
+  "asOf": "screenshot (2025)",
+  "currentTarget": 0.60,
+  "eliteTarget": 0.80,
+  "headlineLineCoverage": 0.6605,
+  "records": [
+    { "pipeline": "DocumentTransformationService", "branches": 0.5640, "lines": 0.6445 },
+    { "pipeline": "ElnoService",                    "branches": 0.4694, "lines": 0.3351 },
+    { "pipeline": "OrderUpdates",                   "branches": 0.4610, "lines": 0.6149 },
+    { "pipeline": "SettleIT",                       "branches": 0.4959, "lines": 0.6605 }
+  ]
+}

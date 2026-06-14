@@ -1,0 +1,77 @@
+{
+  "generatedAt": "2026-06-14T21:46:35",
+  "source": "Releases.xlsx / Overview",
+  "count": 7,
+  "records": [
+    {
+      "fy": 22,
+      "third": 2,
+      "thirdYear": "T2FY22",
+      "releases": 25,
+      "hotfixes": 2,
+      "changeFailureRate": 0.08,
+      "devWorkDays": 75.0,
+      "devCapacity": 240.0
+    },
+    {
+      "fy": 22,
+      "third": 3,
+      "thirdYear": "T3FY22",
+      "releases": 39,
+      "hotfixes": 4,
+      "changeFailureRate": 0.10256410256410256,
+      "devWorkDays": 84.0,
+      "devCapacity": 340.0
+    },
+    {
+      "fy": 23,
+      "third": 1,
+      "thirdYear": "T1FY23",
+      "releases": 51,
+      "hotfixes": 3,
+      "changeFailureRate": 0.058823529411764705,
+      "devWorkDays": 85.0,
+      "devCapacity": 535.0
+    },
+    {
+      "fy": 23,
+      "third": 2,
+      "thirdYear": "T2FY23",
+      "releases": 24,
+      "hotfixes": 3,
+      "changeFailureRate": 0.125,
+      "devWorkDays": 70.0,
+      "devCapacity": 405.0
+    },
+    {
+      "fy": 23,
+      "third": 3,
+      "thirdYear": "T3FY23",
+      "releases": 65,
+      "hotfixes": 3,
+      "changeFailureRate": 0.046153846153846156,
+      "devWorkDays": 84.0,
+      "devCapacity": 524.2
+    },
+    {
+      "fy": 24,
+      "third": 1,
+      "thirdYear": "T1FY24",
+      "releases": 70,
+      "hotfixes": 7,
+      "changeFailureRate": 0.1,
+      "devWorkDays": 86.0,
+      "devCapacity": 542.2
+    },
+    {
+      "fy": 24,
+      "third": 2,
+      "thirdYear": "T2FY24",
+      "releases": 240,
+      "hotfixes": 5,
+      "changeFailureRate": 0.020833333333333332,
+      "devWorkDays": 38.0,
+      "devCapacity": 284.25
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "generatedAt": "2026-06-14T21:46:35",
+  "source": "Support Inbox.xlsx / OverviewData",
+  "count": 7,
+  "records": [
+    {
+      "fy": 22,
+      "third": 2,
+      "thirdYear": "T2FY22",
+      "ordersPlaced": 11167,
+      "tasks": 38,
+      "systemIssues": 28,
+      "userIssues": 18,
+      "otherSystemIssues": 14
+    },
+    {
+      "fy": 22,
+      "third": 3,
+      "thirdYear": "T3FY22",
+      "ordersPlaced": 11927,
+      "tasks": 38,
+      "systemIssues": 71,
+      "userIssues": 6,
+      "otherSystemIssues": 9
+    },
+    {
+      "fy": 23,
+      "third": 1,
+      "thirdYear": "T1FY23",
+      "ordersPlaced": 9845,
+      "tasks": 41,
+      "systemIssues": 59,
+      "userIssues": 23,
+      "otherSystemIssues": 15
+    },
+    {
+      "fy": 23,
+      "third": 2,
+      "thirdYear": "T2FY23",
+      "ordersPlaced": 7867,
+      "tasks": 18,
+      "systemIssues": 24,
+      "userIssues": 15,
+      "otherSystemIssues": 3
+    },
+    {
+      "fy": 23,
+      "third": 3,
+      "thirdYear": "T3FY23",
+      "ordersPlaced": 6767,
+      "tasks": 13,
+      "systemIssues": 20,
+      "userIssues": 19,
+      "otherSystemIssues": 17
+    },
+    {
+      "fy": 24,
+      "third": 1,
+      "thirdYear": "T1FY24",
+      "ordersPlaced": 5744,
+      "tasks": 11,
+      "systemIssues": 21,
+      "userIssues": 14,
+      "otherSystemIssues": 14
+    },
+    {
+      "fy": 24,
+      "third": 2,
+      "thirdYear": "T2FY24",
+      "ordersPlaced": 4455,
+      "tasks": 28,
+      "systemIssues": 27,
+      "userIssues": 22,
+      "otherSystemIssues": 13
+    }
+  ]
+}
