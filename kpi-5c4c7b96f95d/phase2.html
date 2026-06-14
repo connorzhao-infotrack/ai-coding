@@ -3,93 +3,83 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SettleIT KPI — Phase 2 Automation Options</title>
+  <title>SettleIT KPI — Phase 2: two ways to automate it</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230e0f1a'/%3E%3Crect x='3' y='8' width='2.4' height='5' fill='%23f2c23e'/%3E%3Crect x='6.8' y='5' width='2.4' height='8' fill='%2334b39a'/%3E%3Crect x='10.6' y='3' width='2.4' height='10' fill='%233f7fd1'/%3E%3C/svg%3E" />
   <style>
     :root{
-      --bg:#0e0f1a; --panel:#1a1b2b; --panel2:#15162a; --border:#2a2c42;
+      --bg:#0e0f1a; --panel:#1a1b2b; --panel2:#11121f; --border:#2a2c42;
       --text:#e8e9f0; --muted:#9aa0b5; --good:#34b39a; --warn:#f2a73b;
-      --bad:#e0455e; --accent:#3f7fd1; --amber:#f2c23e;
+      --bad:#e0455e; --accent:#3f7fd1; --amber:#f2c23e; --purple:#a98be0;
     }
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--text);
-      font-family:"Segoe UI",Roboto,system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.5}
+      font-family:"Segoe UI",Roboto,system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.55}
     a{color:#6ea8ff}
-    .wrap{max-width:1280px;margin:0 auto;padding:26px 26px 60px}
-
+    .wrap{max-width:1300px;margin:0 auto;padding:26px 26px 60px}
     header.top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;
-      border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:22px;flex-wrap:wrap}
+      border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:20px;flex-wrap:wrap}
     .h-title{font-size:26px;font-weight:800;letter-spacing:.3px;
       background:linear-gradient(90deg,#6ea8ff,#34b39a);-webkit-background-clip:text;background-clip:text;color:transparent}
-    .h-sub{color:var(--muted);font-size:13.5px;margin-top:4px}
-    .back{font-size:13px;text-decoration:none;border:1px solid var(--border);
-      padding:8px 12px;border-radius:8px;color:var(--text);white-space:nowrap}
+    .h-sub{color:var(--muted);font-size:13.5px;margin-top:4px;max-width:820px}
+    .navlinks{display:flex;gap:8px;flex-wrap:wrap}
+    .back{font-size:13px;text-decoration:none;border:1px solid var(--border);padding:8px 12px;border-radius:8px;color:var(--text);white-space:nowrap}
 
-    .lead{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:22px}
-    .lead .flow-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
-    .pill{background:#11121f;border:1px solid var(--border);border-radius:20px;padding:6px 13px;font-size:12.5px;white-space:nowrap}
-    .pill.hot{border-color:var(--amber);color:var(--amber)}
+    .goal{background:linear-gradient(180deg,#1d2616,#171a12);border:1px solid var(--good);border-radius:12px;padding:15px 18px;margin-bottom:16px;display:flex;gap:13px;align-items:flex-start}
+    .goal .ic{font-size:20px} .goal .lbl{font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--good);font-weight:700}
+    .goal .q{font-size:16px;font-weight:700;margin-top:2px} .goal .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
+
+    .lead{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:15px 18px;margin-bottom:22px}
+    .flow-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .pill{background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12.5px;white-space:nowrap}
+    .pill.hot{border-color:var(--amber);color:var(--amber)} .pill.rev{border-color:var(--purple);color:#c7b3f0}
     .arr{color:var(--muted);font-weight:700}
 
-    h2.sec{font-size:13px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);
-      margin:30px 0 12px;border-bottom:1px solid var(--border);padding-bottom:8px}
+    h2.sec{font-size:13px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin:30px 0 12px;border-bottom:1px solid var(--border);padding-bottom:8px}
 
     .cols2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
     @media (max-width:980px){.cols2{grid-template-columns:1fr}}
-
     .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden}
     .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
     .card.a::before{background:var(--good)} .card.b::before{background:var(--accent)}
-    .card.shared::before{background:var(--amber)}
-    .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.5px;padding:3px 9px;border-radius:20px;margin-bottom:6px}
-    .tag.a{background:rgba(52,179,154,.16);color:var(--good)}
-    .tag.b{background:rgba(63,127,209,.18);color:#7fb2ff}
-    .tag.simple{background:rgba(242,167,59,.16);color:var(--warn);margin-left:6px}
-    .card h3{margin:4px 0 4px;font-size:19px}
-    .card .one{color:var(--muted);font-size:13px;margin-bottom:14px}
+    .tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.5px;padding:3px 9px;border-radius:20px;margin-bottom:6px}
+    .tag.a{background:rgba(52,179,154,.16);color:var(--good)} .tag.b{background:rgba(63,127,209,.18);color:#7fb2ff}
+    .tag.pick{background:rgba(242,194,62,.16);color:var(--amber);margin-left:6px}
+    .card h3{margin:5px 0 4px;font-size:19px} .card .one{color:var(--muted);font-size:13px;margin-bottom:13px}
 
-    .flow{display:flex;flex-direction:column;gap:7px;background:#11121f;border:1px solid var(--border);
-      border-radius:9px;padding:12px;margin-bottom:14px}
-    .frow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .node{background:#1f2034;border:1px solid var(--border);border-radius:7px;padding:6px 10px;font-size:12px}
-    .node.k{border-color:var(--amber);color:var(--amber)}
-    .node.ai{border-color:var(--good);color:var(--good)}
-    .node.api{border-color:#7fb2ff;color:#7fb2ff}
-    .node.out{border-color:var(--muted)}
-    .down{color:var(--muted);margin:0 0 0 6px}
+    .flow{display:flex;flex-direction:column;gap:6px;background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:11px;margin-bottom:14px}
+    .frow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:11.5px}
+    .node{background:#1f2034;border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:11.5px}
+    .node.k{border-color:var(--amber);color:var(--amber)} .node.ai{border-color:var(--good);color:var(--good)}
+    .node.api{border-color:#7fb2ff;color:#7fb2ff} .node.rev{border-color:var(--purple);color:#c7b3f0} .node.out{border-color:var(--muted)}
+    .down{color:var(--muted)}
 
-    .pc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
-    @media (max-width:560px){.pc{grid-template-columns:1fr}}
-    .pros h4,.cons h4{margin:0 0 6px;font-size:12px;letter-spacing:.5px;text-transform:uppercase}
-    .pros h4{color:var(--good)} .cons h4{color:var(--bad)}
-    ul.tight{margin:0;padding-left:18px} ul.tight li{margin:4px 0;font-size:13px}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:6px 0 12px}
+    @media (max-width:560px){.split{grid-template-columns:1fr}}
+    .split h4{margin:0 0 6px;font-size:11px;letter-spacing:.5px;text-transform:uppercase}
+    .do-us h4{color:var(--good)} .do-it h4{color:var(--warn)}
+    ul.tight{margin:0;padding-left:17px} ul.tight li{margin:4px 0;font-size:12.6px}
+    .lim h4{margin:8px 0 6px;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--bad)}
 
-    /* shared foundation diagram */
-    .shared-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    @media (max-width:860px){.shared-grid{grid-template-columns:1fr 1fr}}
-    @media (max-width:560px){.shared-grid{grid-template-columns:1fr}}
-    .scard{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:13px 14px}
-    .scard .ic{font-size:18px}
-    .scard b{display:block;margin:6px 0 3px;font-size:14px}
-    .scard span{color:var(--muted);font-size:12.5px}
+    .spot{background:linear-gradient(180deg,#201a2e,#17141f);border:1px solid var(--purple);border-radius:12px;padding:16px 18px;margin-bottom:8px}
+    .spot h3{margin:0 0 8px;font-size:17px;color:#c7b3f0}
+    .spot .two{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px}
+    @media (max-width:760px){.spot .two{grid-template-columns:1fr}}
+    .spot .box{background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:12px 14px}
+    .spot .box b{font-size:13px} .spot .box p{margin:5px 0 0;color:var(--muted);font-size:12.6px}
 
     table.cmp{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-    table.cmp th,table.cmp td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:top}
-    table.cmp thead th{background:#11121f;color:var(--muted);text-transform:uppercase;font-size:11px;letter-spacing:.6px}
-    table.cmp td:first-child{color:var(--muted);width:170px}
+    table.cmp th,table.cmp td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--border);font-size:12.6px;vertical-align:top}
+    table.cmp thead th{background:var(--panel2);color:var(--muted);text-transform:uppercase;font-size:10.5px;letter-spacing:.5px}
+    table.cmp td:first-child{color:var(--muted);width:165px}
     table.cmp th.colA{color:var(--good)} table.cmp th.colB{color:#7fb2ff}
     table.cmp tr:last-child td{border-bottom:none}
+    .yes{color:var(--good);font-weight:600} .meh{color:var(--warn)}
 
-    .notes{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    @media (max-width:860px){.notes{grid-template-columns:1fr}}
-    .note{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px}
+    .note{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:14px}
     .note b{color:var(--text)} .note p{margin:6px 0 0;color:var(--muted);font-size:13px}
 
     .rec{background:linear-gradient(180deg,#18233a,#161a2c);border:1px solid var(--accent);border-radius:12px;padding:18px 20px}
-    .rec h3{margin:0 0 6px;font-size:18px}
-    .rec ol{margin:10px 0 0;padding-left:20px} .rec li{margin:7px 0}
-    .blocker{margin-top:16px;background:rgba(242,167,59,.10);border:1px solid var(--warn);border-radius:10px;padding:13px 15px}
-    .blocker b{color:var(--warn)}
+    .rec h3{margin:0 0 6px;font-size:18px} .rec ol{margin:10px 0 0;padding-left:20px} .rec li{margin:7px 0}
     footer{margin-top:30px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);padding-top:14px}
     .em{color:var(--text);font-weight:600}
   </style>
@@ -99,157 +89,160 @@
 
   <header class="top">
     <div>
-      <div class="h-title">Phase 2 — Automating the Weekly Refresh</div>
-      <div class="h-sub">Two ways to make the SettleIT KPI dashboard update itself every week, with no PC running. Same data, same dashboard — they differ only in <span class="em">who runs the weekly job</span>.</div>
+      <div class="h-title">Phase 2 — two ways to automate it</div>
+      <div class="h-sub">Both routes make the dashboard refresh itself weekly, keep manual entry for hotfixes, and allow a human to review the support summary before it goes live. They differ in <span class="em">how much we build &amp; own</span> and <span class="em">how clean the human-review step is</span>.</div>
     </div>
-    <a class="back" href="index.html">← Back to dashboard</a>
+    <div class="navlinks">
+      <a class="back" href="index.html">← Dashboard</a>
+      <a class="back" href="plan.html">Cost &amp; ratings</a>
+    </div>
   </header>
 
-  <!-- what we are automating -->
-  <div class="lead">
-    <b>What gets automated each week</b> — exactly what you do by hand today:
-    <div class="flow-line">
-      <span class="pill">⏱ Weekly trigger</span><span class="arr">→</span>
-      <span class="pill">Pull releases (Azure DevOps)</span><span class="arr">+</span>
-      <span class="pill hot">Read &amp; classify support inbox</span><span class="arr">→</span>
-      <span class="pill">Write JSON store</span><span class="arr">→</span>
-      <span class="pill">Dashboard updates</span>
-    </div>
-    <div style="color:var(--muted);font-size:12.5px;margin-top:10px">
-      The only step that needs AI is classifying support emails into Task / System / User / Other-system. That single difference is what splits the two approaches.
+  <div class="goal">
+    <div class="ic">🎯</div>
+    <div>
+      <div class="lbl">The objective</div>
+      <div class="q">"Leverage AI to fully automate tracking &amp; reporting for at least two key business metrics."</div>
+      <div class="sub">The two metrics: <span class="em">Releases</span> (deployment / DORA) and <span class="em">Support</span> (volume + the weekly written summary). Win = maximum automation, with a human only where judgement is needed.</div>
     </div>
   </div>
 
-  <!-- the two approaches -->
-  <h2 class="sec">The two approaches (the runner)</h2>
+  <div class="lead">
+    <b>What happens each week — and the one place a human is needed</b>
+    <div class="flow-line">
+      <span class="pill">⏱ Weekly</span><span class="arr">→</span>
+      <span class="pill">Releases from Azure DevOps <span style="color:var(--good)">· no review needed</span></span><span class="arr">+</span>
+      <span class="pill hot">Read &amp; classify the support inbox</span><span class="arr">→</span>
+      <span class="pill rev">✋ Human reviews the summary</span><span class="arr">→</span>
+      <span class="pill">Publish to dashboard</span>
+    </div>
+    <div style="color:var(--muted);font-size:12.5px;margin-top:11px">
+      Release data is factual — it publishes automatically. <span class="em">Only the AI-written support summary needs a human glance before going live.</span> How clean that one step is becomes the main difference between the two routes below. Manual hotfix entry happens in both (hotfixes are almost always entered by hand).
+    </div>
+  </div>
+
+  <h2 class="sec">The two routes</h2>
   <div class="cols2">
 
-    <!-- Approach A -->
+    <!-- ROUTE A -->
     <div class="card a">
-      <span class="tag a">APPROACH A</span><span class="tag simple">SIMPLE / FASTEST</span>
-      <h3>Claude Code scheduled agent</h3>
-      <div class="one">A <code>/schedule</code> routine (remote agent) wakes weekly and runs your <span class="em">existing two skills</span>, then commits the results. The agent <span class="em">is</span> the classifier — no AI code to write.</div>
+      <span class="tag a">ROUTE A · GITHUB PAGES + CLAUDE ROUTINE</span><span class="tag pick">★ LEAN / OUR PICK TO START</span>
+      <h3>AI does it, git stores it</h3>
+      <div class="one">A scheduled Claude routine reads the inbox &amp; Azure DevOps, classifies and writes the summary, and commits the data + summary to a <span class="em">private repo</span>. Private GitHub Pages serves it. Manual edits are a Claude <span class="em">skill</span> run locally. Review = the routine opens a Pull Request a human merges.</div>
 
       <div class="flow">
-        <div class="frow"><span class="node k">⏱ Routine: Mon 7am</span><span class="down">→</span><span class="node ai">Claude Code remote agent</span></div>
-        <div class="frow"><span class="down">runs</span><span class="node">release skill → Azure DevOps</span><span class="node">support skill → Graph inbox</span></div>
-        <div class="frow"><span class="down">→</span><span class="node ai">classifies inbox natively (the skill)</span></div>
-        <div class="frow"><span class="down">→</span><span class="node out">commit JSON to git repo</span><span class="down">→</span><span class="node out">Static Web App auto-deploys</span></div>
+        <div class="frow"><span class="node k">⏱ Claude routine · weekly (cloud or local)</span></div>
+        <div class="frow"><span class="down">reads</span><span class="node ai">Outlook inbox</span><span class="node">Azure DevOps</span></div>
+        <div class="frow"><span class="down">→</span><span class="node ai">classify + write summary</span><span class="down">→</span><span class="node rev">opens PR (draft)</span><span class="down">→</span><span class="node rev">human merges</span></div>
+        <div class="frow"><span class="down">→</span><span class="node out">commit JSON to private repo → GitHub Pages → dashboard</span></div>
+        <div class="frow"><span class="down">manual</span><span class="node">Claude skill (run locally) commits a hotfix/fix</span></div>
       </div>
 
-      <div class="pc">
-        <div class="pros"><h4>Strengths</h4>
-          <ul class="tight">
-            <li><b>Reuses the skills as-is</b> — the hard part (support classification, tag-trust, conflict handling) already works.</li>
-            <li><b>Least new code</b> — you're scheduling, not rebuilding.</li>
-            <li>AI classification is <b>native &amp; free of plumbing</b> — no separate API/prompt to maintain.</li>
-            <li>Git commit = <b>audit trail + diff review + deploy trigger</b> in one.</li>
-            <li>Evolve by editing skill markdown, not redeploying infra.</li>
-          </ul>
-        </div>
-        <div class="cons"><h4>Trade-offs</h4>
-          <ul class="tight">
-            <li>Runs on <b>Anthropic's cloud</b>, not Azure (fine — storage/hosting can still be Azure/git).</li>
-            <li>Agent reasoning is <b>less deterministic</b> than code; needs run-history checks.</li>
-            <li>Costs ~<b>one agent session per week</b> (tokens).</li>
-            <li>Still needs the <b>Graph app registration</b> for headless inbox access (shared).</li>
-          </ul>
-        </div>
+      <div class="split">
+        <div class="do-us"><h4>✅ We can do</h4><ul class="tight">
+          <li>The dashboard + the Claude routine &amp; schedule</li>
+          <li>The manual-entry <b>skill</b> — runs locally under your own access, so no hosted auth to build</li>
+          <li>Set Pages → <b>Private</b> (already confirmed on settleit-kpi)</li>
+        </ul></div>
+        <div class="do-it"><h4>🔒 IT must do</h4><ul class="tight">
+          <li><b>Enable GitHub Actions</b> on the org repo — currently disabled org-wide (blocks Pages build)</li>
+          <li><b>Reliable Outlook access</b> to the shared mailbox (Graph app reg or M365 connector + Full Access)</li>
+          <li>Approve a fine-grained <b>PAT</b> for the routine's commits (org PAT policy)</li>
+        </ul></div>
       </div>
+
+      <div class="lim"><h4>Limitations</h4><ul class="tight">
+        <li><b>Human review = a git PR diff.</b> Perfect audit trail, but the reviewer needs a GitHub account and reads a raw diff — fine for an engineer, clunky for a non-developer. "Pending review" on the dashboard has to be emulated.</li>
+        <li>Trigger is a research-preview routine (daily run caps) — add a completion check.</li>
+        <li>Manual entry is a skill/commit, not a polished form.</li>
+      </ul></div>
     </div>
 
-    <!-- Approach B -->
+    <!-- ROUTE B -->
     <div class="card b">
-      <span class="tag b">APPROACH B</span>
-      <h3>Azure Function timer</h3>
-      <div class="one">A CRON-triggered Azure Function does it all in code: pull releases, read Graph, call the <span class="em">Claude API</span> to classify, write JSON to Blob. Fully serverless, fully Azure.</div>
+      <span class="tag b">ROUTE B · AZURE FUNCTION TIMER + SMALL BACKEND</span>
+      <h3>A small owned app</h3>
+      <div class="one">A timer-triggered Azure Function pulls releases (no review) and the inbox, calls the <span class="em">Claude API</span> to draft the summary, and writes it as <span class="em">pending</span> to a tiny store. A human approves from a Teams/Outlook card (or a small protected page); it flips to published. The dashboard reads published data.</div>
 
       <div class="flow">
-        <div class="frow"><span class="node k">⏱ Timer trigger (CRON)</span><span class="down">→</span><span class="node api">Azure Function</span></div>
-        <div class="frow"><span class="down">calls</span><span class="node">Azure DevOps OData</span><span class="node">Graph inbox</span><span class="node api">Claude API → classify</span></div>
-        <div class="frow"><span class="down">→</span><span class="node out">write JSON to Blob Storage</span></div>
-        <div class="frow"><span class="down">→</span><span class="node out">Static Web App reads JSON</span></div>
+        <div class="frow"><span class="node k">⏱ Azure Function · weekly timer</span></div>
+        <div class="frow"><span class="down">releases</span><span class="node api">Azure DevOps → store</span><span class="down" style="color:var(--good)">no review</span></div>
+        <div class="frow"><span class="down">support</span><span class="node api">Graph inbox</span><span class="node ai">Claude API → draft</span><span class="down">→</span><span class="node out">store = PENDING</span></div>
+        <div class="frow"><span class="down">→</span><span class="node rev">approve via Teams/Outlook card or protected page</span><span class="down">→</span><span class="node out">PUBLISHED</span></div>
+        <div class="frow"><span class="down">→</span><span class="node out">dashboard reads published</span><span class="down">·</span><span class="node">manual: admin form / API</span></div>
       </div>
 
-      <div class="pc">
-        <div class="pros"><h4>Strengths</h4>
-          <ul class="tight">
-            <li><b>Fully Azure / serverless</b> — Consumption plan is ~free at this volume.</li>
-            <li><b>Deterministic &amp; observable</b> — App Insights logs, retries, alerts.</li>
-            <li>Release pull is <b>pure code</b> (no LLM) — faster &amp; cheaper.</li>
-            <li>Native fit with <b>Key Vault + managed identity</b>.</li>
-          </ul>
-        </div>
-        <div class="cons"><h4>Trade-offs</h4>
-          <ul class="tight">
-            <li><b>Most code to build</b> — port the support taxonomy into a Claude API prompt.</li>
-            <li>AI logic now lives in <b>two places</b> (skill + prompt) — risk of drift; mitigate by sharing <code>categorisation-rules.md</code>.</li>
-            <li>Manage a <b>Claude API key</b> (Key Vault).</li>
-            <li>Still needs the <b>Graph app registration</b> (shared).</li>
-          </ul>
-        </div>
+      <div class="split">
+        <div class="do-us"><h4>✅ We can do</h4><ul class="tight">
+          <li>The Function (pull + classify via Claude API + write)</li>
+          <li>The review surface — a Teams/Outlook <b>Approve</b> card or a tiny Entra-protected page</li>
+          <li>The dashboard + a proper manual <b>admin form</b></li>
+        </ul></div>
+        <div class="do-it"><h4>🔒 IT must do</h4><ul class="tight">
+          <li>An <b>Azure subscription / resource group</b> (Function App + storage account live here)</li>
+          <li>A <b>service principal</b> for Azure DevOps + a <b>Graph app reg</b> for the inbox</li>
+          <li>M365 / Power Automate <b>licensing</b> if using the approval card</li>
+        </ul></div>
       </div>
+
+      <div class="lim"><h4>Limitations &amp; notes</h4><ul class="tight">
+        <li><b>More to build &amp; own</b> — a backend, auth, and idempotency (avoid double-publishing on retries).</li>
+        <li><b>Bigger IT ask</b> (service principal + Graph consent + Azure subscription).</li>
+        <li>Timer usually fires unattended but can occasionally stall — add an alert.</li>
+        <li style="color:var(--good)"><b>Good news:</b> no complex CI/CD — deploy via VS Code / CLI / zip. Cost ≈ free Functions grant + ~$1–2/mo storage + ~$1/mo Claude API.</li>
+      </ul></div>
     </div>
   </div>
 
-  <!-- shared foundation -->
-  <h2 class="sec">Shared foundation — build once, both approaches use it</h2>
-  <div class="card shared" style="margin-bottom:16px">
-    <div class="one" style="margin-bottom:14px">These pieces are identical whichever runner you pick. Building them first means <span class="em">starting with Approach A never locks you out of Approach B.</span></div>
-    <div class="shared-grid">
-      <div class="scard"><div class="ic">📥</div><b>Microsoft Graph app registration</b><span>Entra app, application <code>Mail.Read</code> scoped to the shared mailbox. The headless inbox key — needed by both. <span style="color:var(--warn)">Needs one-time admin consent.</span></span></div>
-      <div class="scard"><div class="ic">🗄️</div><b>JSON data store</b><span>The Phase-1 schema (releases, hotfixes, support-weekly, system-issues…). Git repo <i>or</i> Blob Storage.</span></div>
-      <div class="scard"><div class="ic">🌐</div><b>Static Web App (hosting)</b><span>Serves the existing <code>dashboard/</code> folder. Free tier. Reads the same JSON either way.</span></div>
-      <div class="scard"><div class="ic">🔐</div><b>Key Vault (secrets)</b><span>Azure DevOps PAT, Graph client secret/cert, Claude API key. No secrets in files. <span style="color:var(--warn)">Rotate the PAT first.</span></span></div>
-      <div class="scard"><div class="ic">➕</div><b>Manual / API insert path</b><span>Authenticated endpoint (HTTP Function) or a git commit/PR — so ad-hoc corrections don't mean editing files by hand.</span></div>
-      <div class="scard"><div class="ic">👀</div><b>Review queue in the dashboard</b><span>Low-confidence / tag-conflict support items surface for a quick confirm — the only remaining human touch-point.</span></div>
+  <!-- HUMAN REVIEW SPOTLIGHT -->
+  <h2 class="sec">The deciding difference — reviewing the summary before it's published</h2>
+  <div class="spot">
+    <h3>✋ Only the AI summary needs a human. That one step is the cleanest divider.</h3>
+    <div style="color:var(--muted);font-size:13px">Release/deployment numbers are factual and publish automatically in both routes. The weekly written summary is the only thing a person should glance at first — here's how that glance works in each:</div>
+    <div class="two">
+      <div class="box"><b style="color:var(--good)">Route A — approve a Pull Request</b><p>The routine opens a PR with the draft summary; a person reviews the change and merges to publish. <b>Flawless git audit trail</b>, but the reviewer needs a GitHub account and reads a <b>raw diff</b> (not the rendered summary). Great for an engineer; awkward for a non-technical approver. "Pending" must be emulated on the dashboard.</p></div>
+      <div class="box"><b style="color:#7fb2ff">Route B — approve a rendered summary</b><p>The draft is saved as <b>pending</b>; the reviewer gets a Teams/Outlook card (or a small protected page) showing the <b>rendered summary</b> with Approve / Reject — no Git, no diffs, no new tool. "Pending review" is a <b>first-class state</b> the dashboard can show. This is the genuinely cleaner human step, especially for a non-developer.</p></div>
     </div>
+  </div>
+
+  <!-- AI runner note -->
+  <div class="note">
+    <b>Where does the AI run — Claude routine vs Claude API?</b>
+    <p>They pair naturally with the two routes, and aren't interchangeable. A <span class="em">Claude routine</span> bills against your Claude subscription (no per-token fee) — but its trigger is <span class="em">fire-and-forget</span>: it returns a session id, <span class="em">not</span> the summary, so it must publish its own output (commit to the repo). That's Route A — and the routine even self-schedules, so an Azure timer would be redundant there. The <span class="em">Claude API</span> (~$1/mo at this volume) hands the summary <span class="em">back in-process</span>, so code can route it into a review queue — that's Route B (deterministic, retryable, observable). So "use the routine inside the Azure Function to cut cost" isn't really a thing: if you use the routine you don't need the Function; if you use the Function, the API is the right fit.</p>
   </div>
 
   <!-- comparison table -->
   <h2 class="sec">Side by side</h2>
   <table class="cmp">
-    <thead><tr><th></th><th class="colA">A · Claude Code scheduled agent</th><th class="colB">B · Azure Function timer</th></tr></thead>
+    <thead><tr><th></th><th class="colA">A · GitHub Pages + routine</th><th class="colB">B · Azure Function + backend</th></tr></thead>
     <tbody>
-      <tr><td>Where it runs</td><td>Anthropic Claude Code cloud (routine)</td><td>Azure Functions (Consumption)</td></tr>
-      <tr><td>Build effort</td><td><b>Low</b> — schedule the existing skills</td><td><b>Medium–High</b> — write Functions + port classifier</td></tr>
-      <tr><td>Support AI classification</td><td>Native — the agent <i>is</i> the LLM, uses the skill</td><td>Claude API call (taxonomy ported to a prompt)</td></tr>
-      <tr><td>Release pull</td><td>Agent runs the existing Node script</td><td>Same logic in code — deterministic</td></tr>
-      <tr><td>Determinism / observability</td><td>Run history; less deterministic</td><td><b>App Insights, retries, alerts</b>; fully deterministic</td></tr>
-      <tr><td>Inbox access</td><td colspan="2" style="text-align:center;color:var(--amber)">Microsoft Graph app registration — shared by both</td></tr>
-      <tr><td>Storage write</td><td>Git commit (audit + deploy trigger)</td><td>Blob write (managed identity)</td></tr>
-      <tr><td>Weekly cost</td><td>~1 agent session (tokens)</td><td>Functions ~free + small API tokens (40–80 emails)</td></tr>
-      <tr><td>Maintenance</td><td>Edit skill markdown</td><td>Edit code + prompt</td></tr>
-      <tr><td>Best when…</td><td>You want it working fast &amp; value reusing skills</td><td>You want SLAs, full Azure ownership, determinism</td></tr>
+      <tr><td>Where it runs</td><td>Claude routine (cloud or local) + GitHub</td><td>Azure Function (Consumption) + small store</td></tr>
+      <tr><td>Data store</td><td>JSON in a private git repo</td><td>Azure Table Storage (status-aware)</td></tr>
+      <tr><td>AI step</td><td>Claude routine (subscription usage)</td><td>Claude API (~$1/mo, deterministic)</td></tr>
+      <tr><td>Manual entry</td><td>Claude skill (local) / edit + commit</td><td class="yes">Proper admin form / API</td></tr>
+      <tr><td>Review before publish</td><td>Merge a PR (raw diff)</td><td class="yes">Approve a rendered summary (card/page)</td></tr>
+      <tr><td>"Pending" state</td><td>Emulated</td><td class="yes">First-class, queryable</td></tr>
+      <tr><td>Reliability / observability</td><td>Run history; research-preview caps</td><td class="yes">App Insights, retries, alerts</td></tr>
+      <tr><td>IT must enable</td><td class="meh">Actions (org-disabled) + mailbox access + PAT</td><td class="meh">Azure sub + service principal + Graph consent</td></tr>
+      <tr><td>CI/CD</td><td class="yes">None (git push)</td><td class="yes">None required (VS Code / CLI / zip)</td></tr>
+      <tr><td>What we build &amp; own</td><td class="yes">Very little — reuse skills</td><td>A small backend + review surface + auth</td></tr>
+      <tr><td>Monthly cost</td><td>Subscription usage (or ~$0 if on plan) + free Pages</td><td>~free Functions + ~$1–2 storage + ~$1 API</td></tr>
+      <tr><td>Best when…</td><td>You want it working fast, minimal IT, reviewer is technical</td><td>You want a clean non-developer review &amp; SLAs</td></tr>
     </tbody>
   </table>
 
-  <!-- other areas -->
-  <h2 class="sec">Other areas worth mentioning</h2>
-  <div class="notes">
-    <div class="note"><b>Coverage &amp; lead time (still seeded)</b><p>Both runners should also pull <span class="em">code coverage</span> and <span class="em">lead time for changes</span> from Azure DevOps to replace the Phase-1 seed values. Same source either way.</p></div>
-    <div class="note"><b>Idempotency</b><p>Re-running a week must not double-count. Key support rows by <code>weekEnding</code> and releases by <code>(date, application)</code> — upsert, don't append.</p></div>
-    <div class="note"><b>Security / least privilege</b><p>Graph scoped to one mailbox; PAT read-only (Analytics); all secrets in Key Vault; managed identity for B. Rotate the currently-exposed PAT before anything ships.</p></div>
-    <div class="note"><b>Monitoring &amp; failure alerts</b><p>B gets this natively (App Insights). A should notify on completion/failure (email/Teams) and you can eyeball the weekly commit/diff.</p></div>
-    <div class="note"><b>Human review</b><p>“Less human interaction the better” → keep only the support review step. A can open a PR with flagged items; B writes them to the review queue. Either feeds the same dashboard panel.</p></div>
-    <div class="note"><b>Effort &amp; time-to-value</b><p>A can be live in days (reuse skills). B is a larger build but more “owned”. The shared foundation is the same work for both.</p></div>
-  </div>
-
   <!-- recommendation -->
-  <h2 class="sec">Recommendation</h2>
+  <h2 class="sec">How to choose</h2>
   <div class="rec">
-    <h3>Build the shared foundation first, start with Approach A, migrate hot spots to B over time.</h3>
+    <h3>Start with Route A to prove the value fast; move to Route B if/when we want a polished non-developer review workflow.</h3>
     <ol>
-      <li><b>Foundation (do once):</b> Graph app registration + admin consent · Static Web App · Key Vault (rotate &amp; store PAT) · confirm the JSON schema · pick git as the initial store.</li>
-      <li><b>Go live with Approach A:</b> a weekly <code>/schedule</code> routine runs both skills and commits JSON. You get full automation quickly, and the tricky support classification comes for free because the skill already does it well.</li>
-      <li><b>Migrate selectively to Approach B</b> when you want stronger SLAs/observability: move the <span class="em">deterministic release pull</span> (and coverage/lead-time) to an Azure Function timer first; move support classification later once the prompt is proven. Because the foundation is shared, this is incremental — no rework.</li>
+      <li><b>Route A first</b> — it reuses what already works (the skills), asks IT for the least (mainly: turn Actions on for the org repo), and gets a private, auto-refreshing dashboard live in days. The trade-off we accept early: the summary is reviewed by merging a PR.</li>
+      <li><b>Graduate to Route B</b> when the weekly reviewer is a non-developer or we want SLAs/alerting — the draft→approve-a-rendered-card→publish flow is the clean version of human review, and (good news) it needs <span class="em">no complex CI/CD</span>. Bigger IT ask, a small app to own.</li>
+      <li><b>Same dashboard, same data model either way</b> — so moving from A to B is swapping the engine, not rebuilding. We can decide the moment based on the manager's appetite for IT setup vs. reviewer experience.</li>
     </ol>
-    <div class="blocker"><b>⛳ One dependency gates either approach:</b> the Microsoft Graph <b>app registration with one-time admin consent</b> for <code>Mail.Read</code> on the shared mailbox. Worth requesting from IT now — it's on the critical path for both.</div>
   </div>
 
-  <footer>
-    SettleIT KPI Dashboard · Phase 2 options · Both approaches produce the same JSON the Phase-1 dashboard already reads.
-  </footer>
+  <footer>SettleIT KPI · Phase 2 · Route A (GitHub Pages + Claude routine) vs Route B (Azure Function + backend) · both keep manual hotfix entry and human review of the summary · 2026-06-15</footer>
 
 </div>
 </body>
