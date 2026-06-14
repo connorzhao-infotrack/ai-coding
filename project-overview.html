@@ -180,7 +180,7 @@
       <h3>⚠️ Open issues</h3>
       <ul>
         <li><b>Live listen-in lags / overlaps audio.</b> Cause: multiple pods — SignalR events land on a different pod than the call. Hack fix already applied: <b>prod reduced to 1 pod</b> (can be improved later with a backplane / sticky routing — acceptable while max ~3 parallel calls). <b>Audio-overlap fix Mon (Jerold)</b>.</li>
-        <li><b>Gemini quota / resource exhaustion — unconfirmed.</b> Morning Blacktown call dropped mid-hold. Stage confirmed on the <i>company</i> key (not Connor's personal). Root cause still open — <b>investigate next week</b>.</li>
+        <li><b>Gemini mid-call drop ("quota / resource exhaustion" — unconfirmed).</b> Morning Blacktown call dropped mid-hold. Stage confirmed on the <i>company</i> key (not Connor's personal). <b>Not yet proven to be quota</b> — the Gemini Live API also caps a single connection at <b>~10 min</b> and an audio-only session at <b>~15 min</b>, so a long council hold can hit a <i>duration / <code>go_away</code> timeout</i> that looks like a drop but isn't a 429. Root cause still open — <b>Nav runs production E2E repro next week</b> to pin quota-vs-duration (see §0b).</li>
         <li><b>SettleIT release pending</b> — Prem's Clerk-Alert fix to be cherry-picked to the release branch; release slipped past Thu (team event).</li>
       </ul>
     </div>
@@ -200,12 +200,23 @@
     <thead><tr><th>Who</th><th>Commitment</th><th>When</th></tr></thead>
     <tbody>
       <tr><td><b>🗣️ Jerold</b></td><td>Fix listen-in audio overlap · enable Northern Beaches / Bayside / C-Bankstown playbooks in DB + SettleIT side · author Moreton Bay</td><td>Mon</td></tr>
-      <tr><td><b>🧠 Connor</b></td><td>Go through the order list — identify which orders we can hit, and communicate clearly with the file handlers: <b>hold off on manual verification, InfoDialer tries first</b> · investigate Gemini quota / resource-exhaustion drop on the company key · prompt tweak (end-call once, not twice)</td><td>Mon–Tue</td></tr>
+      <tr><td><b>🧠 Connor</b></td><td>Go through the order list — identify which orders we can hit, and communicate clearly with the file handlers: <b>hold off on manual verification, InfoDialer tries first</b> · prompt tweak (end-call once, not twice) · hand the Gemini-drop repro to Nav (below)</td><td>Mon–Tue</td></tr>
+      <tr><td><b>🧪 Nav</b></td><td><b>Production end-to-end testing — reproduce the Gemini mid-call drop and pin its root cause.</b> Run a controlled series of short "mini" calls + a few deliberately <i>long-hold</i> calls on the company key; on every drop capture the exact Gemini Live websocket close code / error and elapsed time, then bucket it: <b>429 <code>RESOURCE_EXHAUSTED</code></b> (true quota / rate limit) vs <b>~10-min connection-lifetime or ~15-min audio-session timeout / <code>go_away</code></b> (duration, not quota) vs <b>WS 1011</b> (tool-call failure). Deliver a <b>reproducible trigger</b> + a verdict on quota-vs-duration, and whether <b>session resumption</b> (resume within 24 h via a <code>sessionResumption</code> token) survives long holds. See test notes below.</td><td>Mon–Tue</td></tr>
       <tr><td><b>🔄 Prem</b></td><td>Raise Clerk-Alert fix PR → cherry-pick to release branch → SettleIT release</td><td>Mon</td></tr>
       <tr><td><b>🎨 Shayla</b></td><td><b>Set up the shared order-tracker Excel</b> (template below) — find a dev to pull the order list from the DB (ground truth), then confirm with each file handler one by one · check with Sarah re upcoming Sydney Water + Blacktown orders · per-council test data in Confluence, formatted per order (e.g. Bankstown = rate amount + certificate number)</td><td>Mon →</td></tr>
       <tr><td><b>👥 Together</b></td><td><b>Babysit real orders:</b> work through the shared tracker order by order (see flow diagram below) — ping the file handler ahead of their call → jump on a Teams call → babysit → tweak / retry on failure. Start with <b>Sydney Water + Blacktown</b>; Newcastle unlikely (low volume).</td><td>all week</td></tr>
     </tbody>
   </table>
+  <div class="callout idea">
+    🔬 <b>Gemini mid-call drop — what Nav's production testing should rule in/out.</b> It's been called "quota," but that isn't proven. Documented Gemini Live API limits to test against:
+    <ul>
+      <li><b>~10-min connection lifetime</b> — a single Live websocket is capped at roughly 10 minutes; when it terminates the session ends too. A council hold queue can exceed this, presenting as a "drop mid-hold" with <b>no 429 at all</b>.</li>
+      <li><b>~15-min audio-only session cap</b> (≈2 min for audio+video) unless context-window compression is enabled.</li>
+      <li><b>429 <code>RESOURCE_EXHAUSTED</code></b> — real quota / rate limit (project-level shared pool, or provisioned-throughput vs pay-as-you-go mixed in one session). This is the "quota" hypothesis to confirm or kill.</li>
+      <li><b>Likely fix if it's duration, not quota:</b> the server sends a <code>go_away</code> before an expected disconnect — enable <code>sessionResumption</code> and reconnect with the latest token (resume within 24 h) so a long hold survives the cap.</li>
+    </ul>
+    Refs: <a href="https://ai.google.dev/gemini-api/docs/live-session">Live session management</a> · <a href="https://docs.cloud.google.com/vertex-ai/generative-ai/docs/live-api/start-manage-session">Start &amp; manage sessions</a> · <a href="https://ai.google.dev/gemini-api/docs/live-guide">Live capabilities</a> · <a href="https://docs.cloud.google.com/vertex-ai/generative-ai/docs/provisioned-throughput/live-api">Provisioned throughput (quota)</a>.
+  </div>
   <div class="callout">
     🛤️ <b>Two tracks in parallel from Mon:</b> fixes (listen-in, playbook enable, Clerk-Alert release) and babysat pilot calls don't wait on each other — Shayla starts the tracker Mon and calls begin as soon as orders are confirmed. Listen-in is wanted for babysitting (Shayla's ask) but recording playback + post-call verification is the fallback, so the pilot isn't gated on it.
   </div>

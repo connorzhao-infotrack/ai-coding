@@ -346,6 +346,51 @@
   abbr[title]{text-decoration:underline dotted var(--rule);text-underline-offset:3px;cursor:help;text-decoration-thickness:1px}
   .tl-step[title]{cursor:help}
 
+  /* PROJECTION · phases over time */
+  .projection{margin:0 0 16px;border:1.5px solid var(--ink);background:var(--paper)}
+  .projection-head{
+    padding:14px 22px;background:var(--ink);color:var(--paper);
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+  .proj-phase{display:grid;grid-template-columns:160px 1fr;border-bottom:1px solid var(--rule)}
+  .proj-phase:last-of-type{border-bottom:none}
+  .proj-gutter{
+    padding:18px 18px;border-right:1px solid var(--rule);
+    display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .proj-phase.p1 .proj-gutter{background:#dfeed4}
+  .proj-phase.p2 .proj-gutter{background:#f1ebd0}
+  .proj-phase.p3 .proj-gutter{background:#ffe6cc}
+  .proj-phase.p4 .proj-gutter{background:#ffe0d6}
+  .proj-when{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);font-weight:700}
+  .proj-rate{font-family:"Fraunces",serif;font-weight:800;font-size:34px;line-height:1;font-variation-settings:"opsz" 60;letter-spacing:-.02em;margin:10px 0 2px}
+  .proj-rate .unit{font-size:16px;color:var(--ink-2);font-weight:600;margin-left:2px}
+  .proj-rate-lbl{font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);line-height:1.3}
+  .proj-body{padding:18px 22px}
+  .proj-name{margin:0 0 4px;font-family:"Fraunces",serif;font-weight:700;font-size:22px;letter-spacing:-.005em;font-variation-settings:"opsz" 36;line-height:1.2}
+  .proj-tag{margin:0 0 14px;font-family:"Lora",serif;font-style:italic;font-size:14.5px;color:var(--ink-2);line-height:1.55}
+  .proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 22px;margin-bottom:12px}
+  .proj-grid > div h5{margin:0 0 4px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);font-weight:700}
+  .proj-grid > div p{margin:0;font-size:14px;line-height:1.5}
+  .proj-dev{padding:10px 14px;background:var(--paper-2);border-left:3px solid var(--ink);font-family:"Lora",serif;font-style:italic;font-size:14.5px;color:var(--ink);line-height:1.55}
+  .proj-dev strong{font-style:normal;font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-right:6px}
+  .proj-foot{padding:18px 22px;background:var(--hi);border-top:1px solid var(--ink)}
+  .proj-foot h4{margin:0 0 10px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);font-weight:700}
+  .proj-foot ul{margin:0;padding-left:18px}
+  .proj-foot li{margin:5px 0;font-size:14px;line-height:1.55}
+  .proj-hedge{
+    margin:0 0 36px;padding:12px 16px;background:var(--paper-2);
+    border:1px dashed var(--rule);
+    font-family:"Lora",serif;font-style:italic;font-size:13.5px;color:var(--ink-2);line-height:1.55;
+  }
+  .proj-hedge strong{font-style:normal;font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);margin-right:6px}
+  @media (max-width:680px){
+    .proj-phase{grid-template-columns:1fr}
+    .proj-gutter{border-right:none;border-bottom:1px solid var(--rule);flex-direction:row;align-items:baseline;gap:18px;padding:14px 18px}
+    .proj-grid{grid-template-columns:1fr}
+  }
+
   .panel-foot{
     grid-column:1/-1;padding:14px 22px;border-top:1px solid var(--rule);
     background:var(--hi);font-family:"Lora",serif;font-style:italic;font-size:14.5px;
@@ -394,7 +439,7 @@
 <header class="mast">
   <div class="kicker">
     <span>📎 Sibling reference · <a href="index.html">↶ How much scaffolding do you actually need?</a></span>
-    <span>v1.0 · May 2026</span>
+    <span>v1.1 · May 2026 · Added projection section</span>
   </div>
   <h1>In-the-loop <em>vs</em> Send-off</h1>
   <p class="lede">Two ways to work with AI on existing code. At May-2026 capability, one wins decisively for brownfield production work — but the other already wins for greenfield POCs and isolated tickets. Here's where each fits today, with a slider you can drag to see when the math flips.</p>
@@ -847,6 +892,134 @@
   <p style="margin-top:18px;font-style:italic;color:var(--ink-2);font-size:14.5px">Honest horizon: somewhere between <strong style="font-style:normal;color:var(--ink)">6 and 36 months</strong> depending on which gate moves fastest — most likely <strong style="font-style:normal;color:var(--ink)">12–24 months</strong> for general brownfield work, longer for regulated. The exact date is a guess; the <em>shape</em> (these three gates, in roughly this order) is the load-bearing claim. Worth watching, not worth re-tooling your team around yet.</p>
 </div>
 
+<!-- PROJECTION · phases over capability -->
+<div class="sec-kicker">🔮 The projection</div>
+<h2 class="sec">What each phase <em>actually looks like</em></h2>
+<p class="sec-lede">The slider above shows the per-ticket math flipping around 80%. Here's the <em>workflow shape</em> at each capability level — including the strange follow-on question that emerges at the far end: <em>"if AI gets reliable enough, why are we breaking work into tickets at all?"</em></p>
+
+<div class="projection">
+  <div class="projection-head">
+    <span>📈 Projected workflow shape vs AI brownfield one-shot rate</span>
+    <span style="opacity:.7">Timeline is a guess · the shape isn't</span>
+  </div>
+
+  <article class="proj-phase p1">
+    <div class="proj-gutter">
+      <div>
+        <div class="proj-when">Today · May 2026</div>
+        <div class="proj-rate">~50<span class="unit">%</span></div>
+        <div class="proj-rate-lbl">one-shot · brownfield</div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <h3 class="proj-name">🧑‍💻 In-the-loop dominates</h3>
+      <p class="proj-tag">Apprentice carpenter — good hands, follows blueprints, needs supervision. You're the lead carpenter.</p>
+      <div class="proj-grid">
+        <div>
+          <h5>Dominant workflow</h5>
+          <p>In-the-loop for brownfield production · Send-off for POCs, lint/typing fixes, isolated work.</p>
+        </div>
+        <div>
+          <h5>Tickets</h5>
+          <p>Essential. They're how humans coordinate. Decomposition is a core engineering skill.</p>
+        </div>
+      </div>
+      <div class="proj-dev"><strong>Developer's day →</strong>Prompting in the IDE, reviewing tightly, testing locally. ~80% of the time you iterate at least once.</div>
+    </div>
+  </article>
+
+  <article class="proj-phase p2">
+    <div class="proj-gutter">
+      <div>
+        <div class="proj-when">Soon · 6–12 months</div>
+        <div class="proj-rate">~70<span class="unit">%</span></div>
+        <div class="proj-rate-lbl">one-shot · brownfield</div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <h3 class="proj-name">🔀 Hybrid becomes the norm</h3>
+      <p class="proj-tag">Send-off graduates from POCs to low-risk brownfield. Most teams use both — routing is per-ticket, not per-team.</p>
+      <div class="proj-grid">
+        <div>
+          <h5>Dominant workflow</h5>
+          <p>Send-off handles low-risk brownfield (refactors, well-bounded fixes, doc/type work). In-the-loop reserved for ambiguous and cross-cutting tickets.</p>
+        </div>
+        <div>
+          <h5>Tickets</h5>
+          <p>Still essential. Coordination doesn't disappear. <em>Routing each ticket to the right workflow</em> becomes a new skill.</p>
+        </div>
+      </div>
+      <div class="proj-dev"><strong>Developer's day →</strong>Routing each ticket to the right lane. Reviewing batches of agent PRs in the morning. Review bandwidth starts becoming the bottleneck.</div>
+    </div>
+  </article>
+
+  <article class="proj-phase p3">
+    <div class="proj-gutter">
+      <div>
+        <div class="proj-when">Mid · 12–24 months</div>
+        <div class="proj-rate">~85<span class="unit">%</span></div>
+        <div class="proj-rate-lbl">one-shot · brownfield</div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <h3 class="proj-name">📤 Send-off becomes the default</h3>
+      <p class="proj-tag">Most brownfield production work flows through agents. Tickets start to thin — a single ticket may now describe a whole feature.</p>
+      <div class="proj-grid">
+        <div>
+          <h5>Dominant workflow</h5>
+          <p>Send-off default for brownfield. In-the-loop kept for genuinely tricky, regulated, or ethical/business-judgment work.</p>
+        </div>
+        <div>
+          <h5>Tickets</h5>
+          <p>Getting thinner. "Build feature X with these constraints" replaces 12-sub-ticket breakdowns. The 8-card Jira board for one feature starts feeling like ceremony.</p>
+        </div>
+      </div>
+      <div class="proj-dev"><strong>Developer's day →</strong>Briefing AI on features, supervising batches, deciding on the trade-offs AI raises. The <em>vigilance inversion</em> bites — best teams pair-review hot PRs even when most look fine.</div>
+    </div>
+  </article>
+
+  <article class="proj-phase p4">
+    <div class="proj-gutter">
+      <div>
+        <div class="proj-when">Far · 24–36+ months</div>
+        <div class="proj-rate">~95<span class="unit">%</span></div>
+        <div class="proj-rate-lbl">one-shot · brownfield</div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <h3 class="proj-name">🤯 "Wait — why break it into tickets at all?"</h3>
+      <p class="proj-tag">The question inverts. If AI can take a whole feature spec and ship it, the 12-sub-ticket decomposition stops earning its keep. Many teams drop it.</p>
+      <div class="proj-grid">
+        <div>
+          <h5>Dominant workflow</h5>
+          <p>Send-off for almost everything. In-the-loop becomes the rare case — used only for genuinely novel, ambiguous, or ethically loaded work.</p>
+        </div>
+        <div>
+          <h5>Tickets</h5>
+          <p>Often replaced by <em>intent + AC + contracts</em>. The decomposition was a human-coordination tool — when AI doesn't need it, you skip it. <em>Except in regulated work — audit still needs the breakdown.</em></p>
+        </div>
+      </div>
+      <div class="proj-dev"><strong>Developer's day →</strong>Strategy. Trade-offs. Customer-facing decisions. Reviewing what AI escalates. The hands-on coding becomes the rare case; <em>deciding what to build</em> is the work.</div>
+    </div>
+  </article>
+
+  <div class="proj-foot">
+    <h4>🪨 What doesn't move at any phase</h4>
+    <ul>
+      <li><strong>"Should we build X?"</strong> — strategic call, stays human at every phase.</li>
+      <li><strong>"Is this worth the cost?"</strong> — business judgment, stays human.</li>
+      <li><strong>Customer apologies, incident comms, regulator-facing decisions</strong> — ethics, tone, accountability stay human.</li>
+      <li><strong>Audit trails</strong> for regulated work — required regardless of how good the model gets.</li>
+      <li><strong>"This looks subtly wrong"</strong> intuition on critical paths — stays human until at least Phase 4, probably much longer.</li>
+    </ul>
+  </div>
+</div>
+
+<p class="proj-hedge">
+  <strong>Honest hedges →</strong>
+  The timeline is a guess — could be faster, could be slower. Each phase also unlocks <em>new</em> failure modes I haven't modelled: auto-merge cascades, drift between intent and shipped code, accountability gaps when "the agent did it" becomes a defence. <em>"Capability"</em> and <em>"deployment-ready"</em> are different things — Phase 3 capability often arrives well before Phase 3 reviewer-comfort.
+</p>
+
 <!-- FURTHER READING -->
 <div class="sec-kicker">📚 Calibrate against real reports</div>
 <h2 class="sec">Further <em>reading</em></h2>
@@ -896,7 +1069,7 @@
 <footer>
   <span>Reference · In-the-loop vs Send-off · Sibling to "How much scaffolding do you actually need?"</span>
   <span class="sig">"Pick the workflow that matches today's capability. The threshold moves; the math doesn't."</span>
-  <span>May 2026 · v1.0</span>
+  <span>May 2026 · v1.1</span>
 </footer>
 
 </div>
