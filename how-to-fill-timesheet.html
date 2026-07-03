@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How to fill your timesheet — SettleIT</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1.5rem; color: #172b4d; line-height: 1.55; }
+  h1 { border-bottom: 2px solid #dfe1e6; padding-bottom: .4rem; }
+  h2 { margin-top: 2rem; color: #0052cc; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #dfe1e6; padding: .5rem .75rem; text-align: left; }
+  th { background: #f4f5f7; }
+  .panel { border-left: 4px solid; border-radius: 4px; padding: .75rem 1rem; margin: 1rem 0; }
+  .info { border-color: #0052cc; background: #deebff; }
+  .warn { border-color: #ff991f; background: #fffae6; }
+  .ok   { border-color: #36b37e; background: #e3fcef; }
+  .err  { border-color: #de350b; background: #ffebe6; }
+  code { background: #f4f5f7; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
+  ol li, ul li { margin: .35rem 0; }
+  a { color: #0052cc; }
+</style>
+</head>
+<body>
+
+<h1>How to fill your timesheet</h1>
+
+<div class="panel info">
+  <strong>🔗 Quick links</strong>
+  <ul>
+    <li>📝 <a href="https://infotrack.atlassian.net/jira/apps/8ffef003-1734-4582-9850-7b90bd2a3a3b/ae2a0a76-45fb-481d-a48a-ecbeec74daf5/main/pages/aiotimeentry">Timesheet app</a> — where you lodge your time</li>
+    <li>🏖️ <a href="https://app.rippling.com/time-products/dashboard/my-time/requests">Leave history (Rippling → My Time → Requests)</a> — look up the leave you've taken</li>
+    <li>📅 <a href="https://www.nsw.gov.au/about-nsw/public-holidays">NSW public holidays (nsw.gov.au)</a> — official dates, don't log time on these</li>
+    <li>📋 <a href="https://infotrack.atlassian.net/wiki/spaces/SET/pages/4634214401/Timesheets+-+H2FY26">Timesheets - H2FY26</a> — the approved epics for the current period</li>
+  </ul>
+</div>
+
+<h2>🚨 Common mistakes (seen in past audits)</h2>
+<div class="panel err">
+  <ul>
+    <li>Time logged on public holidays or weekends.</li>
+    <li>More than 7.5 hours logged in a single day.</li>
+    <li>Time logged against tickets with no epic — finance re-assigns these to Tech Debt, blowing your 15% cap.</li>
+    <li>No time (or too little) logged against Research &amp; Admin / Tech Debt when that's genuinely where the time went — log it honestly, just keep it under the cap.</li>
+    <li>Exceeding the total expected hours for the period (working days × 7.5, public holidays excluded).</li>
+  </ul>
+</div>
+
+<div class="panel info">
+  <strong>⚡ TL;DR</strong> — Log your time in the
+  <a href="https://infotrack.atlassian.net/jira/apps/8ffef003-1734-4582-9850-7b90bd2a3a3b/ae2a0a76-45fb-481d-a48a-ecbeec74daf5/main/pages/aiotimeentry">timesheet app</a>,
+  <strong>only against the epics listed on the current period's Timesheets page</strong>
+  (e.g. <a href="https://infotrack.atlassian.net/wiki/spaces/SET/pages/4634214401/Timesheets+-+H2FY26">Timesheets - H2FY26</a>).
+  7h 30m per working day, leave goes on the Leave epic, nothing on weekends or public holidays,
+  and keep Research &amp; Admin + Tech Debt under 15% of your total time.
+</div>
+
+<h2>🧭 Where to log time</h2>
+<ol>
+  <li>Open the <a href="https://infotrack.atlassian.net/jira/apps/8ffef003-1734-4582-9850-7b90bd2a3a3b/ae2a0a76-45fb-481d-a48a-ecbeec74daf5/main/pages/aiotimeentry">timesheet app</a>.</li>
+  <li>Select the <strong>Timesheet</strong> tab in the top section.</li>
+  <li>Select the <strong>date range</strong> you want to log time for.</li>
+  <li>Click <strong>Import issues</strong> and add the epics for the current period (see next section).</li>
+  <li>Fill in your hours against each epic, per day.</li>
+</ol>
+
+<h2>🎯 What to log time against</h2>
+<p>
+  Log time <strong>directly against the epics</strong> — never against individual tickets.
+  The approved epics for each period are listed on that period's Timesheets Confluence page
+  (a new page is created each period — a half, a 4-month block, etc.).
+</p>
+<p>For the current period (<a href="https://infotrack.atlassian.net/wiki/spaces/SET/pages/4634214401/Timesheets+-+H2FY26">Timesheets - H2FY26</a>) that means:</p>
+<table>
+  <tr><th>Category</th><th>Epic</th><th>What goes here</th></tr>
+  <tr>
+    <td rowspan="3">🔧 Utility</td>
+    <td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-2089">SETTLEIT-2089</a> — Research &amp; Admin</td>
+    <td>🔬 Research, meetings, admin, anything not tied to a Top 5 epic</td>
+  </tr>
+  <tr>
+    <td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-573">SETTLEIT-573</a> — Tech Debt</td>
+    <td>🛠️ Tech-debt work, most bug fixes without their own epic</td>
+  </tr>
+  <tr>
+    <td><a href="https://infotrack.atlassian.net/browse/SETTLEIT-6024">SETTLEIT-6024</a> — Leave</td>
+    <td>🏖️ Any leave you have taken (annual, sick, etc.)</td>
+  </tr>
+  <tr>
+    <td>🚀 BU Top 5</td>
+    <td>SETTLEIT-8714, SETTLEIT-9877, SETTLEIT-9878</td>
+    <td rowspan="3">Project/delivery work — log against whichever epic the work belongs to</td>
+  </tr>
+  <tr>
+    <td>🤝 Other agreed Top 5</td>
+    <td>SETTLEIT-9836</td>
+  </tr>
+  <tr>
+    <td>♻️ BAU Top 5</td>
+    <td>SETTLEIT-9804, SETTLEIT-9809</td>
+  </tr>
+</table>
+
+<h2>📏 The rules</h2>
+<ul>
+  <li>⏱️ <strong>7h 30m per working day.</strong> Never log more than 7.5 hours in a day.</li>
+  <li>🚫 <strong>No time on weekends or public holidays.</strong> Leave those days empty (check the <a href="https://www.nsw.gov.au/about-nsw/public-holidays">official NSW public holiday dates</a>).</li>
+  <li>🏖️ <strong>Leave goes on the Leave epic</strong> (<a href="https://infotrack.atlassian.net/browse/SETTLEIT-6024">SETTLEIT-6024</a>), at 7h 30m per day of leave.
+    You can look up the leave you've taken in
+    <a href="https://app.rippling.com/time-products/dashboard/my-time/requests">Rippling → My Time → Requests</a>.</li>
+  <li>📋 <strong>Only use the epics on the current period's Timesheets page.</strong> Time logged on tickets without an approved epic gets re-assigned by finance (usually to Tech Debt), which can push you over the 15% cap.</li>
+</ul>
+
+<h2>⚖️ The 15% cap on Research &amp; Admin + Tech Debt</h2>
+<div class="panel warn">
+  <strong>Official rule:</strong> your combined time on <strong>Research &amp; Admin (SETTLEIT-2089) + Tech Debt (SETTLEIT-573)</strong>
+  must not exceed <strong>15% of your total hours for the period</strong>.
+</div>
+<div class="panel ok">
+  <strong>Recommended:</strong> check the 15% on a <strong>monthly basis</strong> as you go, so you don't discover at the end of the period that you're way over.
+</div>
+<p>🧮 <strong>Example (monthly check):</strong> a month with 21 working days = 21 × 7.5 = <strong>157.5 hours</strong>. 15% of that is <strong>≈ 23.5 hours</strong> — roughly 3 days. If your R&amp;A + Tech Debt for the month is above that, rebalance toward your Top 5 epics.</p>
+
+<h2>✅ Checklist before the period closes</h2>
+<ul>
+  <li>☐ Every working day has exactly 7h 30m logged.</li>
+  <li>☐ Weekends and public holidays are empty.</li>
+  <li>☐ All leave is on SETTLEIT-6024.</li>
+  <li>☐ Only epics from the current period's Timesheets page are used.</li>
+  <li>☐ R&amp;A + Tech Debt ≤ 15% of total hours.</li>
+</ul>
+
+</body>
+</html>
