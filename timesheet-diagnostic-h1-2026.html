@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Timesheet Diagnostic — H1 2026</title>
+<style>
+  :root{--ok:#1f7a44;--warn:#a86400;--err:#c0392b;--na:#8a94a6;--blue:#0052cc;
+        --okbg:#e3fcef;--warnbg:#fff7e6;--errbg:#ffebe6;--nabg:#f0f1f4;}
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,"Segoe UI",Roboto,sans-serif;margin:0;background:#f4f5f7;color:#172b4d;padding:26px;}
+  h1{margin:0 0 2px;font-size:23px;}
+  .sub{color:#5e6c84;margin-bottom:16px;font-size:13px;}
+  .rulebar{background:#deebff;border-left:4px solid var(--blue);padding:10px 14px;border-radius:5px;font-size:12.5px;margin-bottom:18px;}
+  .rulebar b{color:#091e42;}
+  .wrap{overflow-x:auto;background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(9,30,66,.15);}
+  table{border-collapse:collapse;width:100%;min-width:1080px;font-size:12.5px;}
+  th,td{border:1px solid #ebecf0;padding:8px 10px;text-align:left;vertical-align:top;}
+  thead th{background:#091e42;color:#fff;position:sticky;top:0;font-weight:600;font-size:12px;}
+  tbody tr:nth-child(even){background:#fafbfc;}
+  tr.you{background:#e9f2ff !important;}
+  tr.you td.name{color:#0747a6;}
+  td.name{font-weight:700;white-space:nowrap;}
+  td.totalcell{min-width:150px;}
+  td.leavecell{min-width:150px;}
+  .hours{font-weight:800;font-size:14px;}
+  .pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;white-space:nowrap;margin-bottom:2px;}
+  .p-ok{background:var(--okbg);color:var(--ok);}
+  .p-warn{background:var(--warnbg);color:var(--warn);}
+  .p-err{background:var(--errbg);color:var(--err);}
+  .p-na{background:var(--nabg);color:var(--na);}
+  .muted{color:#6b778c;font-size:11px;}
+  .legend{margin:14px 0 6px;font-size:12px;color:#5e6c84;}
+  .legend .pill{margin-right:5px;}
+  .foot{margin-top:20px;background:#fff;border-radius:10px;padding:14px 20px;box-shadow:0 1px 4px rgba(9,30,66,.15);font-size:12.5px;}
+  .foot h3{margin:0 0 8px;font-size:14px;}
+  .foot li{margin:4px 0;}
+  .note{background:#fffae6;border-left:4px solid var(--warn);padding:8px 12px;border-radius:5px;font-size:12px;margin-top:16px;}
+  .toolbar{margin:0 0 12px;display:flex;gap:10px;flex-wrap:wrap;}
+  .tbtn{font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;border:1px solid #c1c7d0;background:#fff;color:#172b4d;padding:7px 14px;border-radius:6px;}
+  .tbtn:hover{background:#f4f5f7;}
+  .tbtn.active{background:#0052cc;color:#fff;border-color:#0052cc;}
+  #count{font-size:12px;color:#5e6c84;align-self:center;}
+  .hint{font-size:12px;color:#5e6c84;align-self:center;}
+  tbody td{position:relative;cursor:pointer;}
+  tbody td.circled::after{content:"";position:absolute;left:5px;top:4px;right:5px;bottom:4px;
+    border:2.6px solid #e01e1e;border-radius:47% 53% 50% 50% / 50% 50% 53% 47%;
+    transform:rotate(-2.5deg);pointer-events:none;}
+  tbody td.checked::after{content:"\2714";position:absolute;right:10px;top:50%;transform:translateY(-50%);
+    color:#0a7a3f;font-size:22px;font-weight:900;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff;pointer-events:none;}
+</style>
+</head>
+<body>
+<h1>Timesheet Diagnostic — H1 2026 <span class="muted">(Jan 1 – Jun 30)</span></h1>
+<div class="sub">Please review your row and fix any red/amber items in the timesheet app. 123 working days in the period (6 NSW public holidays excluded).</div>
+
+<div class="rulebar">
+  <b>Applies to everyone (any project):</b> lodge all the time you worked (no blank working days) · nothing on weekends or public holidays · no more than your standard hours per day.<br>
+  <b>Applies to SettleIT team only:</b> log SettleIT time against the <b>approved epics</b> (2089, 573, 6024, 8714, 9877, 9878, 9836, 9804, 9809) · keep Research&nbsp;&amp;&nbsp;Admin&nbsp;+&nbsp;Tech&nbsp;Debt <b>at or under 20%</b> of your SettleIT time (10–20% ideal; a bit under is fine, but log at least some — <b>0% and over-20% are flagged</b>). If you are not on SettleIT, ticket choice and the cap don't apply to you.
+</div>
+
+<div class="toolbar">
+  <button id="bGreen" class="tbtn" onclick="toggleGreen(this)">Hide cleared (green + ✔)</button>
+  <button id="bGroup" class="tbtn" onclick="toggleGroup(this)">Hide Peter / Sajal / Samip / Yoga / Geeta / Andrew / Luke / June</button>
+  <button id="bAuto" class="tbtn" onclick="autoCircle()">Auto-circle issues</button>
+  <button id="bClear" class="tbtn" onclick="clearMarks()">Clear all marks</button>
+  <span id="count"></span>
+  <span class="hint">· click any cell to circle it · click a name to ✔ it</span>
+</div>
+
+<div class="wrap">
+<table>
+<thead>
+<tr>
+  <th>Person / Team</th>
+  <th>Total lodged<br><span style="font-weight:400">vs expected</span></th>
+  <th>Public holidays<br><span style="font-weight:400">1 Jan · 26 Jan · 3 Apr · 6 Apr · 27 Apr · 8 Jun</span></th>
+  <th>Weekend / over-hours</th>
+  <th>Coverage</th>
+  <th>Leave logged<br><span style="font-weight:400">manager to verify vs Rippling</span></th>
+  <th>SettleIT epics</th>
+  <th>R&amp;A+TechDebt<br><span style="font-weight:400">(≤20%)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr data-person="Girish Kumar" data-green="1"><td class="name" style="background:#1f9d55;color:#ffffff">Girish Kumar<div style="font-size:11px;color:rgba(255,255,255,.8)">SettleIT</div></td><td class="totalcell"><span class="hours">922.5h</span><div><span class="pill p-ok">on target</span></div><span class="muted">full-period exp 922.5h @ 7.5/day</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">complete — 0 gaps</span></td><td class="leavecell"><span class="hours">13.5 days</span><div class="muted">101h logged</div><div class="muted">02 Jan; 16 Jan; 16 Feb; 06 Mar–09 Mar; 27 Mar; 24 Apr–01 May; 25 May; 05 Jun; 29 Jun</div></td><td><span class="pill p-ok">all approved</span></td><td><span class="pill p-ok">6.3%</span><div class="muted">of 684.5h SettleIT</div></td></tr>
+<tr data-person="Ivy Lyu" data-green="1"><td class="name" style="background:#1f9d55;color:#ffffff">Ivy Lyu<div style="font-size:11px;color:rgba(255,255,255,.8)">SettleIT</div></td><td class="totalcell"><span class="hours">922.5h</span><div><span class="pill p-ok">on target</span></div><span class="muted">full-period exp 922.5h @ 7.5/day</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">complete — 0 gaps</span></td><td class="leavecell"><span class="hours">12 days</span><div class="muted">90h logged</div><div class="muted">02 Jan–09 Jan; 01 Apr; 15 Jun–19 Jun</div></td><td><span class="pill p-ok">all approved</span></td><td><span class="pill p-ok">13.6%</span><div class="muted">of 495h SettleIT</div></td></tr>
+<tr data-person="Jerold Shin" data-green="1"><td class="name" style="background:#1f9d55;color:#ffffff">Jerold Shin<div style="font-size:11px;color:rgba(255,255,255,.8)">SettleIT</div></td><td class="totalcell"><span class="hours">472.5h</span><div><span class="pill p-ok">on target</span></div><span class="muted">employed 30 Mar–30 Jun (confirmed) · exp 472.5h</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">complete — 0 gaps</span></td><td class="leavecell"><span class="pill p-na">none logged</span></td><td><span class="pill p-ok">all approved</span></td><td><span class="pill p-ok">15.9%</span><div class="muted">of 472.5h SettleIT</div></td></tr>
+<tr data-person="Joshua Klaser" data-green="1"><td class="name" style="background:#1f9d55;color:#ffffff">Joshua Klaser<div style="font-size:11px;color:rgba(255,255,255,.8)">SettleIT</div></td><td class="totalcell"><span class="hours">922.5h</span><div><span class="pill p-ok">on target</span></div><span class="muted">full-period exp 922.5h @ 7.5/day</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">complete — 0 gaps</span></td><td class="leavecell"><span class="hours">10 days</span><div class="muted">75h logged</div><div class="muted">02 Jan–09 Jan; 03 Feb; 10 Feb; 08 May; 12 Jun</div></td><td><span class="pill p-ok">all approved</span></td><td><span class="pill p-ok">18.2%</span><div class="muted">of 495.5h SettleIT</div></td></tr>
+<tr data-person="June Sung Lee" data-green="1"><td class="name" style="background:#1f9d55;color:#ffffff">June Sung Lee<div style="font-size:11px;color:rgba(255,255,255,.8)">SettleIT</div></td><td class="totalcell"><span class="hours">922.5h</span><div><span class="pill p-ok">on target</span></div><span class="muted">full-period exp 922.5h @ 7.5/day</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">complete — 0 gaps</span></td><td class="leavecell"><span class="hours">7 days</span><div class="muted">52.5h logged</div><div class="muted">02 Jan–07 Jan; 13 Mar; 27 May; 29 May</div></td><td><span class="pill p-ok">all approved</span></td><td><span class="pill p-ok">14.2%</span><div class="muted">of 922.5h SettleIT</div></td></tr>
+<tr data-person="Marcus Lee" data-green="1"><td class="name" style="background:#1f9d55;color:#ffffff">Marcus Lee<div style="font-size:11px;color:rgba(255,255,255,.8)">SettleIT</div></td><td class="totalcell"><span class="hours">922.5h</span><div><span class="pill p-ok">on target</span></div><span class="muted">full-period exp 922.5h @ 7.5/day</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">complete — 0 gaps</span></td><td class="leavecell"><span class="hours">25.4 days</span><div class="muted">190.5h logged</div><div class="muted">30 Jan–03 Feb; 18 Feb–02 Mar; 14 May–15 May; 12 Jun–29 Jun</div></td><td><span class="pill p-ok">all approved</span></td><td><span class="pill p-ok">15%</span><div class="muted">of 922.5h SettleIT</div></td></tr>
+<tr data-person="Navneet kaur" data-green="1"><td class="name" style="background:#1f9d55;color:#ffffff">Navneet kaur<div style="font-size:11px;color:rgba(255,255,255,.8)">SettleIT</div></td><td class="totalcell"><span class="hours">922.5h</span><div><span class="pill p-ok">on target</span></div><span class="muted">full-period exp 922.5h @ 7.5/day</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">complete — 0 gaps</span></td><td class="leavecell"><span class="hours">16 days</span><div class="muted">120h logged</div><div class="muted">02 Jan–16 Jan; 06 Mar; 25 Mar; 18 Jun–22 Jun</div></td><td><span class="pill p-ok">all approved</span></td><td><span class="pill p-ok">6.9%</span><div class="muted">of 565h SettleIT</div></td></tr>
+<tr data-person="Prem Rijal" data-green="1"><td class="name" style="background:#1f9d55;color:#ffffff">Prem Rijal<div style="font-size:11px;color:rgba(255,255,255,.8)">SettleIT</div></td><td class="totalcell"><span class="hours">922.5h</span><div><span class="pill p-ok">on target</span></div><span class="muted">full-period exp 922.5h @ 7.5/day</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">complete — 0 gaps</span></td><td class="leavecell"><span class="hours">26 days</span><div class="muted">195h logged</div><div class="muted">02 Jan; 16 Jan–20 Jan; 23 Mar–22 Apr; 20 May</div></td><td><span class="pill p-ok">all approved</span></td><td><span class="pill p-ok">14.1%</span><div class="muted">of 922.5h SettleIT</div></td></tr>
+<tr data-person="William Yun" data-green="1"><td class="name" style="background:#1f9d55;color:#ffffff">William Yun<div style="font-size:11px;color:rgba(255,255,255,.8)">SettleIT</div></td><td class="totalcell"><span class="hours">922.5h</span><div><span class="pill p-ok">on target</span></div><span class="muted">full-period exp 922.5h @ 7.5/day</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">complete — 0 gaps</span></td><td class="leavecell"><span class="hours">11 days</span><div class="muted">82.5h logged</div><div class="muted">02 Jan–09 Jan; 23 Jan; 23 Apr–24 Apr; 01 Jun; 19 Jun</div></td><td><span class="pill p-ok">all approved</span></td><td><span class="pill p-ok">18.7%</span><div class="muted">of 545.5h SettleIT</div></td></tr>
+<tr class="you" data-person="connor zhao" data-green="1"><td class="name" style="background:#1f9d55;color:#ffffff">connor zhao<div style="font-size:11px;color:rgba(255,255,255,.8)">(you)</div><div style="font-size:11px;color:rgba(255,255,255,.8)">SettleIT</div></td><td class="totalcell"><span class="hours">922.5h</span><div><span class="pill p-ok">on target</span></div><span class="muted">full-period exp 922.5h @ 7.5/day</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">complete — 0 gaps</span></td><td class="leavecell"><span class="hours">12 days</span><div class="muted">90h logged</div><div class="muted">19 Jan; 06 Feb; 18 Mar; 14 Apr; 19 Jun–30 Jun</div></td><td><span class="pill p-ok">all approved</span></td><td><span class="pill p-ok">13.8%</span><div class="muted">of 922.5h SettleIT</div></td></tr>
+<tr data-person="Andrew.Liu" data-green="1"><td class="name" style="background:#1f9d55;color:#ffffff">Andrew.Liu<div style="font-size:11px;color:rgba(255,255,255,.8)">AI Paralegal</div></td><td class="totalcell"><span class="hours">922.5h</span><div><span class="pill p-ok">on target</span></div><span class="muted">full-period exp 922.5h @ 7.5/day</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">none</span></td><td><span class="pill p-ok">complete — 0 gaps</span></td><td class="leavecell"><span class="hours">7 days</span><div class="muted">52.5h logged</div><div class="muted">02 Jan; 16 Feb–17 Feb; 07 Apr–08 Apr; 17 Jun; 26 Jun</div></td><td><span class="pill p-na">n/a — not SettleIT</span></td><td><span class="pill p-na">n/a</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="legend">
+  <span class="pill p-ok">OK</span>
+  <span class="pill p-warn">check / fix</span>
+  <span class="pill p-err">must fix</span>
+  <span class="pill p-na">not applicable</span>
+  &nbsp;·&nbsp; <b>Name shade</b> = overall severity:
+  <span style="background:#1f9d55;color:#fff;padding:2px 10px;border-radius:4px;">all clear</span>
+  <span style="background:hsl(41,78%,78%);color:#172b4d;padding:2px 10px;border-radius:4px;">minor</span>
+  <span style="background:hsl(22,78%,58%);color:#fff;padding:2px 10px;border-radius:4px;">several</span>
+  <span style="background:hsl(0,78%,40%);color:#fff;padding:2px 10px;border-radius:4px;">most / severe</span>
+</div>
+
+<div class="note">
+  <b>Notes &amp; assumptions — tell Connor if any are wrong:</b>
+  <ul style="margin:6px 0 0;">
+    <li>Public-holiday flags assume <b>NSW</b> public holidays. If you are based in another state or offshore, ignore holiday flags for days that aren't holidays where you are.</li>
+    <li>"Expected" hours assume the full half at your standard daily hours. If you <b>joined or left mid-period</b>, or work <b>part-time</b>, your total will read low — just confirm your dates and ignore.</li>
+    <li>Coverage counts blank working days only <b>within the range you actually logged</b>, so genuine gaps stand out.</li>
+  </ul>
+</div>
+
+<script>
+  const HIDE_GROUP = ["Peter Whitford","Sajal Gupta","Samip.shrestha","Yogananda Rao Locherla","Geeta.Ghugtyal","Andrew.Liu","Luke Phelan","June Sung Lee"];
+  let hideGreen=false, hideGroup=false;
+  function apply(){
+    let shown=0, total=0;
+    document.querySelectorAll('tbody tr').forEach(function(r){
+      total++;
+      var green = r.getAttribute('data-green')==='1';
+      var ticked = r.children[0].classList.contains('checked');
+      var clear = green||ticked;
+      var grp = HIDE_GROUP.indexOf(r.getAttribute('data-person'))>=0;
+      var hide = (hideGreen&&clear)||(hideGroup&&grp);
+      r.style.display = hide?'none':'';
+      if(!hide) shown++;
+    });
+    document.getElementById('count').textContent = 'showing '+shown+' of '+total;
+  }
+  function syncButtons(){
+    var g=document.getElementById('bGreen');
+    if(g){ g.classList.toggle('active',hideGreen); g.textContent=(hideGreen?'Show':'Hide')+' cleared (green + ✔)'; }
+    var gr=document.getElementById('bGroup');
+    if(gr){ gr.classList.toggle('active',hideGroup); gr.textContent=(hideGroup?'Show':'Hide')+' Peter / Sajal / Samip / Yoga / Geeta / Andrew / Luke / June'; }
+  }
+  function toggleGreen(btn){ hideGreen=!hideGreen; syncButtons(); apply(); saveState(); }
+  function toggleGroup(btn){ hideGroup=!hideGroup; syncButtons(); apply(); saveState(); }
+  apply();
+
+  // ---- manual highlight: click a cell to circle it, click a name to check it ----
+  // column index: 0 name,1 total,2 holidays,3 weekend/over,4 coverage,5 leave,6 epics,7 R&A
+  const PRESET = {
+    "Jerold Shin":[6], "Joshua Klaser":[1,2,3,4], "Marcus Lee":[2],
+    "Navneet kaur":[2,3,4], "William Yun":[2,7], "Geeta.Ghugtyal":[3,4],
+    "Ivy Lyu":[2,4], "Luke Phelan":[2,4], "Peter Whitford":[3,4],
+    "Sajal Gupta":[4], "Samip.shrestha":[4], "Yogananda Rao Locherla":[2]
+  };
+  const CHECK = ["Prem Rijal","connor zhao","Andrew.Liu"];
+  var LS='tsdiag-marks-v1';
+  function saveState(){
+    var circled=[], checked=[];
+    document.querySelectorAll('tbody tr').forEach(function(tr){
+      var p=tr.getAttribute('data-person');
+      Array.prototype.forEach.call(tr.children,function(td){
+        if(td.classList.contains('circled')) circled.push(p+'::'+td.cellIndex);
+        if(td.classList.contains('checked')) checked.push(p);
+      });
+    });
+    try{ localStorage.setItem(LS, JSON.stringify({circled:circled,checked:checked,hg:hideGreen,gg:hideGroup})); }catch(e){}
+  }
+  document.querySelectorAll('tbody td').forEach(function(td){
+    td.addEventListener('click',function(){
+      var isName = td.cellIndex===0;
+      td.classList.toggle(isName?'checked':'circled');
+      if(isName) apply();
+      saveState();
+    });
+  });
+  function applyPreset(){
+    document.querySelectorAll('tbody tr').forEach(function(tr){
+      var p=tr.getAttribute('data-person'), cells=tr.children;
+      (PRESET[p]||[]).forEach(function(i){ if(cells[i]) cells[i].classList.add('circled'); });
+      if(CHECK.indexOf(p)>=0 && cells[0]) cells[0].classList.add('checked');
+    });
+  }
+  // auto-circle: circle every cell carrying a problem flag (red/amber pill); tick every all-clear row
+  function autoCircle(){
+    document.querySelectorAll('tbody tr').forEach(function(tr){
+      Array.prototype.forEach.call(tr.children,function(td){
+        if(td.cellIndex===0){ if(tr.getAttribute('data-green')==='1') td.classList.add('checked'); }
+        else if(td.querySelector('.p-err,.p-warn')) td.classList.add('circled');
+      });
+    });
+    apply(); saveState();
+  }
+  function clearMarks(){
+    document.querySelectorAll('tbody td.circled,tbody td.checked').forEach(function(td){
+      td.classList.remove('circled'); td.classList.remove('checked');
+    });
+    apply(); saveState();
+  }
+  function loadState(){
+    var raw=null; try{ raw=localStorage.getItem(LS); }catch(e){}
+    if(raw===null){ applyPreset(); apply(); return; }   // first visit: seed from image preset
+    var st={}; try{ st=JSON.parse(raw); }catch(e){ applyPreset(); apply(); return; }
+    hideGreen=!!st.hg; hideGroup=!!st.gg; syncButtons();
+    var cset={}, kset={};
+    (st.circled||[]).forEach(function(k){ cset[k]=1; });
+    (st.checked||[]).forEach(function(k){ kset[k]=1; });
+    document.querySelectorAll('tbody tr').forEach(function(tr){
+      var p=tr.getAttribute('data-person');
+      if(kset[p] && tr.children[0]) tr.children[0].classList.add('checked');
+      Array.prototype.forEach.call(tr.children,function(td){
+        if(cset[p+'::'+td.cellIndex]) td.classList.add('circled');
+      });
+    });
+    apply();
+  }
+  loadState();
+</script>
+</body>
+</html>
