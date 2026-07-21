@@ -90,9 +90,13 @@
 
   .stage-wrap { padding: 1rem; display:flex; justify-content:center; gap:1rem; align-items:flex-start; }
 
-  /* problems → solutions panel */
-  .probs { flex:0 0 16.5rem; max-height:calc(100vh - 8.5rem); overflow-y:auto; display:flex; flex-direction:column; gap:.55rem; position:sticky; top:4rem; }
-  .probs h3 { font-family:var(--serif); font-size:1.02rem; font-weight:600; color:var(--ink); margin:.1rem 0 .15rem; }
+  /* problems → solutions panel (collapsed by default) */
+  .probs { flex:0 0 16.5rem; max-height:calc(100vh - 8.5rem); overflow-y:auto; position:sticky; top:4rem; }
+  .probs summary { cursor:pointer; list-style:none; font-family:var(--serif); font-size:.95rem; font-weight:600; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:.7rem; padding:.6rem .8rem; box-shadow:var(--shadow); }
+  .probs summary::before { content:"▸ "; color:var(--accent-strong); }
+  .probs[open] summary::before { content:"▾ "; }
+  .probs summary:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .probs-body { display:flex; flex-direction:column; gap:.55rem; margin-top:.55rem; }
   .pcard { background:var(--surface); border:1px solid var(--line); border-radius:.7rem; padding:.6rem .75rem; box-shadow:var(--shadow); font-size:.75rem; line-height:1.45; }
   .pcard .pp { color:var(--warn); font-weight:650; margin:0 0 .2rem; }
   .pcard .ss { margin:0; color:var(--body); }
@@ -110,6 +114,14 @@
   .fin-total { display:flex; justify-content:space-between; gap:.6rem; padding:.35rem .1rem; font-weight:650; color:var(--ink); font-size:.76rem; }
   .fin-total.bal { border-top:1px solid var(--line); margin-top:.1rem; }
   .fin-total.bal .fr { color:var(--warn); }
+
+  /* place-order review (screenshot layout) */
+  .rvsec { display:flex; align-items:center; gap:.4rem; background:rgba(14,143,163,.12); color:var(--ink); font-weight:650; font-size:.7rem; border-radius:.35rem; padding:.3rem .55rem; margin:.6rem 0 .4rem; }
+  .rvgrid { display:grid; grid-template-columns:1fr 1fr; gap:.5rem .9rem; }
+  .rv { font-size:.75rem; min-width:0; }
+  .rv .lbl2 { display:block; color:var(--muted); font-size:.65rem; margin-bottom:.1rem; }
+  .rv .val { color:var(--ink); font-weight:600; overflow-wrap:anywhere; }
+  .rv.wide { grid-column:1 / -1; }
   .stage {
     container: stage / inline-size;
     width: min(100%, 76rem); height: calc(100vh - 8.5rem); min-height: 34rem;
@@ -385,6 +397,7 @@
     <div class="dcard">
       <h4>Try this, in each variant</h4>
       <ol>
+        <li><b>Place the settlement order</b> in the opening review — note there are NO pills while the action is on screen (Lexi's dashed-box rule), and the agent auto-advances into Onboarding (single arrow).</li>
         <li>Click <b>Onboarding</b> in the milestones — then click it <b>again</b>. Old copy → stub; only the latest carries the green ● Live dot.</li>
         <li>Type or tap <b>“show order details”</b>, twice.</li>
         <li>Hit <b>⚡ Simulate client progress</b> — the live copy refreshes in place (“Updated just now”), then the agent <b>auto-advances</b> to Provide documents: the single-route case from the call.</li>
@@ -396,8 +409,9 @@
 </details>
 
 <div class="stage-wrap">
-  <aside class="probs" aria-label="Problems and how we solved them">
-    <h3>Problems → how we solved them</h3>
+  <details class="probs">
+    <summary>Problems → how we solved them</summary>
+    <div class="probs-body">
     <div class="pcard"><p class="pp">⚠ Same component re-rendered over and over</p><p class="ss">Older copies <b>collapse to one-line stubs</b> that jump to the latest — the transcript never fills with duplicates.</p></div>
     <div class="pcard"><p class="pp">⚠ Scrolling up shows stale data as if current</p><p class="ss">Only the <b>latest copy stays expanded and live</b> (SignalR / refetch, subtle green dot). A superseded full view can't be misread.</p></div>
     <div class="pcard"><p class="pp">⚠ "What if the user never clicks?"</p><p class="ss">The data comes to them: the live copy <b>refreshes in place</b>, the agent posts a short progress note, and single-route steps <b>auto-advance</b>.</p></div>
@@ -405,7 +419,8 @@
     <div class="pcard"><p class="pp">⚠ Every re-view used to cost an LLM turn</p><p class="ss">Milestone clicks <b>render straight from the API</b> — no chat turn, no tokens. (Full canonical-stage version is the post-project Variant A.)</p></div>
     <div class="pcard"><p class="pp">⚠ Layout is approval-frozen mid-project</p><p class="ss">Every fix here is <b>behaviour inside the approved layout</b> — no Christian Beck round-trip needed.</p></div>
     <div class="pcard"><p class="pp">⚠ New messages yanked the scroll position</p><p class="ss">Scroll is <b>preserved on re-render</b> — it only sticks to the bottom if you were already there.</p></div>
-  </aside>
+    </div>
+  </details>
   <div class="stage" id="stage">
     <div class="app" id="app" data-tab="chat"></div>
     <div class="toast" id="toast" role="status"></div>
@@ -696,7 +711,8 @@ let justUpdated = null; // kind whose live-latest copy just refreshed via Signal
 
 function initialData() {
   return {
-    progress: 20,
+    progress: 0,
+    placed: false,
     nswDone: false,
     booked: false,
     bookedDate: '', bookedTime: '',
@@ -722,11 +738,11 @@ const MS = [
   { kind: 'financials', name: 'Settlement financials' },
   { kind: 'settlement', name: 'Settlement' },
 ];
-const KIND_NAME = { onboarding: 'Onboarding tasks', docs: 'Documents', booking: 'Settlement booking', financials: 'Settlement financials', settlement: 'Settlement', order: 'Order details' };
-const KIND_ICON = { onboarding: '☑', docs: '📄', booking: '📅', financials: '$', settlement: '🔑', order: '☰' };
+const KIND_NAME = { review: 'Place order — review', onboarding: 'Onboarding tasks', docs: 'Documents', booking: 'Settlement booking', financials: 'Settlement financials', settlement: 'Settlement', order: 'Order details' };
+const KIND_ICON = { review: '🗎', onboarding: '☑', docs: '📄', booking: '📅', financials: '$', settlement: '🔑', order: '☰' };
 
 function msStatus(kind) {
-  if (kind === 'onboarding') { return data.nswDone ? 'done' : 'active'; }
+  if (kind === 'onboarding') { if (!data.placed) { return 'todo'; } return data.nswDone ? 'done' : 'active'; }
   if (kind === 'docs') { return data.nswDone ? 'active' : 'todo'; }
   if (kind === 'booking') { return data.booked ? 'done' : 'todo'; }
   if (kind === 'financials') { return data.booked ? 'active' : 'todo'; }
@@ -738,21 +754,25 @@ function nid() { return 'e' + (++entryId); }
 /* ============================ demo script ============================ */
 function resetDemo() {
   data = initialData(); chat = []; seq = 0; entryId = 0;
-  panel = { kind: null }; wsKind = 'onboarding'; mobTab = 'chat';
+  panel = { kind: null }; wsKind = 'review'; mobTab = 'chat'; justUpdated = null;
   suggestion();
-  pushAgent("Onboarding has started for John Harrison — his tasks were emailed through just now. I'll keep this matter's progress up to date as he completes them.");
-  if (ui.variant === 'A') { pushChip('onboarding', 'Live view'); panel.kind = 'onboarding'; }
-  if (ui.variant === 'B') { pushComp('onboarding', 'Opened automatically'); }
-  if (ui.variant === 'C') { wsKind = 'onboarding'; }
+  pushAgent('Almost there. Please take a moment to confirm everything looks correct before I place the settlement order:');
+  if (ui.variant === 'A') { pushChip('review', 'Review & confirm'); panel.kind = 'review'; }
+  if (ui.variant === 'B') { pushComp('review', ''); }
+  if (ui.variant === 'C') { wsKind = 'review'; }
   render();
 }
 let currentSuggestion;
+// Strict mapping of Lexi's "Proactiveness of SettleIT Agent" chart, per stage:
+// - review on screen → NO pills (dashed-box rule: the action is already on screen)
+// - onboarding, manual docs pending → 'Provide documents' prompt (her orange note)
+// - docs done-ish, invitation still pending → 'Book the settlement date' (+ conditional re-upload)
+// - financials cluster (Adjustments ↔ DTP ↔ Trust, arrows fan out) → crossroad pills
 function suggestion() {
-  // Lexi's flow chart (21 Jul): inside the financials cluster there are multiple
-  // outgoing arrows (Adjustments ↔ DTP ↔ Trust) = genuine crossroad = pills.
-  currentSuggestion = data && data.booked
-    ? { main: 'Review DTP figures', alt: 'Request the trust deposit' }
-    : { main: 'Book the settlement date', alt: 'Show order details' };
+  if (!data || !data.placed) { currentSuggestion = null; return; }
+  if (data.booked) { currentSuggestion = { main: 'Review DTP figures', alt: 'Request the trust deposit' }; return; }
+  if (data.nswDone) { currentSuggestion = { main: 'Book the settlement date', alt: 'Upload another batch of docs' }; return; }
+  currentSuggestion = { main: 'Provide documents', alt: null };
 }
 
 function pushAgent(text) { chat.push({ id: nid(), role: 'agent', text, time: fmtTime() }); }
@@ -786,6 +806,8 @@ function handleUserText(text) {
     agentReply('Let’s get settlement booked. Contract stipulates 42 days from exchange — Mon 15 June 2026 fits. Confirm the details below.', () => { showComponent('booking', 'agent'); });
   } else if (q.includes('dtp') || q.includes('adjust') || q.includes('financ') || q.includes('figure')) {
     agentReply('Here’s where the settlement figures stand — adjustments and directions are still being finalised, so treat the balance as indicative.', () => { showComponent('financials', 'agent'); });
+  } else if (q.includes('upload') || q.includes('batch')) {
+    agentReply('Sure — drop the extra documents on the paperclip and I’ll categorise them against the matter (upload isn’t part of this mock). Here’s what’s held so far.', () => { showComponent('docs', 'agent'); });
   } else if (q.includes('doc')) {
     agentReply('These are the documents held against the matter so far.', () => { showComponent('docs', 'agent'); });
   } else if (q.includes('task') || q.includes('onboard') || q.includes('outstanding') || q.includes('status')) {
@@ -830,6 +852,19 @@ function clickMilestone(kind) {
   render();
 }
 
+// Lexi's chart: Order placement → Onboarding is a SINGLE arrow — after the one
+// approval tap (placing the order is outbound, so it always needs the tap), the
+// agent auto-advances into onboarding with no further prompt.
+function placeOrder() {
+  data.placed = true;
+  data.progress = 20;
+  pushReceipt('Settlement order placed — #' + data.order.orderNo);
+  suggestion();
+  agentReply('Order’s placed. Onboarding is the only possible next step, so I’ve started it — John’s tasks were emailed through just now. I’ll keep this matter’s progress up to date as he completes them.', () => {
+    showComponent('onboarding', 'agent');
+  });
+}
+
 function submitBooking() {
   const d = document.getElementById('bk-date');
   const t = document.getElementById('bk-time');
@@ -853,6 +888,7 @@ function submitBooking() {
 }
 
 function simulate() {
+  if (!data.placed) { toast('Place the settlement order first — the demo starts there'); return; }
   if (data.nswDone) { toast('Already up to date — nothing left to simulate'); return; }
   data.nswDone = true;
   data.progress = data.booked ? 80 : 60;
@@ -910,6 +946,26 @@ function compBooking() {
     + '<div class="frow"><label for="bk-time">Time</label><select id="bk-time"><option>10:00 AM</option><option selected>2:00 PM</option><option>3:30 PM</option></select></div>'
     + '<button class="cbtn" data-act="bksubmit">Confirm booking</button></div>';
 }
+function compReview() {
+  const f = (l, v, wide) => '<div class="rv' + (wide ? ' wide' : '') + '"><span class="lbl2">' + l + '</span><span class="val">' + v + '</span></div>';
+  const action = data.placed
+    ? '<div class="fin-total" style="border-top:1px solid var(--line); margin-top:.5rem"><span>✅ Order placed</span><span class="fr">#' + data.order.orderNo + '</span></div>'
+    : '<button class="cbtn" data-act="placeorder" style="margin-top:.65rem">Place settlement order</button>';
+  return '<div class="comp" data-live="review"><h4>Review &amp; place order</h4>'
+    + '<div class="sub">Confirm everything looks correct before the settlement order is placed</div>'
+    + '<div class="rvsec">⌖ Property</div><div class="rvgrid">'
+    + f('Title reference', data.order.title) + f('Land area', '320 m²')
+    + f('Address', data.order.property, true) + '</div>'
+    + '<div class="rvsec">👤 Purchaser</div><div class="rvgrid">'
+    + f('Full name', 'John Harrison') + f('Date of birth', '09/09/1991')
+    + f('Current address', '135 King Street, Sydney NSW 2000', true)
+    + f('Email', 'john.harrison@email.com') + f('Mobile', '0457 248 532')
+    + f('Address after settlement', data.order.property, true) + '</div>'
+    + '<div class="rvsec">🗎 Transaction details</div><div class="rvgrid">'
+    + f('Settlement date', '15/06/2026') + f('Settlement time', '2:00 pm')
+    + f('Deposit', '$119,000.00') + f('Service fee', data.order.fee) + '</div>'
+    + action + '</div>';
+}
 function compFinancials() {
   const row = (a, b, c) => '<div class="fin-row"><span>' + a + '</span><span>' + b + '</span><span class="fr">' + c + '</span></div>';
   return '<div class="comp" data-live="financials"><h4>Settlement financials</h4>'
@@ -929,6 +985,7 @@ function compPlaceholder(kind) {
   return '<div class="comp" data-live="' + kind + '"><h4>' + KIND_NAME[kind] + '</h4><div class="sub">Not part of this mock — imagine the ' + KIND_NAME[kind].toLowerCase() + ' view here (adjustments, trust ledger, cheque directions…)</div></div>';
 }
 function compByKind(kind) {
+  if (kind === 'review') { return compReview(); }
   if (kind === 'onboarding') { return compOnboarding(); }
   if (kind === 'order') { return compOrder(); }
   if (kind === 'docs') { return compDocs(); }
@@ -988,10 +1045,11 @@ function transcriptHtml() {
 function composerHtml() {
   const s = currentSuggestion;
   let dock = '';
-  if (ui.pill === 'docked') {
+  // s === null → the next action is already on screen (Lexi's dashed-box rule): no pills at all.
+  if (ui.pill === 'docked' && s) {
     dock = '<div class="suggest-dock"><span class="slabel">Suggested</span>'
       + '<button class="spill" data-act="suggest:main">' + s.main + ' →</button>'
-      + '<button class="spill alt" data-act="suggest:alt">' + s.alt + '</button></div>';
+      + (s.alt ? '<button class="spill alt" data-act="suggest:alt">' + s.alt + '</button>' : '') + '</div>';
   }
   return '<div class="composer-zone">' + dock
     + '<div class="composer"><span class="pill-info">ⓘ Instant response</span>'
@@ -999,9 +1057,10 @@ function composerHtml() {
     + '<div class="crow"><button class="clip" aria-label="Attach a file">📎</button><button class="send" data-act="send" aria-label="Send">↑</button></div></div></div>';
 }
 function trailingSuggestHtml() {
-  if (ui.pill !== 'trailing') { return ''; }
+  if (ui.pill !== 'trailing' || !currentSuggestion) { return ''; }
   const s = currentSuggestion;
-  return '<div class="suggest-trailing"><button class="spill" data-act="suggest:main">' + s.main + ' →</button><button class="spill alt" data-act="suggest:alt">' + s.alt + '</button></div>';
+  return '<div class="suggest-trailing"><button class="spill" data-act="suggest:main">' + s.main + ' →</button>'
+    + (s.alt ? '<button class="spill alt" data-act="suggest:alt">' + s.alt + '</button>' : '') + '</div>';
 }
 
 function chatColumn(extraStrip) {
@@ -1139,6 +1198,7 @@ document.addEventListener('click', (ev) => {
     if (input && input.value.trim()) { const v = input.value.trim(); input.value = ''; handleUserText(v); render(); }
     return;
   }
+  if (verb === 'placeorder') { placeOrder(); render(); return; }
   if (verb === 'bksubmit') { submitBooking(); render(); return; }
 });
 
