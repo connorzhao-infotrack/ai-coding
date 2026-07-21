@@ -127,6 +127,8 @@
 
   /* transcript component instance (variant B / inline) */
   .inline-comp { margin-left:2.25rem; max-width:44rem; }
+  .inline-livebar { display:flex; align-items:center; justify-content:flex-end; gap:.45rem; margin-bottom:.25rem; }
+  .upd { font-family:var(--mono); font-size:.62rem; color:var(--good); letter-spacing:.04em; animation: rise .3s ease-out; }
   .caption { margin-left:2.25rem; font-size:.68rem; font-family:var(--mono); color:var(--muted); letter-spacing:.05em; }
   .stub {
     margin-left:2.25rem; display:flex; align-items:center; gap:.5rem; max-width:44rem;
@@ -246,10 +248,12 @@
   .flash { animation: flashbg 1.6s ease-out; }
   @keyframes flashbg { 0% { box-shadow: 0 0 0 3px rgba(46,158,107,.55); } 100% { box-shadow: 0 0 0 3px rgba(46,158,107,0); } }
 
-  /* variant C */
-  .ws-rail { flex:0 0 13.5rem; border-right:1px solid var(--line); background:var(--paper); overflow-y:auto; padding:.9rem .7rem; }
-  .ws-main { flex:1.2; min-width:0; border-right:1px solid var(--line); background:var(--paper); overflow-y:auto; padding: .9rem 1rem; }
-  .ws-chat { flex:1; min-width: 0; display:flex; flex-direction:column; background:var(--surface); }
+  /* variant C — June's ¼ + ¾ + 1: two columns on top (milestones ¼, workspace ¾), chat full-width below */
+  .cframe { flex-direction:column; }
+  .c-top { display:flex; flex:1 1 52%; min-height:0; border-bottom:1px solid var(--line); }
+  .ws-rail { flex:0 0 25%; border-right:1px solid var(--line); background:var(--paper); overflow-y:auto; padding:.9rem .7rem; }
+  .ws-main { flex:1; min-width:0; background:var(--paper); overflow-y:auto; padding: .9rem 1rem; }
+  .ws-chat { flex:1 1 48%; min-height:0; min-width:0; display:flex; flex-direction:column; background:var(--surface); }
 
   .sheet-scrim { position:absolute; inset:0; background:rgba(9,25,30,.45); z-index:5; }
   .sheet {
@@ -278,7 +282,9 @@
   /* ---- responsive: container-driven ---- */
   @container stage (max-width: 719px) {
     .rail { display:none; }
+    .c-top { display:none; }
     .ws-rail, .ws-main { display:none; }
+    .app[data-tab="progress"] .c-top, .app[data-tab="work"] .c-top { display:flex; flex:1; border-bottom:none; }
     .app[data-tab="progress"] .ws-rail { display:block; flex:1; border-right:none; }
     .app[data-tab="work"] .ws-main { display:block; flex:1; border-right:none; }
     .app[data-tab="progress"] .ws-chat, .app[data-tab="work"] .ws-chat { display:none; }
@@ -308,9 +314,9 @@
   <span class="lab-title">AI Paralegal · Interaction Lab</span>
   <div class="seg" role="group" aria-label="Variant">
     <span class="lbl">Variant</span>
-    <button data-act="variant:A" aria-pressed="true">A · Canonical stage</button>
-    <button data-act="variant:B" aria-pressed="false">B · In-transcript</button>
-    <button data-act="variant:C" aria-pressed="false">C · Three-pane</button>
+    <button data-act="variant:B" aria-pressed="true">B+ · In-transcript (ship now)</button>
+    <button data-act="variant:A" aria-pressed="false">A · Canonical stage (post-project)</button>
+    <button data-act="variant:C" aria-pressed="false">C · Workspace ¼+¾+1</button>
   </div>
   <div class="seg" role="group" aria-label="Device">
     <span class="lbl">Device</span>
@@ -328,22 +334,20 @@
 </div>
 
 <details class="drawer">
-  <summary>My ranking, what to try, and what the industry does</summary>
+  <summary>The 21 Jul decision, what to try, and what the industry does</summary>
   <div class="drawer-body">
     <div class="dcard win">
-      <h4><span class="r">RANK 1</span> A · Canonical stage + reference chips</h4>
-      <p class="tagline">Components live ONCE, on the right, always current. Chat contains conversation, chips that open views, and receipts for completed actions. Milestone clicks render directly — no chat turn, no LLM.</p>
-      <p><b>Views are live; actions leave snapshots.</b> That's the answer to your Q1/Q2: never re-render a view into history — open its one canonical home; only <i>completed actions</i> (a booking, a submission) drop an immutable receipt into the transcript.</p>
+      <h4><span class="r">SHIP NOW</span> B+ · In-transcript, live-latest + stubs</h4>
+      <p class="tagline">The 21 Jul call's outcome: the approved layout stays (Corey/Dan P — no Christian Beck round-trip), so staleness is fixed with <b>behaviour</b>, not layout. Old copies collapse to stubs; the latest copy is LIVE (green ● + "Updated just now"); actions still lock into receipts.</p>
+      <p><b>"What if the user doesn't click?"</b> — three layers: SignalR keeps the latest copy current wherever it sits; the agent posts a short progress message when state moves; and single-route transitions <b>auto-advance</b> (fewer clicks — the exec ask).</p>
     </div>
     <div class="dcard">
-      <h4><span class="r">RANK 2</span> B · In-transcript, live-latest + collapse</h4>
-      <p class="tagline">Closest to today's build. Re-requesting a component appends a fresh copy; older copies collapse into one-line stubs that jump to the latest. Only the latest instance is live.</p>
-      <p>Cheapest migration, single surface — but state still has no stable home, and you scroll-hunt for it.</p>
+      <h4><span class="r">NORTH STAR</span> A · Canonical stage + reference chips</h4>
+      <p class="tagline">Still the best answer long-term — components live once, always current, chat stays conversation. Parked for after this project because changing the approved design needs sign-off the team wants to avoid mid-flight.</p>
     </div>
     <div class="dcard">
-      <h4><span class="r">RANK 3</span> C · Three-pane workspace</h4>
-      <p class="tagline">Old-UI mental model plus chat: milestones | workspace | chat. Clear, but chat gets squeezed on desktop and mobile falls back to tab-juggling.</p>
-      <p>Note A ≈ C with the milestone list and workspace <i>merged into one rail</i> — you get C's clarity without the third column.</p>
+      <h4><span class="r">EXPLORING</span> C · Workspace ¼+¾+1 (June's cut)</h4>
+      <p class="tagline">Revised per June: milestones (¼) and workspace (¾) side-by-side on top, chat full-width underneath. Closer to the old UI's mental model; chat keeps full width. Worth feeling out for the post-project rethink alongside A.</p>
     </div>
     <div class="dcard">
       <h4>What the industry converged on</h4>
@@ -353,11 +357,11 @@
     <div class="dcard">
       <h4>Try this, in each variant</h4>
       <ol>
-        <li>Click <b>Onboarding</b> in the milestones — then click it <b>again</b>. Watch what repetition does.</li>
+        <li>Click <b>Onboarding</b> in the milestones — then click it <b>again</b>. Old copy → stub; only the latest carries the green ● Live dot.</li>
         <li>Type or tap <b>“show order details”</b>, twice.</li>
-        <li>Hit <b>⚡ Simulate client progress</b> — the client completes a task server-side. See which copies update.</li>
-        <li>Tap the suggested pill → complete the <b>booking form</b> → note the receipt left in chat.</li>
-        <li>Toggle <b>Pill: Docked / Trailing</b> to feel your question 1. Then switch <b>Device: Phone</b> and redo 1–4.</li>
+        <li>Hit <b>⚡ Simulate client progress</b> — the live copy refreshes in place (“Updated just now”), then the agent <b>auto-advances</b> to Provide documents: the single-route case from the call.</li>
+        <li>Tap the suggested pill → complete the <b>booking form</b> → note the locked receipt left in chat.</li>
+        <li>Toggle <b>Pill: Docked / Trailing</b>, then switch <b>Device: Phone</b> and redo 1–4. In C, note June's ¼+¾+1 layout.</li>
       </ol>
     </div>
   </div>
@@ -461,6 +465,30 @@
 <main class="research">
   <h2>Why the lab looks the way it does</h2>
   <p class="sub">The questions we set out to answer, what we established in the design interview, what the industry research found, and the reasoning that produced the ranking — so the team can challenge the premises, not just the pixels.</p>
+
+  <p class="rs-kicker">Update — decided on the 21 Jul call (June · Lexi · Connor)</p>
+  <div class="rs-qa">
+    <div class="rs-q">
+      <p class="qq">Layout frozen, behaviour free</p>
+      <p class="aa">The approved design (chat + right rail) <b>stays for this project</b> — changing it means re-approval (Corey / Dan P / Christian Beck), which the team wants to avoid mid-flight. A-style canonical stage becomes the <b>post-project</b> improvement.</p>
+      <p class="unlock">solve staleness with behaviour inside the transcript — that's B+ below</p>
+    </div>
+    <div class="rs-q">
+      <p class="qq">The stale-history fix (B+)</p>
+      <p class="aa">When a newer copy of a component exists, <b>older copies collapse to one-line stubs</b> — a stale full view can never be misread (Lexi's "dangerous" case). The <b>latest copy is live</b>: SignalR/refetch keeps it current, marked with a green ● Live dot and a transient "Updated just now".</p>
+      <p class="unlock">answers "what if the user doesn't click" — the data comes to them</p>
+    </div>
+    <div class="rs-q">
+      <p class="qq">Proactivity over suggestions</p>
+      <p class="aa">Where only <b>one</b> action is reasonably possible (onboarding → provide documents), the agent <b>auto-advances</b> — no pill, no click (the exec / Christian Beck "fewer clicks" ask). Pills are for genuine crossroads (e.g. financials' sub-steps). <b>Lexi is mapping</b> which transitions are auto vs choice.</p>
+      <p class="unlock">the pill decision rule gains a step 0: one route → just do it</p>
+    </div>
+    <div class="rs-q">
+      <p class="qq">Smaller calls</p>
+      <p class="aa">Pill sits <b>docked above the input</b> (ChatGPT-style); the below-composer pattern was rejected. Message-bubble wrapping is <b>parked</b> — tables inside bubbles look bad; consider a wider gap between turns instead. C revised to June's <b>¼+¾+1</b> cut for post-project exploration.</p>
+      <p class="unlock">lab updated to match all of the above — B+ is now the default variant</p>
+    </div>
+  </div>
 
   <p class="rs-kicker">The two questions from the ticket — answered</p>
   <div class="rs-verdicts">
@@ -621,8 +649,9 @@
 <script>
 'use strict';
 /* ============================ state ============================ */
-const ui = { variant: 'A', phone: false, pill: 'docked' };
+const ui = { variant: 'B', phone: false, pill: 'docked' };
 let data, chat, panel, wsKind, mobTab, seq, entryId;
+let justUpdated = null; // kind whose live-latest copy just refreshed via SignalR (shows "Updated just now")
 
 function initialData() {
   return {
@@ -657,6 +686,7 @@ const KIND_ICON = { onboarding: '☑', docs: '📄', booking: '📅', financials
 
 function msStatus(kind) {
   if (kind === 'onboarding') { return data.nswDone ? 'done' : 'active'; }
+  if (kind === 'docs') { return data.nswDone ? 'active' : 'todo'; }
   if (kind === 'booking') { return data.booked ? 'done' : 'todo'; }
   return 'todo';
 }
@@ -703,6 +733,7 @@ function agentReply(text, after) {
 
 /* intent handling for typed/tapped messages */
 function handleUserText(text) {
+  justUpdated = null;
   pushUser(text);
   const q = text.toLowerCase();
   if (q.includes('order') || q.includes('detail')) {
@@ -739,6 +770,7 @@ function showComponent(kind, source) {
 }
 
 function clickMilestone(kind) {
+  justUpdated = null;
   if (ui.variant === 'A') {
     const again = panel.kind === kind;
     showComponent(kind, 'milestone');
@@ -769,9 +801,20 @@ function simulate() {
   if (data.nswDone) { toast('Already up to date — nothing left to simulate'); return; }
   data.nswDone = true;
   data.progress = data.booked ? 80 : 60;
+  justUpdated = 'onboarding';
   toast('⚡ SignalR push: John completed the NSW purchaser declaration');
-  agentReply('John just completed his NSW purchaser declaration — onboarding is done. Every live view of onboarding you can see has already updated; nothing was re-sent to chat.');
   flashSoon('[data-live="onboarding"]');
+  // Two-beat script (21 Jul call): 1) the live-latest copy refreshes in place —
+  // the answer to "what if the user doesn't click"; 2) only ONE next step is
+  // possible from here, so the agent AUTO-ADVANCES instead of suggesting.
+  agentReply('John just completed his NSW purchaser declaration — onboarding is done. The onboarding view above refreshed itself (green ● Live); nothing was re-sent to chat.', () => {
+    setTimeout(() => {
+      agentReply('From here Provide documents is the only possible next step, so I’ve moved straight onto it — no click needed. Here’s what’s already held against the matter:', () => {
+        showComponent('docs', 'agent');
+        suggestion();
+      });
+    }, 500);
+  });
   render();
 }
 
@@ -860,7 +903,11 @@ function transcriptHtml() {
         html += '<button class="stub" data-act="stub:' + e.kind + '"><span>↻</span><span><span class="k">' + KIND_NAME[e.kind] + '</span> — superseded · view latest ↓</span></button>';
       } else {
         if (e.cap) { html += '<div class="caption">' + e.cap + '</div>'; }
-        html += '<div class="inline-comp" data-latest="' + e.kind + '">' + compByKind(e.kind) + '</div>';
+        // Latest instance of a kind is the LIVE one (21 Jul call): green pulse dot,
+        // plus a transient "Updated just now" when a SignalR push refreshed it.
+        html += '<div class="inline-comp" data-latest="' + e.kind + '">'
+          + '<div class="inline-livebar">' + (justUpdated === e.kind ? '<span class="upd">Updated just now</span>' : '') + '<span class="live-badge"><i></i>Live</span></div>'
+          + compByKind(e.kind) + '</div>';
       }
     }
   });
@@ -917,6 +964,7 @@ function renderB() {
   return '<div class="frame">' + chatColumn(mobStrip()) + rail + '</div>';
 }
 function renderC() {
+  // June's revision (21 Jul): ¼ + ¾ on top (milestones | workspace), chat full-width below.
   const railHtml = '<aside class="ws-rail">' + matterCard() + '<div style="height:.8rem"></div>' + milestoneList(wsKind) + '</aside>';
   const wsHtml = '<div class="ws-main"><div class="panel-head"><span class="ttl">' + KIND_NAME[wsKind] + '</span><span class="live-badge"><i></i>Live</span></div><div style="height:.6rem"></div>' + compByKind(wsKind) + '</div>';
   const chatHtml = '<div class="ws-chat">' + '<div class="chatlist" id="chatlist">' + transcriptHtml() + trailingSuggestHtml() + '</div>' + composerHtml() + '</div>';
@@ -924,7 +972,7 @@ function renderC() {
     + '<button data-act="tab:progress" aria-pressed="' + (mobTab === 'progress') + '">◎ Progress</button>'
     + '<button data-act="tab:work" aria-pressed="' + (mobTab === 'work') + '">▤ Workspace</button>'
     + '<button data-act="tab:chat" aria-pressed="' + (mobTab === 'chat') + '">✉ Chat</button></div>';
-  return '<div class="frame">' + railHtml + wsHtml + chatHtml + '</div>' + tabbar;
+  return '<div class="frame cframe"><div class="c-top">' + railHtml + wsHtml + '</div>' + chatHtml + '</div>' + tabbar;
 }
 
 function render() {
