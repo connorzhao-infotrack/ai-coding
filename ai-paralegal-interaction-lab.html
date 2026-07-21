@@ -387,6 +387,7 @@
   </div>
   <span class="spacer"></span>
   <button class="btn primary" data-act="simulate">⚡ Simulate client progress</button>
+  <button class="btn" data-act="finupdate" title="Debug: push a settlement-figures change (server-side event)">$ Update financials</button>
   <button class="btn ghost" data-act="reset">Reset</button>
 </div>
 
@@ -807,10 +808,15 @@ function pushAgent(text) { chat.push({ id: nid(), role: 'agent', text, time: fmt
 function pushUser(text) { chat.push({ id: nid(), role: 'user', text, time: fmtTime() }); }
 function pushChip(kind, sub) { chat.push({ id: nid(), role: 'chip', kind, sub: sub || 'Live view' }); }
 function pushComp(kind, cap) {
-  // Versioned statements never collapse — superseded copies stay readable in place
-  // (the dispute record). Windows collapse to stubs as before.
+  // Versions are immutable; renderings are not. For versioned statements, copies of
+  // OLDER versions stay readable in place (the dispute record), but a duplicate
+  // rendering of the SAME version collapses to a stub like any window copy would.
   const isVersionedStatement = STATEMENT_KINDS.has(kind) && ui.statements === 'versioned';
-  if (!isVersionedStatement) {
+  if (isVersionedStatement) {
+    chat.forEach((e) => {
+      if (e.role === 'comp' && e.kind === kind && (e.v || 1) === data.finVersion) { e.collapsed = true; }
+    });
+  } else {
     chat.forEach((e) => { if (e.role === 'comp' && e.kind === kind) { e.collapsed = true; } });
   }
   const entry = { id: nid(), role: 'comp', kind, cap: cap || '', collapsed: false };
@@ -896,23 +902,29 @@ function clickMilestone(kind) {
     // within the LAST 2 transcript entries → scroll to it and flash it; anything
     // older → don't drag the user away from the composer — bring the data to them
     // instead: append a fresh copy, old one collapses to a stub.
-    const existing = chat.find((e) => e.role === 'comp' && e.kind === kind && !e.collapsed);
+    const expandedCopies = chat.filter((e) => e.role === 'comp' && e.kind === kind && !e.collapsed);
+    const existing = expandedCopies.length ? expandedCopies[expandedCopies.length - 1] : null;
     if (existing) {
       const isVersionedStatement = STATEMENT_KINDS.has(kind) && ui.statements === 'versioned';
       const entriesAfter = chat.filter(
         (e, i) => i > chat.indexOf(existing) && e.role !== 'typing',
       ).length;
-      const isFar = entriesAfter > 2;
-      // Versioned statements are immutable records — never duplicated, always navigated to.
-      if (isFar && !isVersionedStatement) {
+      if (entriesAfter > 2) {
+        // Far back → re-anchor at the bottom. For versioned statements this re-issues
+        // the CURRENT version (same-version duplicate collapses; older versions keep
+        // their ribbons above — the record is never lost).
         showComponent(kind, 'milestone');
-        toast('That view was far back — brought the latest to you; the old copy collapsed to a stub');
+        toast(isVersionedStatement
+          ? 'Current version re-anchored at the bottom — earlier versions stay on record above'
+          : 'That view was far back — brought the latest to you; the old copy collapsed to a stub');
         render();
         return;
       }
       render();
       jumpToLatest(kind);
-      toast('Already in the thread and live — brought you to it');
+      toast(isVersionedStatement
+        ? 'That’s the current version — brought you to it'
+        : 'Already in the thread and live — brought you to it');
       return;
     }
     showComponent(kind, 'milestone');
@@ -1005,6 +1017,31 @@ function simulateFiguresChange() {
   toast('⚡ Council rates finalised — the live financials view updated in place');
   flashSoon('[data-live="financials"]');
   agentReply('Council rates came back higher than estimated — the financials view has refreshed itself: City of Sydney Council $2,585.10, balance $1,185,184.90.');
+  render();
+}
+
+// Debug: push an arbitrary figures change without walking the whole journey —
+// each press bumps the version so the Versioned mode can stack v2, v3, v4…
+function updateFinancialsDebug() {
+  if (!data.placed) { toast('Place the settlement order first'); return; }
+  data.finUpdated = true;
+  data.finVersion += 1;
+  const fmtMoney = (n) => '$' + n.toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const council = parseFloat(data.fin.council.replace(/[$,]/g, '')) + 512.40;
+  const balance = parseFloat(data.fin.balance.replace(/[$,]/g, '')) - 512.40;
+  data.fin = { council: fmtMoney(council), balance: fmtMoney(balance), asOf: 'today, ' + fmtTime() };
+  if (ui.statements === 'versioned') {
+    toast('⚡ Figures changed — new statement version issued (v' + data.finVersion + ')');
+    agentReply('The settlement figures have moved — City of Sydney Council is now ' + data.fin.council + ' and the balance is ' + data.fin.balance + '. Updated statement below (v' + data.finVersion + '); earlier versions stay on record.', () => {
+      pushComp('financials', '');
+    });
+    render();
+    return;
+  }
+  justUpdated = 'financials';
+  toast('⚡ Figures changed — the live financials view updated in place');
+  flashSoon('[data-live="financials"]');
+  agentReply('Figures update: City of Sydney Council ' + data.fin.council + ', balance ' + data.fin.balance + ' — every financials view has refreshed itself.');
   render();
 }
 
@@ -1289,6 +1326,7 @@ document.addEventListener('click', (ev) => {
     return;
   }
   if (verb === 'simulate') { simulate(); return; }
+  if (verb === 'finupdate') { updateFinancialsDebug(); return; }
   if (verb === 'reset') { resetDemo(); toast('Demo reset'); return; }
 
   if (verb === 'ms') { clickMilestone(arg); return; }
