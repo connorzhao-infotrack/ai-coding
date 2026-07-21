@@ -308,6 +308,7 @@
   <span class="pt-brand">AI Paralegal · SETTLEIT-10754</span>
   <button data-act="page:lab" aria-pressed="true">🧪 Interactive lab</button>
   <button data-act="page:research" aria-pressed="false">📊 Research &amp; findings</button>
+  <button class="theme-btn" id="theme-btn" data-act="theme:toggle" aria-label="Switch theme">🌙 Dark</button>
 </div>
 
 <div class="controls">
@@ -386,6 +387,7 @@
     background:transparent; color:#bcdbe2; padding:.4rem .85rem; border-radius:.55rem;
   }
   .pagetabs button[aria-pressed="true"] { background:var(--paper); color:var(--ink); }
+  .pagetabs .theme-btn { margin-left:auto; border:1px solid rgba(255,255,255,.25); }
   .pagetabs button:focus-visible { outline:2px solid #7fd3de; outline-offset:2px; }
 
   .research { display:none; }
@@ -648,6 +650,8 @@
 
 <script>
 'use strict';
+/* Light theme by default (overrides the OS dark preference); the 🌙/☀️ button toggles. */
+document.documentElement.dataset.theme = 'light';
 /* ============================ state ============================ */
 const ui = { variant: 'B', phone: false, pill: 'docked' };
 let data, chat, panel, wsKind, mobTab, seq, entryId;
@@ -1022,6 +1026,12 @@ document.addEventListener('click', (ev) => {
   const verb = sep === -1 ? act : act.slice(0, sep);
   const arg = sep === -1 ? '' : act.slice(sep + 1);
 
+  if (verb === 'theme') {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    btn.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+    return;
+  }
   if (verb === 'page') { document.body.dataset.page = arg; setSeg('page', arg); return; }
   if (verb === 'variant') { ui.variant = arg; setSeg('variant', arg); resetDemo(); return; }
   if (verb === 'device') {
