@@ -1,0 +1,1013 @@
+<title>AI Paralegal — Interaction Lab (SETTLEIT-10754)</title>
+<style>
+  :root {
+    --paper:#EBF1F2; --surface:#FFFFFF; --surface-2:#F4F8F9; --ink:#0F272D; --body:#35494F;
+    --muted:#6A7F85; --line:#D7E2E4; --line-soft:#E6EEEF; --brand:#0B4A5B; --brand-ink:#093A47;
+    --accent:#0E8FA3; --accent-strong:#0B7180; --good:#2E9E6B; --good-bg:#E2F2EA; --good-line:#B7DEC8;
+    --warn:#B5771A; --warn-bg:#F6ECDA;
+    --shadow:0 1px 2px rgba(15,39,45,.06),0 8px 24px rgba(15,39,45,.07);
+    --shadow-lg:0 2px 6px rgba(15,39,45,.1),0 18px 44px rgba(15,39,45,.16);
+    --sans:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:"Cascadia Code",Consolas,ui-monospace,Menlo,monospace;
+    --serif:Constantia,"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:#06151A; --surface:#0C2127; --surface-2:#0F282F; --ink:#EAF4F5; --body:#B9CCD0;
+      --muted:#7F979D; --line:#1D3B42; --line-soft:#16323A; --brand:#0A3947; --brand-ink:#0B4A5B;
+      --accent:#2FB6C9; --accent-strong:#48C6D8; --good:#4FBE88; --good-bg:#10312A; --good-line:#235844;
+      --warn:#D69B48; --warn-bg:#2A2415;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35);
+      --shadow-lg:0 2px 8px rgba(0,0,0,.4),0 22px 52px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="light"] {
+    --paper:#EBF1F2; --surface:#FFFFFF; --surface-2:#F4F8F9; --ink:#0F272D; --body:#35494F;
+    --muted:#6A7F85; --line:#D7E2E4; --line-soft:#E6EEEF; --brand:#0B4A5B; --brand-ink:#093A47;
+    --accent:#0E8FA3; --accent-strong:#0B7180; --good:#2E9E6B; --good-bg:#E2F2EA; --good-line:#B7DEC8;
+    --warn:#B5771A; --warn-bg:#F6ECDA;
+    --shadow:0 1px 2px rgba(15,39,45,.06),0 8px 24px rgba(15,39,45,.07);
+    --shadow-lg:0 2px 6px rgba(15,39,45,.1),0 18px 44px rgba(15,39,45,.16);
+  }
+  :root[data-theme="dark"] {
+    --paper:#06151A; --surface:#0C2127; --surface-2:#0F282F; --ink:#EAF4F5; --body:#B9CCD0;
+    --muted:#7F979D; --line:#1D3B42; --line-soft:#16323A; --brand:#0A3947; --brand-ink:#0B4A5B;
+    --accent:#2FB6C9; --accent-strong:#48C6D8; --good:#4FBE88; --good-bg:#10312A; --good-line:#235844;
+    --warn:#D69B48; --warn-bg:#2A2415;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35);
+    --shadow-lg:0 2px 8px rgba(0,0,0,.4),0 22px 52px rgba(0,0,0,.5);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin:0; background:var(--paper); color:var(--body); font-family:var(--sans); font-size:15px; line-height:1.5; }
+
+  /* ============ lab chrome ============ */
+  .controls {
+    position: sticky; top:0; z-index: 50;
+    display:flex; align-items:center; gap:.9rem; flex-wrap:wrap;
+    padding:.65rem 1rem; background:var(--surface); border-bottom:1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  .controls .lab-title { font-family:var(--serif); font-weight:600; color:var(--ink); font-size:1.02rem; margin-right:.4rem; white-space:nowrap; }
+  .seg { display:flex; background:var(--surface-2); border:1px solid var(--line); border-radius:.6rem; padding:.15rem; gap:.15rem; }
+  .seg button {
+    font:inherit; font-size:.8rem; font-weight:600; border:none; background:transparent; color:var(--muted);
+    padding:.3rem .7rem; border-radius:.45rem; cursor:pointer;
+  }
+  .seg button[aria-pressed="true"] { background:var(--brand); color:#fff; }
+  .seg button:focus-visible, .btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .seg .lbl { font-size:.66rem; font-family:var(--mono); text-transform:uppercase; letter-spacing:.08em; color:var(--muted); align-self:center; padding:0 .45rem 0 .55rem; }
+  .btn {
+    font:inherit; font-size:.8rem; font-weight:600; cursor:pointer; border-radius:.55rem;
+    border:1px solid var(--line); background:var(--surface-2); color:var(--body); padding:.42rem .8rem;
+  }
+  .btn.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .btn.ghost { background:transparent; }
+  .spacer { flex:1; }
+
+  details.drawer { max-width: 78rem; margin: .9rem auto 0; padding: 0 1rem; }
+  details.drawer summary {
+    cursor:pointer; font-size:.85rem; font-weight:600; color:var(--accent-strong);
+    list-style:none; display:inline-flex; gap:.4rem; align-items:center;
+  }
+  details.drawer summary::before { content:"▸"; transition: transform .15s; }
+  details.drawer[open] summary::before { transform: rotate(90deg); }
+  .drawer-body {
+    margin-top:.7rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(16rem,1fr)); gap:.8rem;
+  }
+  .dcard { background:var(--surface); border:1px solid var(--line); border-radius:.8rem; padding: .9rem 1rem; box-shadow:var(--shadow); font-size:.85rem; }
+  .dcard.win { border-color: var(--good-line); }
+  .dcard h4 { margin:0 0 .3rem; color:var(--ink); font-size:.92rem; display:flex; gap:.5rem; align-items:baseline; }
+  .dcard h4 .r { font-family:var(--mono); font-size:.7rem; color:var(--accent-strong); }
+  .dcard p { margin:.25rem 0; }
+  .dcard ol { margin:.3rem 0 0; padding-left:1.1rem; }
+  .dcard li { margin-bottom:.25rem; }
+  .dcard .tagline { color:var(--muted); font-size:.78rem; }
+
+  .stage-wrap { padding: 1rem; display:flex; justify-content:center; }
+  .stage {
+    container: stage / inline-size;
+    width: min(100%, 76rem); height: calc(100vh - 8.5rem); min-height: 34rem;
+    background: var(--paper); position: relative;
+  }
+  .stage.phone {
+    width: 402px; height: min(760px, calc(100vh - 8.5rem));
+    border: 10px solid var(--brand-ink); border-radius: 2rem; overflow:hidden; box-shadow: var(--shadow-lg);
+    background: var(--surface);
+  }
+
+  /* ============ app shell ============ */
+  .app { height:100%; display:flex; flex-direction:column; background:var(--paper); border:1px solid var(--line); border-radius:.9rem; overflow:hidden; }
+  .stage.phone .app { border:none; border-radius:0; }
+  .topbar { background:var(--brand); color:#E9F6F8; padding:.5rem .9rem; display:flex; align-items:center; gap:.6rem; flex:0 0 auto; }
+  .topbar .wordmark { font-weight:700; font-size:.95rem; letter-spacing:.01em; }
+  .topbar .wordmark span { color:#7fd3de; }
+  .topbar .settles { margin-left:auto; background:rgba(255,255,255,.14); border-radius:2rem; padding:.15rem .6rem; font-size:.72rem; }
+
+  .frame { flex:1; display:flex; min-height:0; }
+
+  /* chat column */
+  .chatcol { flex:1; min-width:0; display:flex; flex-direction:column; background:var(--surface); }
+  .chatlist { flex:1; overflow-y:auto; padding: 1rem 1.1rem .4rem; display:flex; flex-direction:column; gap:.65rem; scroll-behavior:smooth; }
+  .m-row { display:flex; gap:.55rem; align-items:flex-start; max-width: 46rem; }
+  .m-row.user { align-self:flex-end; flex-direction:row-reverse; }
+  .av { width:1.7rem; height:1.7rem; border-radius:50%; flex:0 0 auto; background:linear-gradient(140deg,var(--accent),var(--brand)); color:#fff; display:grid; place-items:center; font-size:.8rem; margin-top:.1rem; }
+  .bubble { background:var(--surface-2); border:1px solid var(--line-soft); border-radius:.15rem .8rem .8rem .8rem; padding:.55rem .8rem; font-size:.86rem; }
+  .m-row.user .bubble { background:var(--brand); color:#EAF4F5; border-color:var(--brand); border-radius:.8rem .15rem .8rem .8rem; }
+  .bubble .who { display:block; font-size:.72rem; font-weight:700; color:var(--ink); }
+  .bubble .t { font-size:.66rem; color:var(--muted); margin-left:.4rem; font-weight:400; }
+  .typing { display:inline-flex; gap:.25rem; padding:.4rem .2rem; }
+  .typing i { width:.4rem; height:.4rem; border-radius:50%; background:var(--muted); animation: blink 1.2s infinite; }
+  .typing i:nth-child(2){ animation-delay:.2s } .typing i:nth-child(3){ animation-delay:.4s }
+  @keyframes blink { 0%,80%,100%{opacity:.25} 40%{opacity:1} }
+
+  /* transcript component instance (variant B / inline) */
+  .inline-comp { margin-left:2.25rem; max-width:44rem; }
+  .caption { margin-left:2.25rem; font-size:.68rem; font-family:var(--mono); color:var(--muted); letter-spacing:.05em; }
+  .stub {
+    margin-left:2.25rem; display:flex; align-items:center; gap:.5rem; max-width:44rem;
+    border:1px dashed var(--line); border-radius:.6rem; padding:.4rem .7rem; font-size:.78rem; color:var(--muted);
+    background:var(--surface); cursor:pointer;
+  }
+  .stub:hover { border-color:var(--accent); color:var(--accent-strong); }
+  .stub .k { font-weight:600; }
+
+  /* reference chip (variant A) */
+  .refchip {
+    margin-left:2.25rem; display:flex; align-items:center; gap:.6rem; width:max-content; max-width:100%;
+    background:var(--surface); border:1px solid var(--accent); border-radius:.7rem; padding:.5rem .8rem;
+    cursor:pointer; box-shadow:var(--shadow); font-size:.84rem;
+  }
+  .refchip:hover { box-shadow: var(--shadow-lg); }
+  .refchip .ic { width:1.7rem; height:1.7rem; border-radius:.45rem; background:rgba(14,143,163,.12); color:var(--accent-strong); display:grid; place-items:center; font-size:.85rem; }
+  .refchip .nm { font-weight:650; color:var(--ink); }
+  .refchip .sub { font-size:.7rem; color:var(--muted); display:block; }
+  .refchip .open { margin-left:.4rem; color:var(--accent-strong); font-weight:700; font-size:.8rem; white-space:nowrap; }
+
+  /* receipt (snapshot record) */
+  .receipt {
+    margin-left:2.25rem; display:flex; align-items:center; gap:.6rem; width:max-content; max-width:100%;
+    background:var(--good-bg); border:1px solid var(--good-line); border-radius:.7rem; padding:.5rem .8rem; font-size:.82rem;
+  }
+  .receipt .tick { color:var(--good); font-weight:800; }
+  .receipt .nm { font-weight:650; color:var(--ink); }
+  .receipt .lock { font-family:var(--mono); font-size:.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin-left:.3rem; }
+
+  /* composer + suggestions */
+  .composer-zone { flex:0 0 auto; padding:.6rem 1.1rem 1rem; background:var(--surface); }
+  .suggest-dock { display:flex; gap:.45rem; flex-wrap:wrap; align-items:center; margin: 0 0 .5rem .2rem; animation: rise .25s ease-out; }
+  @keyframes rise { from { opacity:0; transform: translateY(.4rem);} to { opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce){ .suggest-dock { animation:none; } }
+  .suggest-dock .slabel { font-family:var(--mono); font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-right:.15rem; }
+  .spill {
+    font:inherit; font-size:.8rem; font-weight:650; cursor:pointer;
+    background:var(--accent); color:#fff; border:none; border-radius:2rem; padding:.42rem .9rem;
+    box-shadow:0 4px 12px rgba(14,143,163,.3);
+  }
+  .spill.alt { background:var(--surface); color:var(--accent-strong); border:1px solid var(--accent); box-shadow:none; font-weight:600; }
+  .suggest-trailing { margin:.1rem 0 0 2.25rem; display:flex; gap:.45rem; flex-wrap:wrap; }
+  .composer { border:1px solid var(--line); border-radius:.8rem; background:var(--surface); padding:.55rem .65rem .5rem; display:flex; flex-direction:column; gap:.45rem; }
+  .composer .pill-info { display:inline-flex; align-items:center; gap:.3rem; font-size:.66rem; color:var(--muted); background:var(--surface-2); border:1px solid var(--line-soft); border-radius:2rem; padding:.14rem .5rem; width:max-content; }
+  .composer input {
+    font:inherit; font-size:.86rem; color:var(--ink); background:transparent; border:none; outline:none; padding:.15rem .1rem; width:100%;
+  }
+  .composer input::placeholder { color:var(--muted); }
+  .composer .crow { display:flex; align-items:center; gap:.5rem; }
+  .composer .send {
+    margin-left:auto; width:1.8rem; height:1.8rem; border-radius:.5rem; background:var(--accent); border:none; color:#fff;
+    display:grid; place-items:center; font-size:.9rem; cursor:pointer;
+  }
+  .composer .clip { color:var(--muted); font-size:1rem; background:none; border:none; cursor:pointer; }
+
+  /* right rail (A & B) */
+  .rail { flex:0 0 21rem; border-left:1px solid var(--line); background:var(--paper); display:flex; flex-direction:column; min-height:0; }
+  .rail-scroll { overflow-y:auto; padding: .9rem .9rem 1rem; display:flex; flex-direction:column; gap:.8rem; }
+  .matter-card { background:var(--surface); border:1px solid var(--line); border-radius:.8rem; padding:.8rem .9rem; box-shadow:var(--shadow); }
+  .badges { display:flex; gap:.4rem; margin-bottom:.4rem; }
+  .badge { font-family:var(--mono); font-size:.6rem; letter-spacing:.07em; padding:.14rem .45rem; border-radius:.3rem; font-weight:700; }
+  .badge.purchase { background:var(--surface-2); color:var(--muted); border:1px solid var(--line-soft); }
+  .badge.progress { background:var(--good-bg); color:var(--good); }
+  .matter-card .addr { font-weight:700; color:var(--ink); font-size:.95rem; line-height:1.25; }
+  .matter-card .meta { font-size:.72rem; color:var(--muted); margin-top:.3rem; }
+  .prog { margin-top:.6rem; }
+  .prog .plabel { font-size:.72rem; color:var(--muted); display:flex; justify-content:space-between; }
+  .prog .bar { height:.35rem; border-radius:1rem; background:var(--line-soft); margin-top:.25rem; overflow:hidden; }
+  .prog .bar i { display:block; height:100%; background:var(--accent); border-radius:1rem; transition: width .5s ease; }
+
+  .ms-list { display:flex; flex-direction:column; }
+  .ms {
+    display:flex; align-items:center; gap:.6rem; padding:.55rem .5rem; border:none; background:none; font:inherit; text-align:left;
+    font-size:.86rem; color:var(--body); cursor:pointer; border-radius:.5rem;
+  }
+  .ms:hover { background:var(--surface); }
+  .ms .dot { width: .85rem; height:.85rem; border-radius:50%; border:2px solid var(--muted); flex:0 0 auto; display:grid; place-items:center; font-size:.5rem; color:#fff; }
+  .ms.active .dot { border-color:var(--accent); background:var(--accent); }
+  .ms.done .dot { border-color:var(--good); background:var(--good); }
+  .ms .nm { font-weight:600; color:var(--ink); }
+  .ms .st { margin-left:auto; font-size:.66rem; color:var(--muted); font-family:var(--mono); }
+  .ms.sel { background: var(--surface); outline:1px solid var(--line); }
+
+  /* stage panel (variant A canonical view) */
+  .panel-head { display:flex; align-items:center; gap:.5rem; }
+  .panel-head .back { font:inherit; font-size:.78rem; color:var(--accent-strong); background:none; border:none; cursor:pointer; padding:.2rem .3rem; font-weight:650; }
+  .panel-head .ttl { font-weight:700; color:var(--ink); font-size:.92rem; }
+  .live-badge { margin-left:auto; display:inline-flex; align-items:center; gap:.3rem; font-family:var(--mono); font-size:.6rem; letter-spacing:.06em; text-transform:uppercase; color:var(--good); background:var(--good-bg); border:1px solid var(--good-line); border-radius:2rem; padding:.15rem .5rem; }
+  .live-badge i { width:.4rem; height:.4rem; border-radius:50%; background:var(--good); animation: blink 1.6s infinite; }
+
+  /* component cards (shared) */
+  .comp { background:var(--surface); border:1px solid var(--line); border-radius:.8rem; padding:.85rem .95rem; box-shadow:var(--shadow); font-size:.84rem; }
+  .comp h4 { margin:0 0 .1rem; color:var(--ink); font-size:.95rem; }
+  .comp .sub { font-size:.72rem; color:var(--muted); margin-bottom:.6rem; }
+  .task { display:flex; align-items:center; gap:.55rem; padding:.45rem .55rem; border:1px solid var(--line-soft); border-radius:.55rem; margin-bottom:.4rem; background:var(--surface); }
+  .task .st-ic { width:1.3rem; text-align:center; }
+  .task .tn { font-weight:600; color:var(--ink); font-size:.8rem; }
+  .task .td { font-size:.68rem; color:var(--muted); display:block; }
+  .task .status { margin-left:auto; font-family:var(--mono); font-size:.62rem; padding:.12rem .45rem; border-radius:.3rem; white-space:nowrap; }
+  .task .status.done { background:var(--good-bg); color:var(--good); }
+  .task .status.wait { background:var(--warn-bg); color:var(--warn); }
+  .kv { display:grid; grid-template-columns:auto 1fr; gap:.25rem .9rem; font-size:.8rem; }
+  .kv dt { color:var(--muted); } .kv dd { margin:0; color:var(--ink); font-weight:600; }
+  .comp .frow { display:flex; flex-direction:column; gap:.25rem; margin-bottom:.6rem; }
+  .comp label { font-size:.72rem; font-weight:600; color:var(--muted); }
+  .comp select, .comp input[type="text"] {
+    font:inherit; font-size:.84rem; padding:.45rem .55rem; border:1px solid var(--line); border-radius:.5rem;
+    background:var(--surface); color:var(--ink); width:100%;
+  }
+  .comp .cbtn { font:inherit; font-size:.82rem; font-weight:650; background:var(--brand); color:#fff; border:none; border-radius:.55rem; padding:.5rem .95rem; cursor:pointer; }
+  .doc { display:flex; align-items:center; gap:.5rem; padding:.4rem .5rem; border-bottom:1px solid var(--line-soft); font-size:.78rem; }
+  .doc:last-child { border-bottom:none; }
+  .doc .dn { color:var(--ink); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .doc .dc { margin-left:auto; color:var(--muted); font-size:.68rem; white-space:nowrap; }
+
+  .flash { animation: flashbg 1.6s ease-out; }
+  @keyframes flashbg { 0% { box-shadow: 0 0 0 3px rgba(46,158,107,.55); } 100% { box-shadow: 0 0 0 3px rgba(46,158,107,0); } }
+
+  /* variant C */
+  .ws-rail { flex:0 0 13.5rem; border-right:1px solid var(--line); background:var(--paper); overflow-y:auto; padding:.9rem .7rem; }
+  .ws-main { flex:1.2; min-width:0; border-right:1px solid var(--line); background:var(--paper); overflow-y:auto; padding: .9rem 1rem; }
+  .ws-chat { flex:1; min-width: 0; display:flex; flex-direction:column; background:var(--surface); }
+
+  .sheet-scrim { position:absolute; inset:0; background:rgba(9,25,30,.45); z-index:5; }
+  .sheet {
+    position:absolute; left:0; right:0; bottom:0; z-index:6; max-height:78%;
+    background:var(--paper); border-radius:1.1rem 1.1rem 0 0; box-shadow:var(--shadow-lg);
+    display:flex; flex-direction:column; animation: sheetup .22s ease-out;
+  }
+  @keyframes sheetup { from { transform: translateY(30%);} to { transform:none; } }
+  @media (prefers-reduced-motion: reduce){ .sheet { animation:none; } }
+  .sheet .grab { width:2.6rem; height:.28rem; background:var(--line); border-radius:1rem; margin:.5rem auto .2rem; }
+  .sheet .sheet-head { display:flex; align-items:center; gap:.5rem; padding:.3rem 1rem .5rem; }
+  .sheet .sheet-head .ttl { font-weight:700; color:var(--ink); }
+  .sheet .close { margin-left:auto; font:inherit; background:none; border:none; font-size:1rem; color:var(--muted); cursor:pointer; }
+  .sheet .sheet-body { overflow-y:auto; padding: 0 1rem 1.2rem; }
+
+  .mob-strip { display:none; }
+  .tabbar { display:none; }
+
+  .toast {
+    position:absolute; bottom:1rem; left:50%; transform:translateX(-50%); z-index:9;
+    background:var(--brand-ink); color:#E9F6F8; font-size:.78rem; padding:.5rem .9rem; border-radius:2rem;
+    box-shadow:var(--shadow-lg); opacity:0; pointer-events:none; transition: opacity .25s; max-width:88%; text-align:center;
+  }
+  .toast.show { opacity:1; }
+
+  /* ---- responsive: container-driven ---- */
+  @container stage (max-width: 719px) {
+    .rail { display:none; }
+    .ws-rail, .ws-main { display:none; }
+    .app[data-tab="progress"] .ws-rail { display:block; flex:1; border-right:none; }
+    .app[data-tab="work"] .ws-main { display:block; flex:1; border-right:none; }
+    .app[data-tab="progress"] .ws-chat, .app[data-tab="work"] .ws-chat { display:none; }
+    .tabbar { display:flex; flex:0 0 auto; border-top:1px solid var(--line); background:var(--surface); }
+    .tabbar button { flex:1; font:inherit; font-size:.72rem; font-weight:600; padding:.55rem 0; background:none; border:none; color:var(--muted); cursor:pointer; }
+    .tabbar button[aria-pressed="true"] { color:var(--accent-strong); }
+    .mob-strip {
+      display:flex; align-items:center; gap:.6rem; padding:.45rem .9rem; background:var(--surface);
+      border-bottom:1px solid var(--line-soft); font-size:.72rem; color:var(--muted); cursor:pointer;
+    }
+    .mob-strip .bar { flex:1; height:.3rem; background:var(--line-soft); border-radius:1rem; overflow:hidden; }
+    .mob-strip .bar i { display:block; height:100%; background:var(--accent); }
+    .mob-strip .pct { font-family:var(--mono); font-weight:700; color:var(--ink); }
+  }
+  @container stage (min-width: 720px) {
+    .sheet, .sheet-scrim { display:none; }
+  }
+</style>
+
+<div class="pagetabs">
+  <span class="pt-brand">AI Paralegal · SETTLEIT-10754</span>
+  <button data-act="page:lab" aria-pressed="true">🧪 Interactive lab</button>
+  <button data-act="page:research" aria-pressed="false">📊 Research &amp; findings</button>
+</div>
+
+<div class="controls">
+  <span class="lab-title">AI Paralegal · Interaction Lab</span>
+  <div class="seg" role="group" aria-label="Variant">
+    <span class="lbl">Variant</span>
+    <button data-act="variant:A" aria-pressed="true">A · Canonical stage</button>
+    <button data-act="variant:B" aria-pressed="false">B · In-transcript</button>
+    <button data-act="variant:C" aria-pressed="false">C · Three-pane</button>
+  </div>
+  <div class="seg" role="group" aria-label="Device">
+    <span class="lbl">Device</span>
+    <button data-act="device:desktop" aria-pressed="true">Desktop</button>
+    <button data-act="device:phone" aria-pressed="false">Phone</button>
+  </div>
+  <div class="seg" role="group" aria-label="Suggestion pill placement">
+    <span class="lbl">Pill</span>
+    <button data-act="pill:docked" aria-pressed="true">Docked</button>
+    <button data-act="pill:trailing" aria-pressed="false">Trailing</button>
+  </div>
+  <span class="spacer"></span>
+  <button class="btn primary" data-act="simulate">⚡ Simulate client progress</button>
+  <button class="btn ghost" data-act="reset">Reset</button>
+</div>
+
+<details class="drawer">
+  <summary>My ranking, what to try, and what the industry does</summary>
+  <div class="drawer-body">
+    <div class="dcard win">
+      <h4><span class="r">RANK 1</span> A · Canonical stage + reference chips</h4>
+      <p class="tagline">Components live ONCE, on the right, always current. Chat contains conversation, chips that open views, and receipts for completed actions. Milestone clicks render directly — no chat turn, no LLM.</p>
+      <p><b>Views are live; actions leave snapshots.</b> That's the answer to your Q1/Q2: never re-render a view into history — open its one canonical home; only <i>completed actions</i> (a booking, a submission) drop an immutable receipt into the transcript.</p>
+    </div>
+    <div class="dcard">
+      <h4><span class="r">RANK 2</span> B · In-transcript, live-latest + collapse</h4>
+      <p class="tagline">Closest to today's build. Re-requesting a component appends a fresh copy; older copies collapse into one-line stubs that jump to the latest. Only the latest instance is live.</p>
+      <p>Cheapest migration, single surface — but state still has no stable home, and you scroll-hunt for it.</p>
+    </div>
+    <div class="dcard">
+      <h4><span class="r">RANK 3</span> C · Three-pane workspace</h4>
+      <p class="tagline">Old-UI mental model plus chat: milestones | workspace | chat. Clear, but chat gets squeezed on desktop and mobile falls back to tab-juggling.</p>
+      <p>Note A ≈ C with the milestone list and workspace <i>merged into one rail</i> — you get C's clarity without the third column.</p>
+    </div>
+    <div class="dcard">
+      <h4>What the industry converged on</h4>
+      <p class="tagline">Researched: ChatGPT Canvas, Claude Artifacts, v0/Bolt/Lovable/Replit, Copilot/Cursor, Intercom/Zendesk, BofA Erica, OpenAI Apps SDK, NN/g studies.</p>
+      <p>Every AI-native product uses <b>one canonical canvas + reference chips</b> (Variant A's shape): repeat requests focus/refresh the panel, never re-print. Zendesk/Intercom bake in <b>lock-on-submit</b> — a form becomes an immutable receipt (our booking flow). Claude/ChatGPT mobile = <b>chip → full-screen/bottom sheet</b>, composer kept reachable. NN/g documents the scroll-hunt pain ("apple picking") of long transcripts — the strongest evidence against re-rendering copies. v0 learned restore must be <b>append-only</b> after community backlash.</p>
+    </div>
+    <div class="dcard">
+      <h4>Try this, in each variant</h4>
+      <ol>
+        <li>Click <b>Onboarding</b> in the milestones — then click it <b>again</b>. Watch what repetition does.</li>
+        <li>Type or tap <b>“show order details”</b>, twice.</li>
+        <li>Hit <b>⚡ Simulate client progress</b> — the client completes a task server-side. See which copies update.</li>
+        <li>Tap the suggested pill → complete the <b>booking form</b> → note the receipt left in chat.</li>
+        <li>Toggle <b>Pill: Docked / Trailing</b> to feel your question 1. Then switch <b>Device: Phone</b> and redo 1–4.</li>
+      </ol>
+    </div>
+  </div>
+</details>
+
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+    <div class="app" id="app" data-tab="chat"></div>
+    <div class="toast" id="toast" role="status"></div>
+  </div>
+</div>
+
+<style>
+  /* ---- page tabs ---- */
+  .pagetabs {
+    display:flex; align-items:center; gap:.5rem; padding:.55rem 1rem;
+    background:var(--brand); border-bottom:1px solid var(--brand-ink);
+  }
+  .pagetabs .pt-brand { color:#a9cfd8; font-family:var(--mono); font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; margin-right:.6rem; }
+  .pagetabs button {
+    font:inherit; font-size:.84rem; font-weight:650; cursor:pointer; border:none;
+    background:transparent; color:#bcdbe2; padding:.4rem .85rem; border-radius:.55rem;
+  }
+  .pagetabs button[aria-pressed="true"] { background:var(--paper); color:var(--ink); }
+  .pagetabs button:focus-visible { outline:2px solid #7fd3de; outline-offset:2px; }
+
+  .research { display:none; }
+  body[data-page="research"] .research { display:block; }
+  body[data-page="research"] .controls,
+  body[data-page="research"] details.drawer,
+  body[data-page="research"] .stage-wrap { display:none; }
+
+  /* ---- research page ---- */
+  .research { max-width:72rem; margin:0 auto; padding:1.8rem 1.25rem 4rem; }
+  .research h2 { font-family:var(--serif); font-weight:600; color:var(--ink); font-size:1.7rem; margin:0 0 .3rem; letter-spacing:-.01em; text-wrap:balance; }
+  .research .sub { color:var(--muted); font-size:.92rem; margin:0 0 1.6rem; max-width:62ch; }
+  .rs-kicker { font-family:var(--mono); font-size:.68rem; letter-spacing:.13em; text-transform:uppercase; color:var(--accent-strong); margin:2.4rem 0 .6rem; }
+  .rs-kicker:first-of-type { margin-top:0; }
+
+  .rs-verdicts { display:grid; grid-template-columns:repeat(auto-fit,minmax(19rem,1fr)); gap:1rem; }
+  .rs-verdict { background:var(--surface); border:1px solid var(--good-line); border-left:4px solid var(--good); border-radius:.8rem; padding:1rem 1.2rem; box-shadow:var(--shadow); }
+  .rs-verdict .q { font-size:.8rem; color:var(--muted); margin:0 0 .35rem; }
+  .rs-verdict .a { font-size:1.05rem; font-weight:700; color:var(--ink); margin:0 0 .3rem; }
+  .rs-verdict p { font-size:.86rem; margin:0; }
+
+  .rs-qa { display:grid; grid-template-columns:repeat(auto-fit,minmax(19rem,1fr)); gap:.9rem; }
+  .rs-q { background:var(--surface); border:1px solid var(--line); border-radius:.8rem; padding:.9rem 1.05rem; box-shadow:var(--shadow); font-size:.85rem; }
+  .rs-q .qq { font-weight:650; color:var(--ink); margin:0 0 .35rem; }
+  .rs-q .aa { margin:0 0 .4rem; }
+  .rs-q .aa b { color:var(--ink); }
+  .rs-q .unlock { font-size:.76rem; color:var(--accent-strong); margin:0; }
+  .rs-q .unlock::before { content:"→ unlocked: "; font-family:var(--mono); font-size:.64rem; text-transform:uppercase; letter-spacing:.06em; }
+
+  .rs-tablewrap { overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:.9rem; box-shadow:var(--shadow); }
+  table.rs-matrix { border-collapse:collapse; width:100%; min-width:52rem; font-size:.8rem; }
+  .rs-matrix th, .rs-matrix td { padding:.55rem .7rem; border-bottom:1px solid var(--line-soft); text-align:center; }
+  .rs-matrix th { font-family:var(--mono); font-size:.62rem; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+  .rs-matrix td:first-child, .rs-matrix th:first-child { text-align:left; }
+  .rs-matrix td:first-child { font-weight:650; color:var(--ink); }
+  .rs-matrix td:first-child small { display:block; font-weight:400; color:var(--muted); font-size:.7rem; }
+  .rs-matrix tr:last-child td { border-bottom:none; }
+  .rs-matrix .yes { color:var(--good); font-weight:800; }
+  .rs-matrix .part { color:var(--warn); font-weight:700; }
+  .rs-matrix .no { color:var(--line); }
+  .rs-matrix td.ours { background:var(--good-bg); font-weight:700; color:var(--good); }
+  .rs-legend { font-size:.72rem; color:var(--muted); margin:.5rem .2rem 0; }
+
+  .rs-scorewrap { overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:.9rem; box-shadow:var(--shadow); padding:1rem 1.2rem; }
+  .rs-scoregrid { display:grid; grid-template-columns:minmax(11rem,1.2fr) repeat(3,minmax(9rem,1fr)); gap:.35rem .9rem; min-width:46rem; align-items:center; }
+  .rs-scoregrid .h { font-family:var(--mono); font-size:.64rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); padding-bottom:.3rem; border-bottom:1px solid var(--line-soft); }
+  .rs-scoregrid .crit { font-size:.8rem; color:var(--body); }
+  .rs-cell { display:flex; align-items:center; gap:.45rem; }
+  .rs-bar { flex:1; height:.55rem; background:var(--line-soft); border-radius:.3rem; overflow:hidden; }
+  .rs-bar i { display:block; height:100%; background:var(--accent); border-radius:.3rem; }
+  .rs-val { font-variant-numeric:tabular-nums; font-size:.74rem; color:var(--ink); font-weight:650; width:1.1rem; text-align:right; }
+  .rs-scoregrid .total { border-top:1px solid var(--line); padding-top:.45rem; font-weight:700; color:var(--ink); font-size:.82rem; }
+  .rs-scoregrid .total .rs-bar i { background:var(--accent-strong); }
+  .rs-note { font-size:.74rem; color:var(--muted); margin:.6rem .2rem 0; }
+
+  .rs-tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(16rem,1fr)); gap:.9rem; }
+  .rs-tile { background:var(--surface); border:1px solid var(--line); border-radius:.8rem; padding:.95rem 1.05rem; box-shadow:var(--shadow); }
+  .rs-tile .big { font-family:var(--serif); font-size:1.35rem; font-weight:600; color:var(--ink); line-height:1.2; margin:0 0 .3rem; }
+  .rs-tile p { font-size:.82rem; margin:0; }
+  .rs-tile .src { display:block; margin-top:.45rem; font-size:.7rem; color:var(--muted); font-family:var(--mono); }
+
+  .rs-flow { display:flex; gap:.5rem; align-items:stretch; flex-wrap:wrap; }
+  .rs-node { flex:1 1 10rem; min-width:10rem; background:var(--surface); border:1px solid var(--line); border-radius:.7rem; padding:.75rem .85rem; box-shadow:var(--shadow); }
+  .rs-node.hot { border-color:var(--accent); }
+  .rs-node .nk, .rs-node .nt, .rs-node .nd { display:block; }
+  .rs-node .nk { font-family:var(--mono); font-size:.6rem; letter-spacing:.09em; text-transform:uppercase; color:var(--accent-strong); }
+  .rs-node .nt { color:var(--ink); font-weight:650; font-size:.84rem; margin-top:.2rem; }
+  .rs-node .nd { font-size:.74rem; color:var(--muted); margin-top:.2rem; line-height:1.4; }
+  .rs-arrow { align-self:center; color:var(--muted); font-size:1rem; }
+  @media (max-width:700px){ .rs-arrow{ display:none; } .rs-flow{ flex-direction:column; } }
+
+  .rs-sources { columns:2 18rem; column-gap:2rem; font-size:.76rem; margin:0; padding-left:1.1rem; }
+  .rs-sources li { margin-bottom:.3rem; break-inside:avoid; }
+  .rs-sources a { color:var(--accent-strong); }
+</style>
+
+<main class="research">
+  <h2>Why the lab looks the way it does</h2>
+  <p class="sub">The questions we set out to answer, what we established in the design interview, what the industry research found, and the reasoning that produced the ranking — so the team can challenge the premises, not just the pixels.</p>
+
+  <p class="rs-kicker">The two questions from the ticket — answered</p>
+  <div class="rs-verdicts">
+    <div class="rs-verdict">
+      <p class="q">Q1 — When the user wants to see a component again (order details, a milestone), should we re-send a message that re-renders it?</p>
+      <p class="a">No — open its one canonical view.</p>
+      <p>Viewing is not a conversation. A milestone click renders directly from the API into the pinned stage (instant, free, no transcript entry). Chat only gets a lightweight <b>reference chip</b> when the <em>agent</em> initiates a view.</p>
+    </div>
+    <div class="rs-verdict">
+      <p class="q">Q2 — If components appear in history, do we keep them up to date, or lock them as a point-in-time record?</p>
+      <p class="a">Views stay live · actions lock.</p>
+      <p>Every <b>view</b> is always-current (SignalR already exists). Every completed <b>action</b> — a booking, a submission, an approval — leaves an immutable <b>receipt</b> in the transcript. The DB + file notes remain the audit record, so the UI never has to be one.</p>
+    </div>
+  </div>
+
+  <p class="rs-kicker">What we established first (design interview)</p>
+  <div class="rs-qa">
+    <div class="rs-q">
+      <p class="qq">Is there a compliance need to preserve exactly what was shown at a point in time?</p>
+      <p class="aa"><b>No hard UI requirement.</b> The old UI always shows latest; audit lives in the DB and agent-side file notes.</p>
+      <p class="unlock">views can be live everywhere — snapshots become a choice, not a constraint</p>
+    </div>
+    <div class="rs-q">
+      <p class="qq">Must a milestone click go through the agent (predefined message → LLM → render)?</p>
+      <p class="aa"><b>No — direct render is fine.</b> The LLM is only needed when there is something to say or do.</p>
+      <p class="unlock">viewing becomes instant and free; the transcript stops being the only render surface</p>
+    </div>
+    <div class="rs-q">
+      <p class="qq">How important is mobile?</p>
+      <p class="aa"><b>Desktop-first; mobile must work well</b> — practitioners at a desk, phone for checking on the go.</p>
+      <p class="unlock">side panel on desktop + bottom sheet on phone is acceptable; permanent three-pane is not required</p>
+    </div>
+    <div class="rs-q">
+      <p class="qq">Where does this end up long-term?</p>
+      <p class="aa"><b>The agent does more, the user reviews more.</b> Less info flows through forms over time.</p>
+      <p class="unlock">chat stays the primary surface; the workspace earns less screen as the product matures — disfavouring heavy three-pane</p>
+    </div>
+  </div>
+
+  <p class="rs-kicker">Research — six patterns, who uses them</p>
+  <div class="rs-tablewrap">
+    <table class="rs-matrix">
+      <thead>
+        <tr>
+          <th>Pattern</th>
+          <th>AI canvases<br>ChatGPT · Claude</th>
+          <th>App builders<br>v0 · Bolt · Lovable</th>
+          <th>Dev tools<br>Copilot · Cursor</th>
+          <th>Fintech<br>Erica · Cleo · Intuit</th>
+          <th>Support<br>Intercom · Zendesk</th>
+          <th>Apps SDK<br>OpenAI</th>
+          <th>Our design</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>P1 · Canonical canvas + reference chips<small>one pinned home; repeat requests focus it</small><td><span class="yes">●</span><td><span class="yes">●</span><td><span class="yes">●</span><td><span class="part">◐</span><td><span class="no">○</span><td><span class="part">◐</span><td class="ours">✓ core</tr>
+        <tr><td>P2 · Version history, append-only restore<small>timeline of snapshots anchored to chat</small><td><span class="yes">●</span><td><span class="yes">●</span><td><span class="part">◐</span><td><span class="no">○</span><td><span class="no">○</span><td><span class="no">○</span><td class="ours">later, if audit asks</tr>
+        <tr><td>P3 · Live-latest + snapshot history<small>current view live; old instances frozen</small><td><span class="part">◐</span><td><span class="no">○</span><td><span class="no">○</span><td><span class="no">○</span><td><span class="yes">●</span><td><span class="yes">●</span><td class="ours">✓</tr>
+        <tr><td>P4 · Lock-on-submit → receipt<small>forms become immutable records once used</small><td><span class="no">○</span><td><span class="no">○</span><td><span class="yes">●</span><td><span class="part">◐</span><td><span class="yes">●</span><td><span class="part">◐</span><td class="ours">✓</tr>
+        <tr><td>P5 · Reference, don't embed<small>chat deep-links to the canonical surface</small><td><span class="part">◐</span><td><span class="no">○</span><td><span class="yes">●</span><td><span class="yes">●</span><td><span class="no">○</span><td><span class="no">○</span><td class="ours">✓ milestone clicks</tr>
+        <tr><td>P6 · Mobile: sheet / fullscreen takeover<small>composer stays reachable</small><td><span class="yes">●</span><td><span class="no">○</span><td><span class="no">○</span><td><span class="part">◐</span><td><span class="yes">●</span><td><span class="yes">●</span><td class="ours">✓ bottom sheet</tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="rs-legend"><span class="yes">●</span> = uses the pattern &nbsp; <span class="part">◐</span> = partial / some products &nbsp; <span class="no">○</span> = doesn't. Notably: <b>no product examined re-renders full copies of the same component into the transcript</b> — the behaviour our current build has.</p>
+
+  <p class="rs-kicker">Variant scorecard — why A ranks first</p>
+  <div class="rs-scorewrap">
+    <div class="rs-scoregrid">
+      <span class="h">Criterion (0–5)</span><span class="h">A · Canonical stage</span><span class="h">B · In-transcript</span><span class="h">C · Three-pane</span>
+      <span class="crit">Transcript stays clean</span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:100%"></i></span><span class="rs-val">5</span></span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:60%"></i></span><span class="rs-val">3</span></span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:100%"></i></span><span class="rs-val">5</span></span>
+      <span class="crit">One source of truth ("where is X now?")</span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:100%"></i></span><span class="rs-val">5</span></span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:40%"></i></span><span class="rs-val">2</span></span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:100%"></i></span><span class="rs-val">5</span></span>
+      <span class="crit">Free re-view (no LLM turn, instant)</span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:100%"></i></span><span class="rs-val">5</span></span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:100%"></i></span><span class="rs-val">5</span></span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:100%"></i></span><span class="rs-val">5</span></span>
+      <span class="crit">Mobile fit</span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:80%"></i></span><span class="rs-val">4</span></span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:80%"></i></span><span class="rs-val">4</span></span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:40%"></i></span><span class="rs-val">2</span></span>
+      <span class="crit">Ease of migration from today's build</span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:60%"></i></span><span class="rs-val">3</span></span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:100%"></i></span><span class="rs-val">5</span></span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:40%"></i></span><span class="rs-val">2</span></span>
+      <span class="crit">Conversational context kept</span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:80%"></i></span><span class="rs-val">4</span></span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:100%"></i></span><span class="rs-val">5</span></span>
+      <span class="rs-cell"><span class="rs-bar"><i style="width:60%"></i></span><span class="rs-val">3</span></span>
+      <span class="crit total">Total</span>
+      <span class="rs-cell total"><span class="rs-bar"><i style="width:87%"></i></span><span class="rs-val">26</span></span>
+      <span class="rs-cell total"><span class="rs-bar"><i style="width:80%"></i></span><span class="rs-val">24</span></span>
+      <span class="rs-cell total"><span class="rs-bar"><i style="width:73%"></i></span><span class="rs-val">22</span></span>
+    </div>
+  </div>
+  <p class="rs-note">Scores are my judgement calls against the interview constraints (desktop-first, audit-in-DB, direct render allowed) — argue with any cell. B wins on migration ease and staying "in the flow"; it loses on the two criteria that motivated the ticket. C ties A on truth &amp; cleanliness but pays for it on mobile and build cost.</p>
+
+  <p class="rs-kicker">Evidence highlights</p>
+  <div class="rs-tiles">
+    <div class="rs-tile">
+      <p class="big">“Apple picking”</p>
+      <p>NN/g's study of daily chatbot users: people repeatedly scroll long transcripts to re-find earlier outputs. Duplicating components into the transcript makes the documented pain worse; chips + a pinned canvas attack it directly.</p>
+      <span class="src">nngroup.com · accordion-editing-apple-picking</span>
+    </div>
+    <div class="rs-tile">
+      <p class="big">≤ ½ screen · ≤ 2 actions</p>
+      <p>Intercom caps every inline canvas at half the messenger; OpenAI's Apps SDK caps inline cards at two actions, no internal scrolling. Two vendors at scale independently concluded: rich content leaves the transcript.</p>
+      <span class="src">developers.intercom.com · developers.openai.com/apps-sdk</span>
+    </div>
+    <div class="rs-tile">
+      <p class="big">Append-only restore</p>
+      <p>v0 shipped destructive version-restore, got sustained user backlash, and rebuilt it append-only ("restoring creates a new latest version"). If we ever show past component states, they must be read-only.</p>
+      <span class="src">v0.app/docs/versions · community.vercel.com</span>
+    </div>
+    <div class="rs-tile">
+      <p class="big">Chat as router</p>
+      <p>Bank of America's Erica embeds nothing rich in chat — it deep-links to canonical screens, and users increasingly use it <em>instead of menus</em>. Matches the long-term goal: the agent does the work, the user reviews.</p>
+      <span class="src">customerexperiencedive.com · americanbanker.com</span>
+    </div>
+  </div>
+
+  <p class="rs-kicker">The reasoning chain</p>
+  <div class="rs-flow">
+    <div class="rs-node"><span class="nk">1 · Problem</span><span class="nt">Artifact identity</span><span class="nd">Is a component a <em>message</em> (record of an utterance) or a <em>view of state</em>? Current build says message → repetition, staleness, LLM cost per view.</span></div>
+    <span class="rs-arrow" aria-hidden="true">→</span>
+    <div class="rs-node"><span class="nk">2 · Constraints</span><span class="nt">From the interview</span><span class="nd">Audit lives in the DB. Direct render allowed. Desktop-first. Agent does more over time.</span></div>
+    <span class="rs-arrow" aria-hidden="true">→</span>
+    <div class="rs-node"><span class="nk">3 · Evidence</span><span class="nt">Industry convergence</span><span class="nd">Every AI-native product: one canonical canvas, chips in transcript, receipts on submit, sheet on mobile. Nobody re-prints components.</span></div>
+    <span class="rs-arrow" aria-hidden="true">→</span>
+    <div class="rs-node hot"><span class="nk">4 · Decision</span><span class="nt">Views live · actions lock</span><span class="nd">Milestone click → REST → pinned stage. Agent-initiated view → chip. Completed action → immutable receipt. Phone → bottom sheet. That is Variant A.</span></div>
+  </div>
+
+  <p class="rs-kicker">Sources</p>
+  <ul class="rs-sources">
+    <li><a href="https://openai.com/index/introducing-canvas/" rel="noopener">OpenAI — Introducing Canvas</a></li>
+    <li><a href="https://support.claude.com/en/articles/9487310-what-are-artifacts-and-how-do-i-use-them" rel="noopener">Claude — Artifacts help</a></li>
+    <li><a href="https://v0.app/docs/versions" rel="noopener">v0 — Versions (append-only restore)</a></li>
+    <li><a href="https://support.bolt.new/building/using-bolt/rollback-backup" rel="noopener">Bolt — Rollback &amp; backups</a></li>
+    <li><a href="https://docs.replit.com/core-concepts/agent/checkpoints-and-rollbacks" rel="noopener">Replit — Checkpoints</a></li>
+    <li><a href="https://code.visualstudio.com/docs/copilot/copilot-edits" rel="noopener">VS Code — Copilot Edits</a></li>
+    <li><a href="https://developers.intercom.com/docs/canvas-kit" rel="noopener">Intercom — Canvas Kit (+ best practices)</a></li>
+    <li><a href="https://developer.zendesk.com/documentation/conversations/messaging-platform/programmable-conversations/structured-messages/" rel="noopener">Zendesk — Structured messages (FormResponse)</a></li>
+    <li><a href="https://developers.openai.com/apps-sdk/concepts/ui-guidelines" rel="noopener">OpenAI Apps SDK — UI guidelines</a></li>
+    <li><a href="https://ai-sdk.dev/docs/ai-sdk-ui/generative-user-interfaces" rel="noopener">Vercel AI SDK — Generative UI</a></li>
+    <li><a href="https://docs.copilotkit.ai/concepts/generative-ui-overview" rel="noopener">CopilotKit (AG-UI) — tool vs state rendering</a></li>
+    <li><a href="https://www.nngroup.com/articles/accordion-editing-apple-picking/" rel="noopener">NN/g — Accordion editing &amp; apple picking</a></li>
+    <li><a href="https://www.nngroup.com/articles/generative-ui/" rel="noopener">NN/g — Generative UI</a></li>
+    <li><a href="https://www.customerexperiencedive.com/news/bank-of-america-erica-virtual-assistants/758334/" rel="noopener">CX Dive — BofA Erica</a></li>
+    <li><a href="https://www.nngroup.com/articles/bottom-sheet/" rel="noopener">NN/g — Bottom sheets</a></li>
+  </ul>
+</main>
+
+<script>
+'use strict';
+/* ============================ state ============================ */
+const ui = { variant: 'A', phone: false, pill: 'docked' };
+let data, chat, panel, wsKind, mobTab, seq, entryId;
+
+function initialData() {
+  return {
+    progress: 20,
+    nswDone: false,
+    booked: false,
+    bookedDate: '', bookedTime: '',
+    order: {
+      property: '50 Bondie Road, Breakfast Point NSW 2030',
+      type: 'Purchase', state: 'NSW', settles: 'Mon 15 June 2026',
+      matter: 'MAT-2365001 Harrison', orderNo: '144909981', title: '1/DP152363', fee: '$385.00 (incl. GST)',
+      agent: 'SettleIT',
+    },
+    docs: [
+      { name: 'ASIC Org Search_ABC_Inc.pdf', cat: 'ASIC organisation extraction' },
+      { name: 'VOI_Harrison_02052026.pdf', cat: 'Verification of identity' },
+      { name: 'InfoTrack_Cert_S184.pdf', cat: 'Sec 184 certificate' },
+      { name: 'ANZ_02052026.pdf', cat: 'Uncategorised' },
+    ],
+  };
+}
+
+const MS = [
+  { kind: 'onboarding', name: 'Onboarding' },
+  { kind: 'docs',       name: 'Provide documents' },
+  { kind: 'booking',    name: 'Settlement booking' },
+  { kind: 'financials', name: 'Settlement financials' },
+  { kind: 'settlement', name: 'Settlement' },
+];
+const KIND_NAME = { onboarding: 'Onboarding tasks', docs: 'Documents', booking: 'Settlement booking', financials: 'Settlement financials', settlement: 'Settlement', order: 'Order details' };
+const KIND_ICON = { onboarding: '☑', docs: '📄', booking: '📅', financials: '$', settlement: '🔑', order: '☰' };
+
+function msStatus(kind) {
+  if (kind === 'onboarding') { return data.nswDone ? 'done' : 'active'; }
+  if (kind === 'booking') { return data.booked ? 'done' : 'todo'; }
+  return 'todo';
+}
+function fmtTime() { const m = 2 + seq++; return '10:' + String(m).padStart(2, '0') + ' am'; }
+function nid() { return 'e' + (++entryId); }
+
+/* ============================ demo script ============================ */
+function resetDemo() {
+  data = initialData(); chat = []; seq = 0; entryId = 0;
+  panel = { kind: null }; wsKind = 'onboarding'; mobTab = 'chat';
+  suggestion();
+  pushAgent("Onboarding has started for John Harrison — his tasks were emailed through just now. I'll keep this matter's progress up to date as he completes them.");
+  if (ui.variant === 'A') { pushChip('onboarding', 'Live view'); panel.kind = 'onboarding'; }
+  if (ui.variant === 'B') { pushComp('onboarding', 'Opened automatically'); }
+  if (ui.variant === 'C') { wsKind = 'onboarding'; }
+  render();
+}
+let currentSuggestion;
+function suggestion() {
+  currentSuggestion = data && data.booked
+    ? { main: 'Request the trust deposit', alt: 'Check outstanding tasks' }
+    : { main: 'Book the settlement date', alt: 'Show order details' };
+}
+
+function pushAgent(text) { chat.push({ id: nid(), role: 'agent', text, time: fmtTime() }); }
+function pushUser(text) { chat.push({ id: nid(), role: 'user', text, time: fmtTime() }); }
+function pushChip(kind, sub) { chat.push({ id: nid(), role: 'chip', kind, sub: sub || 'Live view' }); }
+function pushComp(kind, cap) {
+  chat.forEach((e) => { if (e.role === 'comp' && e.kind === kind) { e.collapsed = true; } });
+  chat.push({ id: nid(), role: 'comp', kind, cap: cap || '', collapsed: false });
+}
+function pushReceipt(text) { chat.push({ id: nid(), role: 'receipt', text, time: fmtTime() }); }
+
+function agentReply(text, after) {
+  const t = { id: nid(), role: 'typing' };
+  chat.push(t); render();
+  setTimeout(() => {
+    chat = chat.filter((e) => e !== t);
+    pushAgent(text);
+    if (after) { after(); }
+    render();
+  }, 650);
+}
+
+/* intent handling for typed/tapped messages */
+function handleUserText(text) {
+  pushUser(text);
+  const q = text.toLowerCase();
+  if (q.includes('order') || q.includes('detail')) {
+    agentReply('Here are the order details — this is always the current state of the order.', () => { showComponent('order', 'agent'); });
+  } else if (q.includes('book')) {
+    agentReply('Let’s get settlement booked. Contract stipulates 42 days from exchange — Mon 15 June 2026 fits. Confirm the details below.', () => { showComponent('booking', 'agent'); });
+  } else if (q.includes('doc')) {
+    agentReply('These are the documents held against the matter so far.', () => { showComponent('docs', 'agent'); });
+  } else if (q.includes('task') || q.includes('onboard') || q.includes('outstanding') || q.includes('status')) {
+    agentReply(data.nswDone
+      ? 'All onboarding tasks are complete — John’s NSW purchaser declaration came back today.'
+      : 'One task is still outstanding — John’s NSW purchaser declaration. His VOI and client authorisation are done.', () => { showComponent('onboarding', 'agent'); });
+  } else if (q.includes('trust')) {
+    agentReply('I’d draft the trust deposit request next — that flow isn’t part of this mock, but you get the idea.');
+  } else {
+    agentReply('This is a scripted mock — try “show order details”, “book the settlement”, or click a milestone on the right (twice!).');
+  }
+}
+
+/* the heart of the comparison: what "show component X" means per variant */
+function showComponent(kind, source) {
+  if (ui.variant === 'A') {
+    if (source === 'agent') { pushChip(kind); }
+    if (panel.kind === kind) { toast('Already showing — the stage view is always current'); }
+    panel.kind = kind;
+    flashSoon('[data-live="' + kind + '"]');
+  } else if (ui.variant === 'B') {
+    pushComp(kind, source === 'milestone' ? KIND_NAME[kind] + ' — opened from milestones' : '');
+  } else {
+    wsKind = kind; mobTab = 'work';
+    flashSoon('[data-live="' + kind + '"]');
+    if (source === 'agent') { toast('Opened in the workspace →'); }
+  }
+}
+
+function clickMilestone(kind) {
+  if (ui.variant === 'A') {
+    const again = panel.kind === kind;
+    showComponent(kind, 'milestone');
+    if (!again) { toast('Rendered directly from the API — no chat turn, no tokens'); }
+  } else if (ui.variant === 'B') {
+    showComponent(kind, 'milestone');
+    toast('Appended to the transcript — previous copy collapsed');
+  } else {
+    showComponent(kind, 'milestone');
+  }
+  render();
+}
+
+function submitBooking() {
+  const d = document.getElementById('bk-date');
+  const t = document.getElementById('bk-time');
+  data.booked = true;
+  data.bookedDate = d ? d.value : 'Mon 15 June 2026';
+  data.bookedTime = t ? t.value : '2:00 PM';
+  data.progress = Math.max(data.progress, data.nswDone ? 80 : 40);
+  pushReceipt('Settlement booked — ' + data.bookedDate + ', ' + data.bookedTime + ' AEST');
+  suggestion();
+  if (ui.variant === 'A') { panel.kind = 'booking'; }
+  agentReply('Booked. I’ve locked in ' + data.bookedDate + ' at ' + data.bookedTime + ' with the incoming bank’s agent. The receipt above is the point-in-time record — the booking view itself stays live if anything moves.');
+}
+
+function simulate() {
+  if (data.nswDone) { toast('Already up to date — nothing left to simulate'); return; }
+  data.nswDone = true;
+  data.progress = data.booked ? 80 : 60;
+  toast('⚡ SignalR push: John completed the NSW purchaser declaration');
+  agentReply('John just completed his NSW purchaser declaration — onboarding is done. Every live view of onboarding you can see has already updated; nothing was re-sent to chat.');
+  flashSoon('[data-live="onboarding"]');
+  render();
+}
+
+/* ============================ components (shared renderers) ============================ */
+function compOnboarding() {
+  const nsw = data.nswDone;
+  return '<div class="comp" data-live="onboarding">'
+    + '<h4>Onboarding — John Harrison</h4>'
+    + '<div class="sub">Individual · DOB 09/09/1991 · 135 King Street, Sydney NSW 2000</div>'
+    + '<div class="task"><span class="st-ic">✅</span><span><span class="tn">Verification of identity</span><span class="td">VOI_Harrison.pdf · synced from InfoTrack</span></span><span class="status done">DONE</span></div>'
+    + '<div class="task"><span class="st-ic">✅</span><span><span class="tn">Client authorisation form</span><span class="td">Signature received via eSigning</span></span><span class="status done">DONE</span></div>'
+    + '<div class="task"><span class="st-ic">' + (nsw ? '✅' : '⏳') + '</span><span><span class="tn">NSW purchaser declaration</span><span class="td">' + (nsw ? 'Completed by client just now' : 'Awaiting client — emailed 10:02 am') + '</span></span><span class="status ' + (nsw ? 'done' : 'wait') + '">' + (nsw ? 'DONE' : 'WAITING') + '</span></div>'
+    + '</div>';
+}
+function compOrder() {
+  return '<div class="comp" data-live="order">'
+    + '<h4>Order details</h4><div class="sub">Order #' + data.order.orderNo + ' · ' + data.order.matter + '</div>'
+    + '<dl class="kv">'
+    + '<dt>Property</dt><dd>' + data.order.property + '</dd>'
+    + '<dt>Type</dt><dd>' + data.order.type + ' · ' + data.order.state + '</dd>'
+    + '<dt>Title ref</dt><dd>' + data.order.title + '</dd>'
+    + '<dt>Settles</dt><dd>' + data.order.settles + (data.booked ? ' · ' + data.bookedTime + ' (booked)' : ' (not yet booked)') + '</dd>'
+    + '<dt>Service fee</dt><dd>' + data.order.fee + '</dd>'
+    + '</dl></div>';
+}
+function compDocs() {
+  let rows = '';
+  data.docs.forEach((doc) => { rows += '<div class="doc"><span>📄</span><span class="dn">' + doc.name + '</span><span class="dc">' + doc.cat + '</span></div>'; });
+  return '<div class="comp" data-live="docs"><h4>Documents</h4><div class="sub">Held against the matter · categorised by AI Paralegal</div>' + rows + '</div>';
+}
+function compBooking() {
+  if (data.booked) {
+    return '<div class="comp" data-live="booking"><h4>Settlement booking</h4><div class="sub">Confirmed with all parties</div>'
+      + '<dl class="kv"><dt>Date</dt><dd>' + data.bookedDate + '</dd><dt>Time</dt><dd>' + data.bookedTime + ' AEST</dd><dt>Venue</dt><dd>PEXA workspace · electronic</dd><dt>Status</dt><dd>✅ Booked</dd></dl></div>';
+  }
+  return '<div class="comp" data-live="booking"><h4>Settlement booking</h4><div class="sub">Propose a date and time — 42 days from exchange</div>'
+    + '<div class="frow"><label for="bk-date">Settlement date</label><select id="bk-date"><option>Mon 15 June 2026</option><option>Tue 16 June 2026</option><option>Wed 17 June 2026</option></select></div>'
+    + '<div class="frow"><label for="bk-time">Time</label><select id="bk-time"><option>10:00 AM</option><option selected>2:00 PM</option><option>3:30 PM</option></select></div>'
+    + '<button class="cbtn" data-act="bksubmit">Confirm booking</button></div>';
+}
+function compPlaceholder(kind) {
+  return '<div class="comp" data-live="' + kind + '"><h4>' + KIND_NAME[kind] + '</h4><div class="sub">Not part of this mock — imagine the ' + KIND_NAME[kind].toLowerCase() + ' view here (adjustments, trust ledger, cheque directions…)</div></div>';
+}
+function compByKind(kind) {
+  if (kind === 'onboarding') { return compOnboarding(); }
+  if (kind === 'order') { return compOrder(); }
+  if (kind === 'docs') { return compDocs(); }
+  if (kind === 'booking') { return compBooking(); }
+  return compPlaceholder(kind);
+}
+
+/* ============================ layout renderers ============================ */
+function matterCard() {
+  return '<div class="matter-card"><div class="badges"><span class="badge purchase">PURCHASE</span><span class="badge progress">IN PROGRESS</span></div>'
+    + '<div class="addr">50 Bondie Road<br>Breakfast Point NSW 2030</div>'
+    + '<div class="meta">⌖ 1/DP152363 · ☷ ' + data.order.matter + '</div>'
+    + '<div class="meta">📅 Settles 15 June 2026</div>'
+    + '<div class="prog"><div class="plabel"><span>Matter progress</span><span>' + data.progress + '%</span></div><div class="bar"><i style="width:' + data.progress + '%"></i></div></div></div>';
+}
+function milestoneList(selKind) {
+  let html = '<div class="ms-list" role="list">';
+  MS.forEach((m) => {
+    const st = msStatus(m.kind);
+    const cls = 'ms ' + (st === 'done' ? 'done' : st === 'active' ? 'active' : '') + (selKind === m.kind ? ' sel' : '');
+    const stLbl = st === 'done' ? '✓ done' : st === 'active' ? 'in progress' : '';
+    html += '<button class="' + cls + '" data-act="ms:' + m.kind + '" role="listitem"><span class="dot">' + (st === 'done' ? '✓' : '') + '</span><span class="nm">' + m.name + '</span><span class="st">' + stLbl + '</span></button>';
+  });
+  return html + '</div>';
+}
+
+function transcriptHtml() {
+  let html = '';
+  chat.forEach((e) => {
+    if (e.role === 'agent') {
+      html += '<div class="m-row"><span class="av">✦</span><div class="bubble"><span class="who">AI Paralegal <span class="t">' + e.time + '</span></span>' + e.text + '</div></div>';
+    } else if (e.role === 'user') {
+      html += '<div class="m-row user"><div class="bubble"><span class="who" style="color:#cfe9ee">You <span class="t" style="color:#9fc6cf">' + e.time + '</span></span>' + e.text + '</div></div>';
+    } else if (e.role === 'typing') {
+      html += '<div class="m-row"><span class="av">✦</span><div class="bubble"><span class="typing"><i></i><i></i><i></i></span></div></div>';
+    } else if (e.role === 'chip') {
+      html += '<button class="refchip" data-act="chip:' + e.kind + '"><span class="ic">' + KIND_ICON[e.kind] + '</span><span><span class="nm">' + KIND_NAME[e.kind] + '</span><span class="sub">' + e.sub + ' · always current</span></span><span class="open">Open →</span></button>';
+    } else if (e.role === 'receipt') {
+      html += '<div class="receipt"><span class="tick">✓</span><span><span class="nm">' + e.text + '</span></span><span class="lock">🔒 record · ' + e.time + '</span></div>';
+    } else if (e.role === 'comp') {
+      if (e.collapsed) {
+        html += '<button class="stub" data-act="stub:' + e.kind + '"><span>↻</span><span><span class="k">' + KIND_NAME[e.kind] + '</span> — superseded · view latest ↓</span></button>';
+      } else {
+        if (e.cap) { html += '<div class="caption">' + e.cap + '</div>'; }
+        html += '<div class="inline-comp" data-latest="' + e.kind + '">' + compByKind(e.kind) + '</div>';
+      }
+    }
+  });
+  return html;
+}
+
+function composerHtml() {
+  const s = currentSuggestion;
+  let dock = '';
+  if (ui.pill === 'docked') {
+    dock = '<div class="suggest-dock"><span class="slabel">Suggested</span>'
+      + '<button class="spill" data-act="suggest:main">' + s.main + ' →</button>'
+      + '<button class="spill alt" data-act="suggest:alt">' + s.alt + '</button></div>';
+  }
+  return '<div class="composer-zone">' + dock
+    + '<div class="composer"><span class="pill-info">ⓘ Instant response</span>'
+    + '<input id="chat-input" type="text" placeholder="Ask about your settlement status or next steps…" aria-label="Message AI Paralegal">'
+    + '<div class="crow"><button class="clip" aria-label="Attach a file">📎</button><button class="send" data-act="send" aria-label="Send">↑</button></div></div></div>';
+}
+function trailingSuggestHtml() {
+  if (ui.pill !== 'trailing') { return ''; }
+  const s = currentSuggestion;
+  return '<div class="suggest-trailing"><button class="spill" data-act="suggest:main">' + s.main + ' →</button><button class="spill alt" data-act="suggest:alt">' + s.alt + '</button></div>';
+}
+
+function chatColumn(extraStrip) {
+  return '<div class="chatcol">' + (extraStrip || '')
+    + '<div class="chatlist" id="chatlist">' + transcriptHtml() + trailingSuggestHtml() + '</div>'
+    + composerHtml() + '</div>';
+}
+function mobStrip() {
+  return '<button class="mob-strip" data-act="strip"><span>' + (data.nswDone ? 'Onboarding ✓' : 'Onboarding') + '</span><span class="bar"><i style="width:' + data.progress + '%"></i></span><span class="pct">' + data.progress + '%</span></button>';
+}
+
+function renderA() {
+  let rail;
+  if (panel.kind) {
+    rail = '<div class="rail-scroll">' + matterCard()
+      + '<div class="panel-head"><button class="back" data-act="back">‹ Milestones</button><span class="ttl">' + KIND_NAME[panel.kind] + '</span><span class="live-badge"><i></i>Live</span></div>'
+      + compByKind(panel.kind) + '</div>';
+  } else {
+    rail = '<div class="rail-scroll">' + matterCard() + '<div class="panel-head"><span class="ttl">Matter progress</span></div>' + milestoneList(null) + '</div>';
+  }
+  let sheet = '';
+  if (panel.kind) {
+    sheet = '<div class="sheet-scrim" data-act="back"></div><div class="sheet"><div class="grab"></div>'
+      + '<div class="sheet-head"><span class="ttl">' + KIND_NAME[panel.kind] + '</span><span class="live-badge"><i></i>Live</span><button class="close" data-act="back" aria-label="Close">✕</button></div>'
+      + '<div class="sheet-body">' + compByKind(panel.kind) + '</div></div>';
+  }
+  return '<div class="frame">' + chatColumn(mobStrip()) + '<aside class="rail">' + rail + '</aside></div>' + sheet;
+}
+function renderB() {
+  const rail = '<aside class="rail"><div class="rail-scroll">' + matterCard() + '<div class="panel-head"><span class="ttl">Matter progress</span></div>' + milestoneList(null) + '</div></aside>';
+  return '<div class="frame">' + chatColumn(mobStrip()) + rail + '</div>';
+}
+function renderC() {
+  const railHtml = '<aside class="ws-rail">' + matterCard() + '<div style="height:.8rem"></div>' + milestoneList(wsKind) + '</aside>';
+  const wsHtml = '<div class="ws-main"><div class="panel-head"><span class="ttl">' + KIND_NAME[wsKind] + '</span><span class="live-badge"><i></i>Live</span></div><div style="height:.6rem"></div>' + compByKind(wsKind) + '</div>';
+  const chatHtml = '<div class="ws-chat">' + '<div class="chatlist" id="chatlist">' + transcriptHtml() + trailingSuggestHtml() + '</div>' + composerHtml() + '</div>';
+  const tabbar = '<div class="tabbar">'
+    + '<button data-act="tab:progress" aria-pressed="' + (mobTab === 'progress') + '">◎ Progress</button>'
+    + '<button data-act="tab:work" aria-pressed="' + (mobTab === 'work') + '">▤ Workspace</button>'
+    + '<button data-act="tab:chat" aria-pressed="' + (mobTab === 'chat') + '">✉ Chat</button></div>';
+  return '<div class="frame">' + railHtml + wsHtml + chatHtml + '</div>' + tabbar;
+}
+
+function render() {
+  const app = document.getElementById('app');
+  app.dataset.tab = mobTab;
+  const top = '<div class="topbar"><span class="wordmark">AI <span>Paralegal</span></span><span class="settles">📅 Settles 15 Jun</span></div>';
+  let body = '';
+  if (ui.variant === 'A') { body = renderA(); }
+  if (ui.variant === 'B') { body = renderB(); }
+  if (ui.variant === 'C') { body = renderC(); }
+  app.innerHTML = top + body;
+  const list = document.getElementById('chatlist');
+  if (list) { list.scrollTop = list.scrollHeight; }
+  const input = document.getElementById('chat-input');
+  if (input) {
+    input.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter' && input.value.trim()) { const v = input.value.trim(); input.value = ''; handleUserText(v); render(); }
+    });
+  }
+}
+
+/* ============================ util ============================ */
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+function flashSoon(sel) {
+  setTimeout(() => {
+    document.querySelectorAll(sel).forEach((el) => { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); });
+  }, 60);
+}
+function setSeg(groupAct, value) {
+  document.querySelectorAll('[data-act^="' + groupAct + ':"]').forEach((b) => {
+    b.setAttribute('aria-pressed', String(b.dataset.act === groupAct + ':' + value));
+  });
+}
+
+/* ============================ events ============================ */
+document.addEventListener('click', (ev) => {
+  const btn = ev.target.closest('[data-act]');
+  if (!btn) { return; }
+  const act = btn.dataset.act;
+  const sep = act.indexOf(':');
+  const verb = sep === -1 ? act : act.slice(0, sep);
+  const arg = sep === -1 ? '' : act.slice(sep + 1);
+
+  if (verb === 'page') { document.body.dataset.page = arg; setSeg('page', arg); return; }
+  if (verb === 'variant') { ui.variant = arg; setSeg('variant', arg); resetDemo(); return; }
+  if (verb === 'device') {
+    ui.phone = arg === 'phone'; setSeg('device', arg);
+    document.getElementById('stage').classList.toggle('phone', ui.phone); render(); return;
+  }
+  if (verb === 'pill') { ui.pill = arg; setSeg('pill', arg); render(); return; }
+  if (verb === 'simulate') { simulate(); return; }
+  if (verb === 'reset') { resetDemo(); toast('Demo reset'); return; }
+
+  if (verb === 'ms') { clickMilestone(arg); return; }
+  if (verb === 'chip') { panel.kind = arg; if (ui.variant === 'C') { wsKind = arg; mobTab = 'work'; } render(); flashSoon('[data-live="' + arg + '"]'); return; }
+  if (verb === 'back') { panel.kind = null; render(); return; }
+  if (verb === 'strip') {
+    if (ui.variant === 'A') { panel.kind = panel.kind || 'onboarding'; render(); }
+    else { toast('Progress: ' + data.progress + '% · ' + (data.nswDone ? 'Onboarding complete' : 'Onboarding in progress')); }
+    return;
+  }
+  if (verb === 'tab') { mobTab = arg; render(); return; }
+  if (verb === 'stub') {
+    render();
+    const latest = document.querySelector('[data-latest="' + arg + '"]');
+    if (latest) { latest.scrollIntoView({ behavior: 'smooth', block: 'center' }); flashSoon('[data-latest="' + arg + '"] .comp'); }
+    return;
+  }
+  if (verb === 'suggest') {
+    const s = currentSuggestion;
+    handleUserText(arg === 'main' ? s.main : s.alt);
+    render(); return;
+  }
+  if (verb === 'send') {
+    const input = document.getElementById('chat-input');
+    if (input && input.value.trim()) { const v = input.value.trim(); input.value = ''; handleUserText(v); render(); }
+    return;
+  }
+  if (verb === 'bksubmit') { submitBooking(); render(); return; }
+});
+
+resetDemo();
+</script>
