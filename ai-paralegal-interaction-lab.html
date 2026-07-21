@@ -287,12 +287,14 @@
   .flash { animation: flashbg 1.6s ease-out; }
   @keyframes flashbg { 0% { box-shadow: 0 0 0 3px rgba(46,158,107,.55); } 100% { box-shadow: 0 0 0 3px rgba(46,158,107,0); } }
 
-  /* variant C — June's ¼ + ¾ + 1: two columns on top (milestones ¼, workspace ¾), chat full-width below */
-  .cframe { flex-direction:column; }
-  .c-top { display:flex; flex:1 1 52%; min-height:0; border-bottom:1px solid var(--line); }
-  .ws-rail { flex:0 0 25%; border-right:1px solid var(--line); background:var(--paper); overflow-y:auto; padding:.9rem .7rem; }
-  .ws-main { flex:1; min-width:0; background:var(--paper); overflow-y:auto; padding: .9rem 1rem; }
-  .ws-chat { flex:1 1 48%; min-height:0; min-width:0; display:flex; flex-direction:column; background:var(--surface); }
+  /* variant C — left column: matter + milestones (top ¼) over the component workspace (bottom ¾); chat docked right */
+  .c-left { flex:1.55; min-width:0; min-height:0; display:flex; flex-direction:column; border-right:1px solid var(--line); background:var(--paper); }
+  .c-info { flex:0 0 26%; min-height:0; overflow-y:auto; display:flex; gap:.9rem; align-items:flex-start; padding:.8rem .9rem; border-bottom:1px solid var(--line); }
+  .c-info .matter-card { flex:0 0 15rem; }
+  .c-info .ms-list { flex:1; min-width:11rem; }
+  .c-info .ms { padding:.35rem .5rem; }
+  .ws-main { flex:1; min-width:0; min-height:0; background:var(--paper); overflow-y:auto; padding: .9rem 1rem; }
+  .ws-chat { flex:1; min-width:0; min-height:0; display:flex; flex-direction:column; background:var(--surface); }
 
   .sheet-scrim { position:absolute; inset:0; background:rgba(9,25,30,.45); z-index:5; }
   .sheet {
@@ -321,11 +323,12 @@
   /* ---- responsive: container-driven ---- */
   @container stage (max-width: 719px) {
     .rail { display:none; }
-    .c-top { display:none; }
-    .ws-rail, .ws-main { display:none; }
-    .app[data-tab="progress"] .c-top, .app[data-tab="work"] .c-top { display:flex; flex:1; border-bottom:none; }
-    .app[data-tab="progress"] .ws-rail { display:block; flex:1; border-right:none; }
-    .app[data-tab="work"] .ws-main { display:block; flex:1; border-right:none; }
+    .c-left { display:none; }
+    .app[data-tab="progress"] .c-left, .app[data-tab="work"] .c-left { display:flex; flex:1; border-right:none; }
+    .app[data-tab="progress"] .ws-main { display:none; }
+    .app[data-tab="progress"] .c-info { flex:1; flex-direction:column; border-bottom:none; }
+    .app[data-tab="progress"] .c-info .matter-card { flex:0 0 auto; width:100%; }
+    .app[data-tab="work"] .c-info { display:none; }
     .app[data-tab="progress"] .ws-chat, .app[data-tab="work"] .ws-chat { display:none; }
     .tabbar { display:flex; flex:0 0 auto; border-top:1px solid var(--line); background:var(--surface); }
     .tabbar button { flex:1; font:inherit; font-size:.72rem; font-weight:600; padding:.55rem 0; background:none; border:none; color:var(--muted); cursor:pointer; }
@@ -356,7 +359,7 @@
     <span class="lbl">Variant</span>
     <button data-act="variant:B" aria-pressed="true">B+ · In-transcript (ship now)</button>
     <button data-act="variant:A" aria-pressed="false">A · Canonical stage (post-project)</button>
-    <button data-act="variant:C" aria-pressed="false">C · Workspace ¼+¾+1</button>
+    <button data-act="variant:C" aria-pressed="false">C · Workspace + chat right</button>
   </div>
   <div class="seg" role="group" aria-label="Device">
     <span class="lbl">Device</span>
@@ -386,8 +389,8 @@
       <p class="tagline">Still the best answer long-term — components live once, always current, chat stays conversation. Parked for after this project because changing the approved design needs sign-off the team wants to avoid mid-flight.</p>
     </div>
     <div class="dcard">
-      <h4><span class="r">EXPLORING</span> C · Workspace ¼+¾+1 (June's cut)</h4>
-      <p class="tagline">Revised per June: milestones (¼) and workspace (¾) side-by-side on top, chat full-width underneath. Closer to the old UI's mental model; chat keeps full width. Worth feeling out for the post-project rethink alongside A.</p>
+      <h4><span class="r">EXPLORING</span> C · Workspace left · chat right</h4>
+      <p class="tagline">Left column: matter details + milestones in the top quarter, the component workspace below. Chat docked on the right, full height. Closest to "SettleIT with a chat dock" — worth feeling out for the post-project rethink alongside A.</p>
     </div>
     <div class="dcard">
       <h4>What the industry converged on</h4>
@@ -1111,15 +1114,16 @@ function renderB() {
   return '<div class="frame">' + chatColumn(mobStrip()) + rail + '</div>';
 }
 function renderC() {
-  // June's revision (21 Jul): ¼ + ¾ on top (milestones | workspace), chat full-width below.
-  const railHtml = '<aside class="ws-rail">' + matterCard() + '<div style="height:.8rem"></div>' + milestoneList(wsKind) + '</aside>';
+  // Left column: matter card + milestones in the top ¼, component workspace in the
+  // bottom ¾; chat docked on the right (Connor's revision, 21 Jul).
+  const info = '<div class="c-info">' + matterCard() + milestoneList(wsKind) + '</div>';
   const wsHtml = '<div class="ws-main"><div class="panel-head"><span class="ttl">' + KIND_NAME[wsKind] + '</span><span class="live-badge"><i></i>Live</span></div><div style="height:.6rem"></div>' + compByKind(wsKind) + '</div>';
   const chatHtml = '<div class="ws-chat">' + '<div class="chatlist" id="chatlist">' + transcriptHtml() + trailingSuggestHtml() + '</div>' + composerHtml() + '</div>';
   const tabbar = '<div class="tabbar">'
     + '<button data-act="tab:progress" aria-pressed="' + (mobTab === 'progress') + '">◎ Progress</button>'
     + '<button data-act="tab:work" aria-pressed="' + (mobTab === 'work') + '">▤ Workspace</button>'
     + '<button data-act="tab:chat" aria-pressed="' + (mobTab === 'chat') + '">✉ Chat</button></div>';
-  return '<div class="frame cframe"><div class="c-top">' + railHtml + wsHtml + '</div>' + chatHtml + '</div>' + tabbar;
+  return '<div class="frame"><div class="c-left">' + info + wsHtml + '</div>' + chatHtml + '</div>' + tabbar;
 }
 
 function render() {
