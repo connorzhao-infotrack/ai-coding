@@ -162,6 +162,15 @@
   .inline-comp { margin-left:2.25rem; max-width:44rem; }
   .inline-livebar { display:flex; align-items:center; justify-content:flex-end; gap:.45rem; margin-bottom:.25rem; }
   .upd { font-family:var(--mono); font-size:.62rem; color:var(--good); letter-spacing:.04em; animation: rise .3s ease-out; }
+  /* versioned statements (Lexi's split): stamped, immutable, superseded stays readable */
+  .stamp { font-family:var(--mono); font-size:.62rem; color:var(--muted); letter-spacing:.04em; }
+  .inline-comp.superseded .comp { opacity:.78; }
+  .ribbon {
+    display:flex; width:100%; font:inherit; text-align:left; font-size:.66rem; font-family:var(--mono);
+    color:var(--warn); background:var(--warn-bg); border:none; border-radius:.45rem;
+    padding:.28rem .6rem; cursor:pointer; margin-bottom:.25rem;
+  }
+  .ribbon:hover { text-decoration:underline; }
   .caption { margin-left:2.25rem; font-size:.68rem; font-family:var(--mono); color:var(--muted); letter-spacing:.05em; }
   .stub {
     margin-left:2.25rem; display:flex; align-items:center; gap:.5rem; max-width:44rem;
@@ -371,6 +380,11 @@
     <button data-act="pill:docked" aria-pressed="true">Docked</button>
     <button data-act="pill:trailing" aria-pressed="false">Trailing</button>
   </div>
+  <div class="seg" role="group" aria-label="Statement components policy">
+    <span class="lbl">Statements</span>
+    <button data-act="stmt:live" aria-pressed="true">Live</button>
+    <button data-act="stmt:versioned" aria-pressed="false">Versioned</button>
+  </div>
   <span class="spacer"></span>
   <button class="btn primary" data-act="simulate">⚡ Simulate client progress</button>
   <button class="btn ghost" data-act="reset">Reset</button>
@@ -405,7 +419,8 @@
         <li>Type or tap <b>“show order details”</b>, twice — the agent path appends a fresh copy and the older one collapses to a stub.</li>
         <li>Hit <b>⚡ Simulate client progress</b> — the live copy refreshes in place (“Updated just now”), then the agent <b>auto-advances</b> to Provide documents: the single-route case from the call.</li>
         <li>Tap the suggested pill → complete the <b>booking form</b> → note the locked receipt left in chat.</li>
-        <li>Toggle <b>Pill: Docked / Trailing</b>, then switch <b>Device: Phone</b> and redo 1–4. In C, note June's ¼+¾+1 layout.</li>
+        <li>After booking, hit <b>⚡ Simulate again</b> — council rates change. With <b>Statements: Live</b> the financials view rewrites itself; flip to <b>Versioned</b>, replay, and the old figures stay on record (🔒 stamp) with the new version below — Lexi's dispute case, side by side. Ask <i>"what changed?"</i> for the history.</li>
+        <li>Toggle <b>Pill: Docked / Trailing</b>, then switch <b>Device: Phone</b> and redo 1–4.</li>
       </ol>
     </div>
   </div>
@@ -543,6 +558,11 @@
       <p class="qq">Smaller calls</p>
       <p class="aa">Pill sits <b>docked above the input</b> (ChatGPT-style); the below-composer pattern was rejected. Message-bubble wrapping is <b>parked</b> — tables inside bubbles look bad; consider a wider gap between turns instead. C revised to June's <b>¼+¾+1</b> cut for post-project exploration.</p>
       <p class="unlock">lab updated to match all of the above — B+ is now the default variant</p>
+    </div>
+    <div class="rs-q">
+      <p class="qq">OPEN — Lexi's dispute concern (2nd call, 21 Jul)</p>
+      <p class="aa">If a client is <b>disputing a figure</b> and the view is live, the record they disputed from is silently rewritten ("my old record will be gone"). And: "if I received a message, I don't expect it to change — that's the whole point of a chat." Proposed answer: a <b>two-class split</b> — status <b>windows</b> stay live; $-figure <b>statements</b> (adjustments, DTP, trust) become stamped immutable versions, superseded copies staying readable in place, with history on ask. Connor leans all-live; the lab's <b>Statements: Live / Versioned toggle</b> demos both — flip it, book, then hit ⚡ twice.</p>
+      <p class="unlock">decision pending Lexi's flow-down: which class is each component?</p>
     </div>
   </div>
 
@@ -707,7 +727,10 @@
 /* Light theme by default (overrides the OS dark preference); the 🌙/☀️ button toggles. */
 document.documentElement.dataset.theme = 'light';
 /* ============================ state ============================ */
-const ui = { variant: 'B', phone: false, pill: 'docked' };
+const ui = { variant: 'B', phone: false, pill: 'docked', statements: 'live' };
+// Statement-class components (Lexi's 2nd-call concern): $-figures parties rely on.
+// In 'versioned' mode they render as stamped immutable versions instead of live views.
+const STATEMENT_KINDS = new Set(['financials']);
 let data, chat, panel, wsKind, mobTab, seq, entryId;
 let justUpdated = null; // kind whose live-latest copy just refreshed via SignalR (shows "Updated just now")
 
@@ -716,6 +739,9 @@ function initialData() {
     progress: 0,
     placed: false,
     nswDone: false,
+    finVersion: 1,
+    finUpdated: false,
+    fin: { council: '$850.36', balance: '$1,186,919.64', asOf: '4 June 2026, 9:20 am' },
     booked: false,
     bookedDate: '', bookedTime: '',
     order: {
@@ -781,8 +807,15 @@ function pushAgent(text) { chat.push({ id: nid(), role: 'agent', text, time: fmt
 function pushUser(text) { chat.push({ id: nid(), role: 'user', text, time: fmtTime() }); }
 function pushChip(kind, sub) { chat.push({ id: nid(), role: 'chip', kind, sub: sub || 'Live view' }); }
 function pushComp(kind, cap) {
-  chat.forEach((e) => { if (e.role === 'comp' && e.kind === kind) { e.collapsed = true; } });
-  chat.push({ id: nid(), role: 'comp', kind, cap: cap || '', collapsed: false });
+  // Versioned statements never collapse — superseded copies stay readable in place
+  // (the dispute record). Windows collapse to stubs as before.
+  const isVersionedStatement = STATEMENT_KINDS.has(kind) && ui.statements === 'versioned';
+  if (!isVersionedStatement) {
+    chat.forEach((e) => { if (e.role === 'comp' && e.kind === kind) { e.collapsed = true; } });
+  }
+  const entry = { id: nid(), role: 'comp', kind, cap: cap || '', collapsed: false };
+  if (kind === 'financials') { entry.v = data.finVersion; entry.snap = { ...data.fin }; }
+  chat.push(entry);
 }
 function pushReceipt(text) { chat.push({ id: nid(), role: 'receipt', text, time: fmtTime() }); }
 
@@ -806,6 +839,10 @@ function handleUserText(text) {
     agentReply('Here are the order details — this is always the current state of the order.', () => { showComponent('order', 'agent'); });
   } else if (q.includes('book')) {
     agentReply('Let’s get settlement booked. Contract stipulates 42 days from exchange — Mon 15 June 2026 fits. Confirm the details below.', () => { showComponent('booking', 'agent'); });
+  } else if (q.includes('history') || q.includes('as at') || q.includes('change record') || q.includes('changed') || q.includes('version')) {
+    agentReply(data.finUpdated
+      ? 'Here’s the change record for the settlement figures: v1 · as of 4 June 2026, 9:20 am — City of Sydney Council $850.36, balance $1,186,919.64. v2 · as of 21 July 2026, 2:14 pm — City of Sydney Council $2,585.10, balance $1,185,184.90 (council rates finalised). In the full build this renders as a change-record component.'
+      : 'No changes yet — the settlement figures are still at v1 (as of 4 June 2026, 9:20 am). Once anything moves I can show you a full change record.');
   } else if (q.includes('dtp') || q.includes('adjust') || q.includes('financ') || q.includes('figure')) {
     agentReply('Here’s where the settlement figures stand — adjustments and directions are still being finalised, so treat the balance as indicative.', () => { showComponent('financials', 'agent'); });
   } else if (q.includes('upload') || q.includes('batch')) {
@@ -909,7 +946,13 @@ function submitBooking() {
 
 function simulate() {
   if (!data.placed) { toast('Place the settlement order first — the demo starts there'); return; }
-  if (data.nswDone) { toast('Already up to date — nothing left to simulate'); return; }
+  if (data.nswDone && data.booked && !data.finUpdated) { simulateFiguresChange(); return; }
+  if (data.nswDone) {
+    toast(data.finUpdated
+      ? 'Already up to date — nothing left to simulate'
+      : 'Nothing new — book the settlement to unlock the next simulated event');
+    return;
+  }
   data.nswDone = true;
   data.progress = data.booked ? 80 : 60;
   justUpdated = 'onboarding';
@@ -926,6 +969,28 @@ function simulate() {
       });
     }, 500);
   });
+  render();
+}
+
+// Second simulate beat — the dispute scenario from Lexi's 2nd call: the agent
+// finalises council rates, so the adjustment figures CHANGE after the client has
+// already seen them. The two Statements modes handle it differently.
+function simulateFiguresChange() {
+  data.finUpdated = true;
+  data.finVersion += 1;
+  data.fin = { council: '$2,585.10', balance: '$1,185,184.90', asOf: '21 July 2026, 2:14 pm' };
+  if (ui.statements === 'versioned') {
+    toast('⚡ Council rates finalised — figures changed');
+    agentReply('Council rates came back higher than estimated, so the adjustments have changed — City of Sydney Council is now $2,585.10 and the balance is $1,185,184.90. Here’s the updated statement; the earlier version above stays on record exactly as you saw it.', () => {
+      pushComp('financials', '');
+    });
+    render();
+    return;
+  }
+  justUpdated = 'financials';
+  toast('⚡ Council rates finalised — the live financials view updated in place');
+  flashSoon('[data-live="financials"]');
+  agentReply('Council rates came back higher than estimated — the financials view has refreshed itself: City of Sydney Council $2,585.10, balance $1,185,184.90.');
   render();
 }
 
@@ -986,10 +1051,11 @@ function compReview() {
     + f('Deposit', '$119,000.00') + f('Service fee', data.order.fee) + '</div>'
     + action + '</div>';
 }
-function compFinancials() {
+function compFinancials(snap) {
+  const fin = snap || data.fin;
   const row = (a, b, c) => '<div class="fin-row"><span>' + a + '</span><span>' + b + '</span><span class="fr">' + c + '</span></div>';
   return '<div class="comp" data-live="financials"><h4>Settlement financials</h4>'
-    + '<div class="sub">Adjustments &amp; directions still being finalised — last updated 4 June 2026, 9:20 am</div>'
+    + '<div class="sub">Adjustments &amp; directions still being finalised — last updated ' + fin.asOf + '</div>'
     + '<div class="fin-head"><span>Amount due at settlement</span><span class="fr">$1,190,440.00</span></div>'
     + '<div class="fin-sec">Source funds</div>'
     + row('Loan proceeds', 'MSA National · Ref.485662', '$537,850.00')
@@ -998,19 +1064,19 @@ function compFinancials() {
     + '<div class="fin-sec">Directions</div>'
     + row('Professional fee', 'ABC Legal · 062-284 · 10223652', '$1,000.00')
     + row('Other', 'CCQ LAW · 152-965 · 104536996', '$1,670.00')
-    + row('Other', 'City of Sydney Council', '$850.36')
-    + '<div class="fin-total bal"><span>Balance</span><span class="fr">$1,186,919.64</span></div></div>';
+    + row('Other', 'City of Sydney Council', fin.council)
+    + '<div class="fin-total bal"><span>Balance</span><span class="fr">' + fin.balance + '</span></div></div>';
 }
 function compPlaceholder(kind) {
   return '<div class="comp" data-live="' + kind + '"><h4>' + KIND_NAME[kind] + '</h4><div class="sub">Not part of this mock — imagine the ' + KIND_NAME[kind].toLowerCase() + ' view here (adjustments, trust ledger, cheque directions…)</div></div>';
 }
-function compByKind(kind) {
+function compByKind(kind, snap) {
   if (kind === 'review') { return compReview(); }
   if (kind === 'onboarding') { return compOnboarding(); }
   if (kind === 'order') { return compOrder(); }
   if (kind === 'docs') { return compDocs(); }
   if (kind === 'booking') { return compBooking(); }
-  if (kind === 'financials') { return compFinancials(); }
+  if (kind === 'financials') { return compFinancials(snap); }
   return compPlaceholder(kind);
 }
 
@@ -1049,6 +1115,16 @@ function transcriptHtml() {
     } else if (e.role === 'comp') {
       if (e.collapsed) {
         html += '<button class="stub" data-act="stub:' + e.kind + '"><span>↻</span><span><span class="k">' + KIND_NAME[e.kind] + '</span> — superseded · view latest ↓</span></button>';
+      } else if (STATEMENT_KINDS.has(e.kind) && ui.statements === 'versioned') {
+        // Lexi's split: statements are stamped immutable versions. Superseded copies
+        // stay fully readable (the dispute record) with a ribbon to the latest.
+        const isSuperseded = (e.v || 1) < data.finVersion;
+        if (e.cap) { html += '<div class="caption">' + e.cap + '</div>'; }
+        html += '<div class="inline-comp' + (isSuperseded ? ' superseded' : '') + '"' + (isSuperseded ? '' : ' data-latest="' + e.kind + '"') + '>'
+          + (isSuperseded
+            ? '<button class="ribbon" data-act="stub:' + e.kind + '">⚠ Superseded — v' + (e.v || 1) + ' · as of ' + e.snap.asOf + ' · view latest ↓</button>'
+            : '<div class="inline-livebar"><span class="stamp">🔒 v' + (e.v || 1) + ' · as of ' + e.snap.asOf + '</span></div>')
+          + compByKind(e.kind, e.snap) + '</div>';
       } else {
         if (e.cap) { html += '<div class="caption">' + e.cap + '</div>'; }
         // Latest instance of a kind is the LIVE one (21 Jul call): green pulse dot,
@@ -1191,6 +1267,13 @@ document.addEventListener('click', (ev) => {
     document.getElementById('stage').classList.toggle('phone', ui.phone); render(); return;
   }
   if (verb === 'pill') { ui.pill = arg; setSeg('pill', arg); render(); return; }
+  if (verb === 'stmt') {
+    ui.statements = arg; setSeg('stmt', arg); resetDemo();
+    toast(arg === 'versioned'
+      ? 'Demo reset — $-figure statements are now stamped immutable versions (Lexi’s split)'
+      : 'Demo reset — statements are always live (Connor’s lean)');
+    return;
+  }
   if (verb === 'simulate') { simulate(); return; }
   if (verb === 'reset') { resetDemo(); toast('Demo reset'); return; }
 
