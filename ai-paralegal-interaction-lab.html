@@ -415,7 +415,7 @@
       <h4>Try this, in each variant</h4>
       <ol>
         <li><b>Place the settlement order</b> in the opening review — note there are NO pills while the action is on screen (Lexi's dashed-box rule), and the agent auto-advances into Onboarding (single arrow).</li>
-        <li>Click <b>Onboarding</b> in the milestones — then click it <b>again</b>. No re-render: a nearby live copy is scrolled to and flashed; a far-back one (1.5+ screens up) is re-anchored to the bottom instead.</li>
+        <li>Click <b>Onboarding</b> in the milestones — then click it <b>again</b>. No re-render: a live copy within the last 2 messages is scrolled to and flashed; anything older is re-anchored to the bottom instead.</li>
         <li>Type or tap <b>“show order details”</b>, twice — the agent path appends a fresh copy and the older one collapses to a stub.</li>
         <li>Hit <b>⚡ Simulate client progress</b> — the live copy refreshes in place (“Updated just now”), then the agent <b>auto-advances</b> to Provide documents: the single-route case from the call.</li>
         <li>Tap the suggested pill → complete the <b>booking form</b> → note the locked receipt left in chat.</li>
@@ -430,7 +430,7 @@
   <details class="probs">
     <summary>Problems → how we solved them</summary>
     <div class="probs-body">
-    <div class="pcard"><p class="pp">⚠ Same component re-rendered over and over</p><p class="ss">A milestone click <b>jumps to the existing live copy and flashes it</b> — but only when it's nearby. A copy that's <b>far back</b> (days ago) is <b>re-anchored to the bottom</b> instead, so the user is never dragged away from the composer; older copies <b>collapse to one-line stubs</b>.</p></div>
+    <div class="pcard"><p class="pp">⚠ Same component re-rendered over and over</p><p class="ss">A milestone click <b>jumps to the existing live copy and flashes it</b> — but only when it's within the <b>last 2 messages</b>. Anything older is <b>re-anchored to the bottom</b> instead, so the user is never dragged away from the composer; older copies <b>collapse to one-line stubs</b>.</p></div>
     <div class="pcard"><p class="pp">⚠ Scrolling up shows stale data as if current</p><p class="ss">Only the <b>latest copy stays expanded and live</b> (SignalR / refetch, subtle green dot). A superseded full view can't be misread.</p></div>
     <div class="pcard"><p class="pp">⚠ "What if the user never clicks?"</p><p class="ss">The data comes to them: the live copy <b>refreshes in place</b>, the agent posts a short progress note, and single-route steps <b>auto-advance</b>.</p></div>
     <div class="pcard"><p class="pp">⚠ Users don't know what to do next</p><p class="ss">Lexi's flow chart decides it: <b>one outgoing arrow → the agent just does it</b>; several arrows → <b>pills docked above the input</b>; orange loops → conditional re-prompts.</p></div>
@@ -893,19 +893,16 @@ function clickMilestone(kind) {
     if (!again) { toast('Rendered directly from the API — no chat turn, no tokens'); }
   } else if (ui.variant === 'B') {
     // If a live copy is already in the thread, don't re-render it. Distance rule:
-    // NEARBY (within ~1.5 screens above the viewport) → scroll to it and flash it;
-    // FAR BACK (e.g. from days ago) → don't drag the user away from the composer —
-    // bring the data to them instead: append a fresh copy, old one collapses to a stub.
+    // within the LAST 2 transcript entries → scroll to it and flash it; anything
+    // older → don't drag the user away from the composer — bring the data to them
+    // instead: append a fresh copy, old one collapses to a stub.
     const existing = chat.find((e) => e.role === 'comp' && e.kind === kind && !e.collapsed);
     if (existing) {
       const isVersionedStatement = STATEMENT_KINDS.has(kind) && ui.statements === 'versioned';
-      const list = document.getElementById('chatlist');
-      const el = document.querySelector('[data-latest="' + kind + '"]');
-      let isFar = false;
-      if (list && el) {
-        const distanceAboveViewport = list.getBoundingClientRect().top - el.getBoundingClientRect().bottom;
-        isFar = distanceAboveViewport > list.clientHeight * 1.5;
-      }
+      const entriesAfter = chat.filter(
+        (e, i) => i > chat.indexOf(existing) && e.role !== 'typing',
+      ).length;
+      const isFar = entriesAfter > 2;
       // Versioned statements are immutable records — never duplicated, always navigated to.
       if (isFar && !isVersionedStatement) {
         showComponent(kind, 'milestone');
