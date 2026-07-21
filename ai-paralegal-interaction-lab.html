@@ -398,8 +398,8 @@
       <h4>Try this, in each variant</h4>
       <ol>
         <li><b>Place the settlement order</b> in the opening review — note there are NO pills while the action is on screen (Lexi's dashed-box rule), and the agent auto-advances into Onboarding (single arrow).</li>
-        <li>Click <b>Onboarding</b> in the milestones — then click it <b>again</b>. Old copy → stub; only the latest carries the green ● Live dot.</li>
-        <li>Type or tap <b>“show order details”</b>, twice.</li>
+        <li>Click <b>Onboarding</b> in the milestones — then click it <b>again</b>. No re-render: you're scrolled to the existing live copy and its border flashes.</li>
+        <li>Type or tap <b>“show order details”</b>, twice — the agent path appends a fresh copy and the older one collapses to a stub.</li>
         <li>Hit <b>⚡ Simulate client progress</b> — the live copy refreshes in place (“Updated just now”), then the agent <b>auto-advances</b> to Provide documents: the single-route case from the call.</li>
         <li>Tap the suggested pill → complete the <b>booking form</b> → note the locked receipt left in chat.</li>
         <li>Toggle <b>Pill: Docked / Trailing</b>, then switch <b>Device: Phone</b> and redo 1–4. In C, note June's ¼+¾+1 layout.</li>
@@ -412,7 +412,7 @@
   <details class="probs">
     <summary>Problems → how we solved them</summary>
     <div class="probs-body">
-    <div class="pcard"><p class="pp">⚠ Same component re-rendered over and over</p><p class="ss">Older copies <b>collapse to one-line stubs</b> that jump to the latest — the transcript never fills with duplicates.</p></div>
+    <div class="pcard"><p class="pp">⚠ Same component re-rendered over and over</p><p class="ss">A milestone click <b>jumps to the existing live copy and flashes it</b> instead of re-rendering; when the agent does push a fresh copy, older ones <b>collapse to one-line stubs</b>.</p></div>
     <div class="pcard"><p class="pp">⚠ Scrolling up shows stale data as if current</p><p class="ss">Only the <b>latest copy stays expanded and live</b> (SignalR / refetch, subtle green dot). A superseded full view can't be misread.</p></div>
     <div class="pcard"><p class="pp">⚠ "What if the user never clicks?"</p><p class="ss">The data comes to them: the live copy <b>refreshes in place</b>, the agent posts a short progress note, and single-route steps <b>auto-advance</b>.</p></div>
     <div class="pcard"><p class="pp">⚠ Users don't know what to do next</p><p class="ss">Lexi's flow chart decides it: <b>one outgoing arrow → the agent just does it</b>; several arrows → <b>pills docked above the input</b>; orange loops → conditional re-prompts.</p></div>
@@ -837,6 +837,15 @@ function showComponent(kind, source) {
   }
 }
 
+// Scrolls to the expanded (live) copy of a component and flashes its border.
+function jumpToLatest(kind) {
+  const el = document.querySelector('[data-latest="' + kind + '"]');
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    flashSoon('[data-latest="' + kind + '"] .comp');
+  }
+}
+
 function clickMilestone(kind) {
   justUpdated = null;
   if (ui.variant === 'A') {
@@ -844,6 +853,15 @@ function clickMilestone(kind) {
     showComponent(kind, 'milestone');
     if (!again) { toast('Rendered directly from the API — no chat turn, no tokens'); }
   } else if (ui.variant === 'B') {
+    // If a live copy is already in the thread, don't re-render it — bring the
+    // user to it and highlight it. Only append when no expanded copy exists.
+    const existing = chat.find((e) => e.role === 'comp' && e.kind === kind && !e.collapsed);
+    if (existing) {
+      render();
+      jumpToLatest(kind);
+      toast('Already in the thread and live — brought you to it');
+      return;
+    }
     showComponent(kind, 'milestone');
     toast('Appended to the transcript — previous copy collapsed');
   } else {
@@ -1184,8 +1202,7 @@ document.addEventListener('click', (ev) => {
   if (verb === 'tab') { mobTab = arg; render(); return; }
   if (verb === 'stub') {
     render();
-    const latest = document.querySelector('[data-latest="' + arg + '"]');
-    if (latest) { latest.scrollIntoView({ behavior: 'smooth', block: 'center' }); flashSoon('[data-latest="' + arg + '"] .comp'); }
+    jumpToLatest(arg);
     return;
   }
   if (verb === 'suggest') {
