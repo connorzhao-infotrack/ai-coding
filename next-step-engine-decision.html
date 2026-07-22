@@ -217,10 +217,9 @@
               <div class="fnode">Resolver<small>map + guards</small></div>
               <span class="farr">→</span>
               <div class="fnode dec">route?</div>
-              <span class="farr">→</span>
               <div class="fbranch">
-                <div class="fbrow"><span class="flabel">1 route</span><div class="fnode auto">Auto-advance</div></div>
-                <div class="fbrow"><span class="flabel">branch</span><div class="fnode">Static list<small>from catalogue</small></div></div>
+                <div class="fbrow"><span class="flabel">1 route</span><span class="farr">→</span><div class="fnode auto">Auto-advance</div></div>
+                <div class="fbrow"><span class="flabel">branch</span><span class="farr">→</span><div class="fnode">Static list<small>from catalogue</small></div></div>
               </div>
               <span class="farr">→</span>
               <div class="fnode render">Render</div>
@@ -264,10 +263,9 @@
               <div class="fnode">Resolver</div>
               <span class="farr">→</span>
               <div class="fnode dec">deterministic?</div>
-              <span class="farr">→</span>
               <div class="fbranch">
-                <div class="fbrow"><span class="flabel">yes</span><div class="fnode auto">Auto / static</div></div>
-                <div class="fbrow"><span class="flabel">crossroad</span><div class="fnode llm">🧠 LLM ranks<small>catalogue subset</small></div></div>
+                <div class="fbrow"><span class="flabel">yes</span><span class="farr">→</span><div class="fnode auto">Auto / static</div></div>
+                <div class="fbrow"><span class="flabel">crossroad</span><span class="farr">→</span><div class="fnode llm">🧠 LLM ranks<small>catalogue subset</small></div></div>
               </div>
               <span class="farr">→</span>
               <div class="fnode">Validate ids<small>∈ catalogue</small></div>
@@ -317,10 +315,9 @@
               <div class="fnode llm">🧠 LLM generates<small>+ selects</small></div>
               <span class="farr">→</span>
               <div class="fnode guard">🛡 Guardrail<small>maps to real action?</small></div>
-              <span class="farr">→</span>
               <div class="fbranch">
-                <div class="fbrow"><span class="flabel">pass</span><div class="fnode render">Render</div></div>
-                <div class="fbrow"><span class="flabel">fail</span><div class="fnode">Drop / retry</div></div>
+                <div class="fbrow"><span class="flabel">pass</span><span class="farr">→</span><div class="fnode render">Render</div></div>
+                <div class="fbrow"><span class="flabel">fail</span><span class="farr">→</span><div class="fnode">Drop / retry</div></div>
               </div>
             </div>
           </div>
