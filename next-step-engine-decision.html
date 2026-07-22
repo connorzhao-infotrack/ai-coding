@@ -150,6 +150,31 @@
   .pstep.hold { opacity:.7; border-style:dashed; }
   .parr { color:var(--muted); }
 
+  /* behaviour mock-up (matches the interaction lab) */
+  .mockrow { display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; margin-top:1.6rem; }
+  @media (max-width:760px){ .mockrow { grid-template-columns:1fr; } }
+  .mocklabel { font-family:var(--mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:0 0 .5rem; }
+  .mocklabel b { color:var(--accent-strong); }
+  .mockchat { background:var(--surface); border:1px solid var(--line); border-radius:.9rem; box-shadow:var(--shadow); overflow:hidden; }
+  .mbar { background:var(--brand); color:#E9F6F8; padding:.45rem .8rem; font-size:.8rem; font-weight:700; display:flex; align-items:center; gap:.5rem; }
+  .mbar .a { color:#7fd3de; }
+  .mbar .settles { margin-left:auto; background:rgba(255,255,255,.14); border-radius:2rem; padding:.12rem .5rem; font-size:.66rem; font-weight:400; }
+  .mockbody { padding:.85rem .85rem 1rem; display:flex; flex-direction:column; gap:.55rem; }
+  .mmsg { display:flex; gap:.5rem; align-items:flex-start; }
+  .mav { width:1.5rem; height:1.5rem; border-radius:50%; flex:0 0 auto; background:linear-gradient(140deg,var(--accent),var(--brand)); color:#fff; display:grid; place-items:center; font-size:.72rem; margin-top:.1rem; }
+  .mbubble { background:var(--surface-2); border:1px solid var(--line-soft); border-radius:.15rem .7rem .7rem .7rem; padding:.5rem .7rem; font-size:.82rem; color:var(--body); line-height:1.4; }
+  .mnote { margin-left:2rem; font-size:.72rem; color:var(--good); }
+  .mcomposer { border:1px solid var(--line); border-radius:.7rem; background:var(--surface); padding:.5rem .6rem; display:flex; flex-direction:column; gap:.45rem; margin-top:.15rem; }
+  .mdock { display:flex; gap:.4rem; flex-wrap:wrap; align-items:center; }
+  .mdock .dl { font-family:var(--mono); font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+  .mpill { font-size:.76rem; font-weight:650; background:var(--accent); color:#fff; border-radius:2rem; padding:.34rem .8rem; box-shadow:0 3px 9px rgba(14,143,163,.28); }
+  .mpill.alt { background:var(--surface); color:var(--accent-strong); border:1px solid var(--accent); font-weight:600; box-shadow:none; }
+  .minfo { display:inline-flex; align-items:center; gap:.3rem; font-size:.64rem; color:var(--muted); background:var(--surface-2); border:1px solid var(--line-soft); border-radius:2rem; padding:.12rem .5rem; width:max-content; }
+  .minput { display:flex; align-items:center; gap:.5rem; }
+  .minput .ph { font-size:.8rem; color:var(--muted); flex:1; }
+  .minput .send { width:1.6rem; height:1.6rem; border-radius:.45rem; background:var(--accent); color:#fff; display:grid; place-items:center; font-size:.85rem; flex:0 0 auto; }
+  .mockhint { font-size:.78rem; color:var(--muted); margin:1rem 0 0; max-width:64ch; }
+
   footer { padding:2.5rem 0 4rem; color:var(--muted); font-size:.82rem; }
   footer .wrap { display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
 </style>
@@ -166,6 +191,45 @@
     <p class="lede">The proactive-agent behaviour (auto-advance + suggestion pills) is really one engine with a dial on it — <b>how much autonomy the LLM gets</b>. These aren't three unrelated designs; they're three points on that dial. Here's each one as a flow, rated honestly, with a recommendation that walks the dial rather than planting a flag on it.</p>
   </div>
 </header>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">What we're actually building</p>
+    <h2>Two behaviours: the agent just does it, or it offers you pills</h2>
+    <p>The shapes are already live in the interaction lab — this whole page is about how to <b>decide and produce</b> them. When there's one obvious next step the agent auto-advances (no click); at a crossroad it docks <b>1–4 suggestion pills</b> above the input.</p>
+    <div class="mockrow">
+      <div>
+        <p class="mocklabel">① Single route → <b>auto-advance</b>, no pill</p>
+        <div class="mockchat">
+          <div class="mbar">AI<span class="a">Paralegal</span><span class="settles">📅 Settles 15 Jun</span></div>
+          <div class="mockbody">
+            <div class="mmsg"><span class="mav">✦</span><div class="mbubble">Order's placed. Onboarding is the only possible next step, so I've started it — John's tasks were emailed through just now.</div></div>
+            <div class="mnote">↳ started automatically — nothing to click</div>
+            <div class="mcomposer">
+              <span class="minfo">ⓘ Instant response</span>
+              <div class="minput"><span class="ph">Ask about your settlement status or next steps…</span><span class="send">↑</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="mocklabel">② Crossroad → <b>docked suggestion pills</b></p>
+        <div class="mockchat">
+          <div class="mbar">AI<span class="a">Paralegal</span><span class="settles">📅 Settles 15 Jun</span></div>
+          <div class="mockbody">
+            <div class="mmsg"><span class="mav">✦</span><div class="mbubble">Booking's confirmed — next is Settlement financials. Adjustments, DTP and trust can happen in any order, so it's over to you:</div></div>
+            <div class="mcomposer">
+              <div class="mdock"><span class="dl">Suggested</span><span class="mpill">Review DTP figures →</span><span class="mpill alt">Request trust deposit</span></div>
+              <span class="minfo">ⓘ Instant response</span>
+              <div class="minput"><span class="ph">Ask about your settlement status or next steps…</span><span class="send">↑</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="mockhint">Same docked-pill pattern as the interaction lab. The engine's only job is to decide, at each state, whether it's case ① or case ② — and, for ②, which 1–4 pills to show. <b>How</b> it decides is the choice below.</p>
+  </div>
+</section>
 
 <section>
   <div class="wrap">
