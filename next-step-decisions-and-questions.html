@@ -43,7 +43,8 @@
 
   * { box-sizing:border-box; }
   body { margin:0; background:var(--paper); color:var(--body); font-family:var(--sans); font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
-  .wrap { max-width:70rem; margin:0 auto; padding:0 1.5rem; }
+  .wrap { max-width:none; margin:0 auto; padding:0 2.5rem; }
+  @media (max-width:700px){ .wrap { padding:0 1.25rem; } }
 
   .topbar { display:flex; align-items:center; gap:.6rem; padding:.55rem 1rem; background:var(--brand); border-bottom:1px solid var(--brand-ink); }
   .topbar .bk { color:#a9cfd8; font-family:var(--mono); font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; }
@@ -92,8 +93,8 @@
   .qnow { font-size:.8rem; color:var(--muted); margin:.7rem 0 0; font-style:italic; }
 
   /* two-column: questions left, sticky end-to-end mock right */
-  .qgrid { display:grid; grid-template-columns:minmax(0,1fr) 23rem; gap:1.4rem; align-items:start; margin-top:1.2rem; }
-  .qcol { min-width:0; }
+  .qgrid { display:grid; grid-template-columns:minmax(0,1fr) 27rem; gap:1.6rem; align-items:start; margin-top:1.2rem; }
+  .qcol { min-width:0; max-width:72rem; }
   .mockcol { position:sticky; top:1rem; max-height:calc(100vh - 2rem); overflow-y:auto; background:var(--surface); border:1px solid var(--line); border-radius:.9rem; box-shadow:var(--shadow); padding:1rem 1.05rem 1.2rem; }
   @media (max-width:1000px) {
     .qgrid { grid-template-columns:1fr; }
@@ -120,6 +121,8 @@
   .np { font-size:.67rem; font-weight:650; background:var(--accent); color:#fff; border-radius:2rem; padding:.18rem .5rem; }
   .np.alt { background:var(--surface); color:var(--accent-strong); border:1px solid var(--accent); font-weight:600; }
   .nopill { font-size:.66rem; color:var(--muted); font-style:italic; }
+  .autonav { display:inline-flex; align-items:baseline; gap:.3rem; font-size:.66rem; font-weight:700; color:var(--good); background:var(--good-bg); border:1px solid var(--good-line); border-radius:2rem; padding:.16rem .55rem; }
+  .autonav .an-t { font-weight:500; color:var(--body); }
   .snote { font-size:.67rem; color:var(--muted); margin-top:.35rem; }
   .snote.warn { color:var(--warn); }
 
@@ -132,7 +135,10 @@
   td.num { font-family:var(--mono); color:var(--muted); width:2rem; }
   td b { color:var(--ink); }
   .src { font-family:var(--mono); font-size:.7rem; color:var(--muted); white-space:nowrap; }
-  .yes { color:var(--good); font-weight:700; }
+  .yes { color:var(--good); font-weight:700; font-size:1rem; }
+  .part { color:var(--warn); font-weight:700; font-size:1rem; }
+  .no { color:var(--warn); font-weight:800; font-size:1rem; }
+  td .sp { font-family:var(--mono); font-size:.55rem; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); background:var(--surface-2); border:1px solid var(--line); border-radius:2rem; padding:.05rem .38rem; }
 
   /* findings */
   .find { background:var(--surface); border:1px solid var(--line); border-radius:.8rem; box-shadow:var(--shadow); padding:1rem 1.2rem; margin-bottom:.9rem; }
@@ -250,7 +256,8 @@
         <div class="sh"><span class="st">1 · Order placed</span></div>
         <div class="minichat">
           <div class="mline"><span class="mav">✦</span><span>Order's placed. Onboarding is the only next step, so I've opened it for you.</span></div>
-          <div class="mpills"><span class="nopill">no prompt — the agent just proceeds</span></div>
+          <div class="mpills"><span class="autonav">⤷ auto-navigate <span class="an-t">— opens the Onboarding card</span></span></div>
+          <div class="snote">No pill. <code>advance.onboarding</code> · priority 100 · <b>built</b>.</div>
         </div>
       </div>
 
@@ -268,8 +275,8 @@
         <div class="sh"><span class="st">3a · Tasks submitted</span><span class="sp">planned</span></div>
         <div class="minichat">
           <div class="mline"><span class="mav">✦</span><span>Onboarding started — I've emailed the tasks to your clients.</span></div>
-          <div class="mpills"><span class="nopill">no prompt — auto-advance</span></div>
-          <div class="snote">Once every task is resolved, the agent moves straight on to Provide documents.</div>
+          <div class="mpills"><span class="autonav">⤷ auto-navigate <span class="an-t">— opens Provide documents</span></span></div>
+          <div class="snote">Fires only once every task is resolved. <code>advance.provide-documents</code> — in the catalogue, <b>no rule yet</b>.</div>
         </div>
       </div>
 
@@ -356,6 +363,45 @@
     <p class="kicker">Part 3 — dev reference</p>
     <h2>What the code review found</h2>
     <p>Four questions that looked like product decisions turned out to be already answered by existing systems. <b>Wave 2 needs no new signals</b> — it can reuse what's here.</p>
+
+    <h3 style="font-family:var(--serif); font-size:1.15rem; color:var(--ink); margin:1.8rem 0 .2rem;">The rules as built</h3>
+    <p style="font-size:.9rem;">All six shipped rules, in priority order. The resolver takes the <b>highest-priority auto-navigate</b> (at most one) and returns <b>every</b> matching pill.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Priority</th><th>Action</th><th>Kind</th><th>Fires when</th></tr></thead>
+        <tbody>
+          <tr><td class="num">100</td><td><code>advance.onboarding</code></td><td><b>Auto-navigate</b></td><td>Order placed ∧ onboarding not yet complete</td></tr>
+          <tr><td class="num">200</td><td><code>pill.check-settlement-booking-status</code></td><td>Pill</td><td>Documents milestone complete ∧ no adjustments yet</td></tr>
+          <tr><td class="num">300</td><td><code>pill.view-settlement-adjustments</code></td><td>Pill</td><td>Adjustments exist ∧ approval not given</td></tr>
+          <tr><td class="num">310</td><td><code>pill.view-directions-to-pay</code></td><td>Pill</td><td>″</td></tr>
+          <tr><td class="num">320</td><td><code>pill.check-trust-account-status</code></td><td>Pill</td><td>″</td></tr>
+          <tr><td class="num">400</td><td><code>pill.check-settlement-status</code></td><td>Pill</td><td>Approval given — <b>no end condition</b></td></tr>
+          <tr><td class="num">—</td><td><code>advance.provide-documents</code></td><td><b>Auto-navigate</b></td><td>In the catalogue, but <b>no rule references it yet</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-family:var(--serif); font-size:1.15rem; color:var(--ink); margin:1.8rem 0 .2rem;">Does the journey match the code?</h3>
+    <p style="font-size:.9rem;">Checking each stage of the proposed journey against what the rules actually do today.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Stage</th><th>Journey shows</th><th>Code today</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><b>1</b> Order placed</td><td>Auto-navigate to Onboarding</td><td>Matches rule 100 exactly</td><td class="yes">✓</td></tr>
+          <tr><td><b>2</b> Onboarding opened</td><td>No prompt</td><td>Rule 100 <i>keeps</i> matching while onboarding is incomplete, but the frontend suppresses it because the card is already in the transcript — so no visible difference</td><td class="yes">✓</td></tr>
+          <tr><td><b>3a</b> Tasks submitted</td><td>Auto-navigate to Provide documents</td><td><b>No rule</b> — wave 2</td><td class="part">◐</td></tr>
+          <tr><td><b>3b</b> Opted out</td><td>"Provide documents" pill</td><td><b>No rule</b> — wave 2. Today onboarding is still incomplete here, so rule 100 is the only signal and no pill shows</td><td class="part">◐</td></tr>
+          <tr><td><b>4</b> Provide documents</td><td>Three prompts</td><td>Only <code>check-settlement-booking-status</code> exists; both upload prompts are wave 2. It also requires the documents milestone to be <b>complete</b>, whereas Lexi's wording was "just been performed" — see Q3</td><td class="part">◐</td></tr>
+          <tr><td><b>5</b> Adjustments ready</td><td>Three financial prompts; booking-status stops</td><td>Matches rules 300/310/320, and rule 200's "no adjustments yet" guard is what stops booking-status</td><td class="yes">✓</td></tr>
+          <tr><td><b>6</b> Approval given</td><td>Check settlement status</td><td>Matches rule 400</td><td class="yes">✓</td></tr>
+          <tr><td><b>7</b> Settled</td><td>No prompts</td><td><b>Misaligned</b> — rule 400 has no end condition, so the pill still fires forever. This is exactly <b>Q1</b>; the journey shows the recommended fix, not today's behaviour</td><td class="no">✗</td></tr>
+          <tr><td><b>All</b> Pill cap</td><td>"capped at 3"</td><td><b>Misaligned</b> — neither the resolver nor the frontend caps; every matching pill renders</td><td class="no">✗</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cmp-note" style="margin-top:.7rem;">The two ✗ rows are deliberate: the journey shows the proposed state. Both are already listed as code actions below. The ◐ rows are wave 2 and tagged <span class="sp">planned</span> in the journey.</p>
+
+    <h3 style="font-family:var(--serif); font-size:1.15rem; color:var(--ink); margin:2rem 0 .6rem;">Existing systems wave 2 can reuse</h3>
 
     <div class="find">
       <h3>Manual onboarding documents — already modelled</h3>
