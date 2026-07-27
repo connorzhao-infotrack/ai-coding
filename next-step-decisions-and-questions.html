@@ -1,0 +1,323 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Next-step engine — decisions &amp; open questions (SETTLEIT-10754)</title>
+<style>
+  :root {
+    --paper:#EBF1F2; --surface:#FFFFFF; --surface-2:#F4F8F9; --ink:#0F272D; --body:#35494F;
+    --muted:#6A7F85; --line:#D7E2E4; --line-soft:#E6EEEF; --brand:#0B4A5B; --brand-ink:#093A47;
+    --accent:#0E8FA3; --accent-strong:#0B7180; --good:#2E9E6B; --good-bg:#E2F2EA; --good-line:#B7DEC8;
+    --warn:#B5771A; --warn-bg:#F6ECDA; --warn-line:#E4C489;
+    --shadow:0 1px 2px rgba(15,39,45,.06),0 8px 24px rgba(15,39,45,.07);
+    --shadow-lg:0 2px 6px rgba(15,39,45,.1),0 18px 44px rgba(15,39,45,.16);
+    --sans:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:"Cascadia Code",Consolas,ui-monospace,Menlo,monospace;
+    --serif:Constantia,"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:#06151A; --surface:#0C2127; --surface-2:#0F282F; --ink:#EAF4F5; --body:#B9CCD0;
+      --muted:#7F979D; --line:#1D3B42; --line-soft:#16323A; --brand:#0A3947; --brand-ink:#0B4A5B;
+      --accent:#2FB6C9; --accent-strong:#48C6D8; --good:#4FBE88; --good-bg:#10312A; --good-line:#235844;
+      --warn:#D69B48; --warn-bg:#2A2415; --warn-line:#5A4A22;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35);
+      --shadow-lg:0 2px 8px rgba(0,0,0,.4),0 22px 52px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="light"] {
+    --paper:#EBF1F2; --surface:#FFFFFF; --surface-2:#F4F8F9; --ink:#0F272D; --body:#35494F;
+    --muted:#6A7F85; --line:#D7E2E4; --line-soft:#E6EEEF; --brand:#0B4A5B; --brand-ink:#093A47;
+    --accent:#0E8FA3; --accent-strong:#0B7180; --good:#2E9E6B; --good-bg:#E2F2EA; --good-line:#B7DEC8;
+    --warn:#B5771A; --warn-bg:#F6ECDA; --warn-line:#E4C489;
+    --shadow:0 1px 2px rgba(15,39,45,.06),0 8px 24px rgba(15,39,45,.07);
+    --shadow-lg:0 2px 6px rgba(15,39,45,.1),0 18px 44px rgba(15,39,45,.16);
+  }
+  :root[data-theme="dark"] {
+    --paper:#06151A; --surface:#0C2127; --surface-2:#0F282F; --ink:#EAF4F5; --body:#B9CCD0;
+    --muted:#7F979D; --line:#1D3B42; --line-soft:#16323A; --brand:#0A3947; --brand-ink:#0B4A5B;
+    --accent:#2FB6C9; --accent-strong:#48C6D8; --good:#4FBE88; --good-bg:#10312A; --good-line:#235844;
+    --warn:#D69B48; --warn-bg:#2A2415; --warn-line:#5A4A22;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35);
+    --shadow-lg:0 2px 8px rgba(0,0,0,.4),0 22px 52px rgba(0,0,0,.5);
+  }
+
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--paper); color:var(--body); font-family:var(--sans); font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:70rem; margin:0 auto; padding:0 1.5rem; }
+
+  .topbar { display:flex; align-items:center; gap:.6rem; padding:.55rem 1rem; background:var(--brand); border-bottom:1px solid var(--brand-ink); }
+  .topbar .bk { color:#a9cfd8; font-family:var(--mono); font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; }
+  .theme-btn { margin-left:auto; font:inherit; font-size:.82rem; font-weight:650; cursor:pointer; border:1px solid rgba(255,255,255,.25); background:transparent; color:#bcdbe2; padding:.35rem .8rem; border-radius:.55rem; }
+  .theme-btn:focus-visible { outline:2px solid #7fd3de; outline-offset:2px; }
+
+  header.mast { padding:3.2rem 0 2rem; border-bottom:1px solid var(--line); }
+  .eyebrow { font-family:var(--mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-strong); margin:0 0 1rem; }
+  h1 { font-family:var(--serif); font-weight:600; color:var(--ink); font-size:clamp(2rem,4.5vw,2.95rem); line-height:1.05; letter-spacing:-.015em; margin:0 0 1rem; text-wrap:balance; }
+  .lede { max-width:64ch; font-size:1.08rem; margin:0 0 1.4rem; }
+  .lede b { color:var(--ink); }
+  .statusrow { display:flex; gap:.6rem; flex-wrap:wrap; }
+  .chip { display:inline-flex; align-items:center; gap:.4rem; font-family:var(--mono); font-size:.7rem; letter-spacing:.05em; text-transform:uppercase; font-weight:700; padding:.35rem .75rem; border-radius:2rem; }
+  .chip.g { background:var(--good-bg); color:var(--good); border:1px solid var(--good-line); }
+  .chip.w { background:var(--warn-bg); color:var(--warn); border:1px solid var(--warn-line); }
+  .chip.n { background:var(--surface); color:var(--muted); border:1px solid var(--line); }
+
+  section { padding:2.8rem 0; border-bottom:1px solid var(--line-soft); }
+  .kicker { font-family:var(--mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:0 0 .5rem; }
+  .kicker.hot { color:var(--warn); }
+  h2 { font-family:var(--serif); font-weight:600; color:var(--ink); font-size:clamp(1.45rem,2.7vw,1.95rem); line-height:1.1; margin:0 0 .3rem; letter-spacing:-.01em; text-wrap:balance; }
+  section > .wrap > p { max-width:66ch; }
+  p { margin:0 0 1rem; }
+  b, strong { color:var(--ink); }
+  code { font-family:var(--mono); font-size:.85em; background:var(--surface-2); border:1px solid var(--line-soft); border-radius:.3rem; padding:.05rem .3rem; color:var(--ink); overflow-wrap:anywhere; }
+
+  /* question cards */
+  .qcard { background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--warn); border-radius:.9rem; box-shadow:var(--shadow); padding:1.2rem 1.4rem; margin-bottom:1.1rem; }
+  .qhead { display:flex; align-items:baseline; gap:.7rem; flex-wrap:wrap; margin-bottom:.5rem; }
+  .qhead .qn { font-family:var(--mono); font-size:.7rem; font-weight:700; color:var(--warn); background:var(--warn-bg); border-radius:.35rem; padding:.15rem .45rem; }
+  .qhead h3 { margin:0; color:var(--ink); font-size:1.06rem; flex:1; min-width:14rem; }
+  .qhead .tag { font-family:var(--mono); font-size:.6rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); border:1px solid var(--line); border-radius:2rem; padding:.15rem .5rem; }
+  .qwhy { font-size:.9rem; margin:0 0 .7rem; }
+  .qeg { background:var(--surface-2); border:1px solid var(--line-soft); border-radius:.6rem; padding:.6rem .8rem; font-size:.86rem; margin:0 0 .85rem; }
+  .qeg b { color:var(--ink); }
+  .qeg .lbl { display:block; font-family:var(--mono); font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:.2rem; }
+  .opts { display:flex; flex-direction:column; gap:.4rem; }
+  .opt { display:grid; grid-template-columns:auto 1fr; gap:.65rem; align-items:start; border:1px solid var(--line); border-radius:.6rem; padding:.55rem .75rem; font-size:.87rem; background:var(--surface); }
+  .opt.rec { border-color:var(--good-line); background:var(--good-bg); }
+  .opt .box { width:1.05rem; height:1.05rem; border:1.5px solid var(--muted); border-radius:.25rem; margin-top:.15rem; flex:0 0 auto; }
+  .opt.rec .box { border-color:var(--good); background:var(--good); position:relative; }
+  .opt.rec .box::after { content:"✓"; color:#fff; font-size:.72rem; position:absolute; top:-.12rem; left:.13rem; font-weight:700; }
+  .opt .ot { display:block; color:var(--ink); font-weight:650; }
+  .opt .od { display:block; color:var(--body); font-size:.83rem; margin-top:.15rem; }
+  .opt .recbadge { font-family:var(--mono); font-size:.58rem; letter-spacing:.07em; text-transform:uppercase; color:var(--good); font-weight:700; margin-left:.4rem; }
+  .qnow { font-size:.8rem; color:var(--muted); margin:.7rem 0 0; font-style:italic; }
+
+  /* generic tables */
+  .tablewrap { overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:.9rem; box-shadow:var(--shadow); margin-top:1.2rem; }
+  table { border-collapse:collapse; width:100%; min-width:40rem; font-size:.87rem; }
+  th, td { padding:.6rem .85rem; border-bottom:1px solid var(--line-soft); text-align:left; vertical-align:top; }
+  th { font-family:var(--mono); font-size:.62rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+  tr:last-child td { border-bottom:none; }
+  td.num { font-family:var(--mono); color:var(--muted); width:2rem; }
+  td b { color:var(--ink); }
+  .src { font-family:var(--mono); font-size:.7rem; color:var(--muted); white-space:nowrap; }
+  .yes { color:var(--good); font-weight:700; }
+
+  /* findings */
+  .find { background:var(--surface); border:1px solid var(--line); border-radius:.8rem; box-shadow:var(--shadow); padding:1rem 1.2rem; margin-bottom:.9rem; }
+  .find h3 { margin:0 0 .4rem; color:var(--ink); font-size:1rem; }
+  .find p { font-size:.87rem; margin:0 0 .55rem; }
+  .find p:last-child { margin-bottom:0; }
+  .find ul { margin:.3rem 0 .55rem; padding-left:1.15rem; }
+  .find li { font-size:.86rem; margin-bottom:.25rem; }
+  .path { display:block; font-family:var(--mono); font-size:.72rem; color:var(--accent-strong); margin-top:.4rem; overflow-wrap:anywhere; }
+
+  .action { display:grid; grid-template-columns:auto 1fr; gap:.9rem; background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:.7rem; padding:.85rem 1.05rem; margin-bottom:.7rem; box-shadow:var(--shadow); }
+  .action .an { font-family:var(--mono); font-size:.72rem; color:var(--accent-strong); font-weight:700; }
+  .action .at { color:var(--ink); font-weight:650; font-size:.94rem; margin:0 0 .2rem; }
+  .action p { margin:0; font-size:.86rem; }
+
+  footer { padding:2.5rem 0 4rem; color:var(--muted); font-size:.82rem; }
+  footer .wrap { display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  a { color:var(--accent-strong); }
+</style>
+
+<div class="topbar">
+  <span class="bk">SETTLEIT-10754 · next-step engine · decisions &amp; open questions</span>
+  <button class="theme-btn" id="theme-btn" data-act="theme">🌙 Dark</button>
+</div>
+
+<header class="mast">
+  <div class="wrap">
+    <p class="eyebrow">Status as at 27 July 2026</p>
+    <h1>Six questions left for Lexi. Everything else is settled.</h1>
+    <p class="lede">The deterministic next-step engine is built and merged. Lexi's written flow plus the 27 Jul call resolved most of the spec, and a code review answered several more from existing systems. <b>What remains is six product calls</b> — each below has a concrete example and a recommended answer, so it's a tick-or-correct rather than a design exercise.</p>
+    <div class="statusrow">
+      <span class="chip g">✓ BE engine merged · PR 9334</span>
+      <span class="chip g">✓ FE pills + auto-advance merged · PR 9339</span>
+      <span class="chip w">⚠ 6 open questions</span>
+      <span class="chip n">Wave 2 rules · 10817</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ FOR LEXI ============ -->
+<section>
+  <div class="wrap">
+    <p class="kicker hot">Part 1 — for Lexi, please verify</p>
+    <h2>The six open questions</h2>
+    <p>Ticked box = what we'd do unless you say otherwise. Questions 1–3 affect behaviour that is <b>already live</b>, so they're the urgent ones.</p>
+
+    <!-- Q1 -->
+    <div class="qcard">
+      <div class="qhead"><span class="qn">Q1</span><h3>Should "Check settlement status" ever stop showing?</h3><span class="tag">live now</span></div>
+      <p class="qwhy"><b>Why it matters:</b> the pill appears once approval is given and currently has <b>no end condition</b> — it shows forever, including on matters that settled months ago.</p>
+      <div class="qeg"><span class="lbl">Example</span>Matter settles 15 June. On 20 August the user opens it — the pill still says <b>"Check settlement status"</b> on a completed, closed matter.</div>
+      <div class="opts">
+        <div class="opt rec"><span class="box"></span><span><span class="ot">Stop once settlement is complete<span class="recbadge">recommended</span></span><span class="od">We already capture "settlement complete" — it's a one-line change. A finished matter shows no pills.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">Keep it forever</span><span class="od">Current behaviour — the status stays reachable via pill for as long as the matter exists.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">Stop at a different point</span><span class="od">e.g. once the user has opened it once, or a set number of days after settlement.</span></span></div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="qcard">
+      <div class="qhead"><span class="qn">Q2</span><h3>When adjustments arrive, should "Check Settlement booking status" disappear?</h3><span class="tag">live now</span></div>
+      <p class="qwhy"><b>Why it matters:</b> right now it vanishes the moment the first adjustments document exists, and the three financial pills replace it. If the Workspace invitation is <em>still pending</em> at that point, the user loses the prompt to chase it.</p>
+      <div class="qeg"><span class="lbl">Example</span>Invitation still unaccepted, but the agent prepares adjustments on Tuesday. From Tuesday the user sees <b>View settlement adjustments · View Directions to pay · Check Trust account status</b> — and no longer sees the booking-status prompt.</div>
+      <div class="opts">
+        <div class="opt rec"><span class="box"></span><span><span class="ot">Yes — it disappears<span class="recbadge">recommended</span></span><span class="od">Current behaviour. Once adjustments are ready, financial review is the live task; booking status is still reachable from the milestone list on the right.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">Keep it, but only while the invitation is still pending</span><span class="od">Most accurate, but needs an invitation-status signal we don't read yet — extra work.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">Keep it alongside the financial pills</span><span class="od">Simple, but with the 3-pill cap it would push a financial pill out.</span></span></div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="qcard">
+      <div class="qhead"><span class="qn">Q3</span><h3>When should "Check Settlement booking status" first appear?</h3><span class="tag">live now</span></div>
+      <p class="qwhy"><b>Why it matters:</b> your written flow says "as long as Provide documents had just been performed" (which is what we built), but on the call you said the agent can open the Workspace as soon as the order is placed, so there's no reason to make the client wait — and that it's fine for the card to show nothing.</p>
+      <div class="qeg"><span class="lbl">Example</span>Order placed Monday, agent invites the Workspace Monday afternoon. The client hasn't uploaded any documents yet — should they be able to see the invitation status already, or only after they've done the documents step?</div>
+      <div class="opts">
+        <div class="opt rec"><span class="box"></span><span><span class="ot">After the documents step — as written<span class="recbadge">recommended</span></span><span class="od">Matches your written flow and what's built. Keeps the early conversation focused on onboarding and documents.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">As soon as the order is placed</span><span class="od">Matches your comment on the call. Client can track the invitation from day one; the card shows nothing until there's something to show.</span></span></div>
+      </div>
+      <p class="qnow">Also confirm: is it acceptable for this pill to open a card with <b>nothing in it</b>? On the call you said "we're just showing nothing" — we want to be sure that's intended, since every other pill opens something real.</p>
+    </div>
+
+    <!-- Q4 -->
+    <div class="qcard">
+      <div class="qhead"><span class="qn">Q4</span><h3>Should anything show while we're waiting on the consumers?</h3><span class="tag">gap</span></div>
+      <p class="qwhy"><b>Why it matters:</b> after the agent opens onboarding, there are <b>no prompts at all</b> until the consumers finish their tasks. That can be several days — exactly when the user is most likely to wonder what's happening.</p>
+      <div class="qeg"><span class="lbl">Example</span>Monday: agent shows the onboarding card. The client takes five days to complete their VOI. Wednesday the user opens the matter — no suggestions at all, even though "chase the client" is the obvious action.</div>
+      <div class="opts">
+        <div class="opt rec"><span class="box"></span><span><span class="ot">Add a "Check onboarding progress" pill while anyone is outstanding<span class="recbadge">recommended</span></span><span class="od">The system already knows exactly which consumers are outstanding, so this is cheap. Fills the longest dead spot in the flow.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">Show nothing</span><span class="od">Current behaviour. The milestone list on the right still shows progress.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">Have the agent post a short update instead</span><span class="od">e.g. "Still waiting on John's VOI" — a message rather than a pill.</span></span></div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="qcard">
+      <div class="qhead"><span class="qn">Q5</span><h3>Purchase vs Sale — any differences in the flow?</h3><span class="tag">scope</span></div>
+      <p class="qwhy"><b>Why it matters:</b> both currently follow identical rules. If any step only applies to one, we need to know before wave 2.</p>
+      <div class="qeg"><span class="lbl">Example</span>A Sale has no purchaser declaration and no shortfall calculation. Does that change which prompts appear, or is it handled automatically because the underlying task simply isn't there?</div>
+      <div class="opts">
+        <div class="opt rec"><span class="box"></span><span><span class="ot">Identical — differences fall out naturally<span class="recbadge">recommended</span></span><span class="od">Where a task doesn't exist for that order type, its guard is false and the prompt just never appears.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">There are real differences</span><span class="od">Please list them — we'll add order-type conditions.</span></span></div>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="qcard">
+      <div class="qhead"><span class="qn">Q6</span><h3>Non-LEAP clients — same document flow?</h3><span class="tag">scope</span></div>
+      <p class="qwhy"><b>Why it matters:</b> the first Provide-documents step scans the LEAP correspondence list and bulk-loads what it finds. Clients not on LEAP don't get that scan — they upload manually. <b>Good news from the code review:</b> the missing-documents detection is <em>not</em> LEAP-specific, so the follow-up prompts work for everyone.</p>
+      <div class="qeg"><span class="lbl">Example</span>A non-LEAP firm places an order. There's no correspondence list to scan, so the first documents step is an empty upload box rather than a pre-filled list — but "upload another batch" still works normally afterwards.</div>
+      <div class="opts">
+        <div class="opt rec"><span class="box"></span><span><span class="ot">Same flow, no bulk scan<span class="recbadge">recommended</span></span><span class="od">Only the initial pre-fill differs; every prompt behaves identically.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">Non-LEAP needs different wording or steps</span><span class="od">Please describe what should change.</span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONFIRMED ============ -->
+<section>
+  <div class="wrap">
+    <p class="kicker">Part 2 — settled</p>
+    <h2>Confirmed decisions</h2>
+    <p>No action needed on these — recorded so the whole picture is in one place.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th></th><th>Decision</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td><b>No LLM in the next-step path</b> — every decision is a fixed rule over order state. ("For now" — overarching status will need AI, see #11.)</td><td class="src">Connor</td></tr>
+          <tr><td class="num">2</td><td><b>Pills are state-derived and survive refresh</b> — not tied to the last exchange. <i>"It is all about what makes sense at that stage of the matter progression."</i></td><td class="src">Lexi · 27 Jul</td></tr>
+          <tr><td class="num">3</td><td>Order placement → <b>auto-float Onboarding</b> (single path, no pill).</td><td class="src">shipped · R1</td></tr>
+          <tr><td class="num">4</td><td><b>Manual onboarding documents are five types</b>, not just VOI: Verification of Identity, Client Authorisation Form, Purchaser Declaration, Mortgage Discharge Authority, Trust Account Authority. "Manual" = the consumer opted out of that task.</td><td class="src">code · confirmed</td></tr>
+          <tr><td class="num">5</td><td><b>When onboarding tasks aren't all started or resolved, don't auto-navigate</b> — show the "Provide documents" pill instead, so the user knows there's a next step and doesn't forget.</td><td class="src">Connor + Lexi</td></tr>
+          <tr><td class="num">6</td><td>The bulk-upload card <b>locks on confirm</b> — further uploads need a fresh prompt. This is existing behaviour, not new.</td><td class="src">Lexi · 27 Jul</td></tr>
+          <tr><td class="num">7</td><td><b>The adjustments document is produced by the agent</b>; the engine only checks whether one exists.</td><td class="src">Connor</td></tr>
+          <tr><td class="num">8</td><td>Adjustments / DTP / Trust prompts <b>linger until one approval is given</b>; then "Check settlement status" appears.</td><td class="src">Lexi · shipped</td></tr>
+          <tr><td class="num">9</td><td><b>Maximum 3 pills at once.</b> If more qualify, the lowest-priority ones drop silently.</td><td class="src">Connor</td></tr>
+          <tr><td class="num">10</td><td><b>Pill wording is flexible</b> and already live — each label is a one-line change (e.g. "View adjustment calculation" instead of "View settlement adjustments").</td><td class="src">Lexi</td></tr>
+          <tr><td class="num">11</td><td><b>Overarching status</b> ("what's the progress of my settlement?", "what else do I need to do?") → <b>separate ticket</b>, needs AI. Discuss effort with June; CB has asked for this.</td><td class="src">Connor</td></tr>
+          <tr><td class="num">12</td><td><b>Settlement funds summary / "how much is the shortfall"</b> — out of scope until Jerol's task lands. Slot reserved.</td><td class="src">Lexi</td></tr>
+          <tr><td class="num">13</td><td><b>Milestone-rail changes are out of scope</b> — pills only, inside the approved layout.</td><td class="src">Connor</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CODE FINDINGS ============ -->
+<section>
+  <div class="wrap">
+    <p class="kicker">Part 3 — dev reference</p>
+    <h2>What the code review found</h2>
+    <p>Four questions that looked like product decisions turned out to be already answered by existing systems. <b>Wave 2 needs no new signals</b> — it can reuse what's here.</p>
+
+    <div class="find">
+      <h3>Manual onboarding documents — already modelled</h3>
+      <p>Opting out of a consumer task is recorded as <code>Option.IsDeleted == true</code>. Five task types can be opted out of, each with its own "has it been provided" check:</p>
+      <ul>
+        <li><code>VerificationOfIdentity</code> → an identity verification exists for the consumer</li>
+        <li><code>ClientAuthorisationForm</code> → a signed CAF exists</li>
+        <li><code>PurchaserDeclarationForm</code> → a signed purchaser declaration exists</li>
+        <li><code>MortgageDischargeAuthorityForm</code> → a draft MDA document exists</li>
+        <li><code>TrustAccountAuthority</code> → a signed TAA exists</li>
+      </ul>
+      <p>Three ready-made methods give wave 2 exactly the guards it needs: <code>IsConsumerOnboardingConfirmedForAllConsumers</code> (all started), <code>AllConsumersHaveSatisfiedOnboardingRequirements</code> (all provided), and <code>GetConsumersWithOutstandingOnboarding</code> (who's holding it up — also powers Q4's suggested pill).</p>
+      <span class="path">src/api/InfoTrack.SettleIt.Application/Infrastructure/BusinessLogic/ConsumerOnboarding/ConsumerOnboardingStatusLogic.cs</span>
+    </div>
+
+    <div class="find">
+      <h3>"Missing documents" — an existing subsystem, not a new definition</h3>
+      <p>There is already an <b>Outstanding Items</b> engine used for agent-side reminders. Its document evaluator returns the missing document categories plus any custom documents the agent asked for but that have no file attached, and it covers VOI/CAF progress, supplier withholding, discharge authority, required client documents and approval status.</p>
+      <p>This is the natural source for the "Upload another batch of docs" guard — <b>no new definition required</b>, and it isn't LEAP-specific, so it works for all clients (see Q6).</p>
+      <span class="path">…/Infrastructure/OutstandingItems/Evaluator/DocumentRelatedEvaluator.cs · Interfaces/OutstandingItems/Models/OutstandingDocumentItems.cs</span>
+    </div>
+
+    <div class="find">
+      <h3>"One approval" — order-level, resolved by order type</h3>
+      <p>The signal is <code>IsDocumentApproved</code>: whether the documents required for the order's approval milestone are approved. The milestone is derived from the order type by the service — for orders with financials it's the final-approval document set. It is <b>a single order-level flag, not per-consumer or per-party</b>, so one approval stops the financial pills and starts "Check settlement status".</p>
+      <span class="path">src/api/Modules/Client/…/Financials/Models/Dtos/OrderApprovalDto.cs</span>
+    </div>
+
+    <div class="find">
+      <h3>Adjustments detection — better than feared, one gap</h3>
+      <p>The guard resolves the latest document in the <code>SettlementAdjustments</code> category that has a real document attached, so <b>empty placeholders are already excluded</b>. Crucially the pill guard and the client's viewer use the <b>same resolver</b> — the pill can't point at something the viewer can't open.</p>
+      <p><b>The gap:</b> the code notes that draft detection is deferred, and Connor confirmed drafts do create a document row. So a saved draft would fire the pills early — the fix is to exclude drafts (see action 1).</p>
+      <span class="path">src/api/Modules/Client/…/Financials/FinancialsService.cs → ResolveLatestCompletedAdjustmentsDocumentAsync</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACTIONS ============ -->
+<section style="border-bottom:none">
+  <div class="wrap">
+    <p class="kicker">Part 4</p>
+    <h2>What changes in the code</h2>
+
+    <div class="action"><span class="an">1</span><div><p class="at">Exclude draft adjustment statements from the guard</p><p>Drafts currently create a document row, which would show the three financial pills before the client should see anything. Needs a draft flag in the resolver. <b>Do first — affects live behaviour.</b></p></div></div>
+    <div class="action"><span class="an">2</span><div><p class="at">Cap pills at 3, dropping lowest priority</p><p>No cap today. Existing rule priorities give the drop order: booking status → adjustments → directions to pay → trust → settlement status.</p></div></div>
+    <div class="action"><span class="an">3</span><div><p class="at">Wave 2 (10817) — wire guards to the existing services</p><p>Onboarding-docs guards from <code>ConsumerOnboardingStatusLogic</code>; missing-docs guard from the Outstanding Items evaluator; "first batch done" = the confirm action on the bulk-upload card. No new signals needed, which should shorten the estimate.</p></div></div>
+    <div class="action"><span class="an">4</span><div><p class="at">Pending Lexi</p><p>Q1 → add an end condition to "Check settlement status". Q2/Q3 → adjust the booking-status window. Q4 → possibly add a "Check onboarding progress" pill. All small once answered.</p></div></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>SETTLEIT-10754 · next-step engine — decisions &amp; open questions · sources: Lexi's written flow, calls 21 &amp; 27 Jul, code review of develop</span>
+    <span>Please reply on Q1–Q6</span>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.dataset.theme = 'light';
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-act="theme"]');
+    if (!b) { return; }
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    b.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+  });
+</script>

@@ -4,7 +4,11 @@
 decided (and by whom), what is still open, and where the code lives.
 
 Ticket: <https://infotrack.atlassian.net/browse/SETTLEIT-10754> — *"Automatic AI prompts for next step"*
-Status as of 22 Jul 2026: **design decided, not yet implemented.** No production code has been written.
+Status as of 27 Jul 2026: **wave 1 built and merged.** The deterministic engine (PR
+[#9334](https://github.com/InfoTrackGlobal/SettleIT/pull/9334)) and the frontend pills + auto-advance
+(PR [#9339](https://github.com/InfoTrackGlobal/SettleIT/pull/9339)) are on `develop`. Wave 2 rules
+([SETTLEIT-10817](https://infotrack.atlassian.net/browse/SETTLEIT-10817)) are still open, and **six
+product questions are with Lexi** — see `next-step-decisions-and-questions.html` below.
 
 ---
 
@@ -16,6 +20,7 @@ Two self-contained HTML pages. Both are in this repo (`ai-coding`, public) and s
 |---|---|---|
 | `C:\code\ai-coding\ai-paralegal-interaction-lab.html` | <https://connorzhao-infotrack.github.io/ai-coding/ai-paralegal-interaction-lab.html> | **Interactive prototype** + research tab |
 | `C:\code\ai-coding\next-step-engine-decision.html` | <https://connorzhao-infotrack.github.io/ai-coding/next-step-engine-decision.html> | **The plan** — deterministic engine, Lexi's chart redrawn |
+| `C:\code\ai-coding\next-step-decisions-and-questions.html` | <https://connorzhao-infotrack.github.io/ai-coding/next-step-decisions-and-questions.html> | **Current status** — 6 open questions for Lexi, confirmed decisions, code findings |
 
 Claude artifact mirrors (private, same content):
 
