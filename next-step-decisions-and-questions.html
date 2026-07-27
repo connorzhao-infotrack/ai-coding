@@ -91,6 +91,15 @@
   .opt .od { display:block; color:var(--body); font-size:.83rem; margin-top:.15rem; }
   .opt .recbadge { font-family:var(--mono); font-size:.58rem; letter-spacing:.07em; text-transform:uppercase; color:var(--good); font-weight:700; margin-left:.4rem; }
   .qnow { font-size:.8rem; color:var(--muted); margin:.7rem 0 0; font-style:italic; }
+  .qcard.answered { border-left-color:var(--good); }
+  .qcard.answered .qn { color:var(--good); background:var(--good-bg); }
+  .tag.ok { color:var(--good); border-color:var(--good-line); background:var(--good-bg); }
+  .ans { background:var(--good-bg); border:1px solid var(--good-line); border-radius:.6rem; padding:.6rem .8rem; font-size:.86rem; margin:.85rem 0 0; }
+  .ans .lbl { display:block; font-family:var(--mono); font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; color:var(--good); margin-bottom:.2rem; }
+  .ans b { color:var(--ink); }
+  .dep { background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:.8rem; padding:1rem 1.2rem; margin-top:1.2rem; }
+  .dep h3 { margin:0 0 .4rem; color:var(--ink); font-size:1rem; }
+  .dep p { font-size:.88rem; margin:0; }
 
   /* two-column: questions left, sticky end-to-end mock right */
   .qgrid { display:grid; grid-template-columns:minmax(0,1fr) 27rem; gap:1.6rem; align-items:start; margin-top:1.2rem; }
@@ -123,6 +132,9 @@
   .nopill { font-size:.66rem; color:var(--muted); font-style:italic; }
   .autonav { display:inline-flex; align-items:baseline; gap:.3rem; font-size:.66rem; font-weight:700; color:var(--good); background:var(--good-bg); border:1px solid var(--good-line); border-radius:2rem; padding:.16rem .55rem; }
   .autonav .an-t { font-weight:500; color:var(--body); }
+  .sysmsg { background:rgba(14,143,163,.08); border:1px dashed var(--accent); border-radius:.5rem; padding:.5rem .6rem; font-size:.74rem; color:var(--body); line-height:1.35; }
+  .sysmsg .sysl { display:block; font-family:var(--mono); font-size:.55rem; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-strong); margin-bottom:.2rem; }
+  .np.drop { background:var(--surface); color:var(--muted); border:1px dashed var(--muted); box-shadow:none; font-weight:500; }
   .snote { font-size:.67rem; color:var(--muted); margin-top:.35rem; }
   .snote.warn { color:var(--warn); }
 
@@ -166,13 +178,14 @@
 
 <header class="mast">
   <div class="wrap">
-    <p class="eyebrow">Status as at 27 July 2026</p>
-    <h1>Five questions left for Lexi. Everything else is settled.</h1>
-    <p class="lede">The deterministic next-step engine is built and merged. Lexi's written flow plus the 27 Jul call resolved most of the spec, and a code review answered several more from existing systems. <b>What remains is five product calls</b> — each below has a concrete example and a recommended answer, so it's a tick-or-correct rather than a design exercise.</p>
+    <p class="eyebrow">Status as at 27 July 2026 · all questions answered</p>
+    <h1>The agreed next-step flow.</h1>
+    <p class="lede">The deterministic engine is built and merged. Lexi answered the five open questions on the <b>27 Jul call</b> — four confirmed the recommendation, and <b>one changed the design</b>: the booking-status prompt now lingers while the workspace invitation is pending, rather than stopping when adjustments arrive. This page is the record of what was decided, the resulting flow, and what still needs building.</p>
     <div class="statusrow">
       <span class="chip g">✓ BE engine merged · PR 9334</span>
       <span class="chip g">✓ FE pills + auto-advance merged · PR 9339</span>
-      <span class="chip w">⚠ 5 open questions</span>
+      <span class="chip g">✓ 5 questions answered</span>
+      <span class="chip w">⚠ 1 new conflict to resolve</span>
       <span class="chip n">Wave 2 rules · 10817</span>
     </div>
   </div>
@@ -181,68 +194,110 @@
 <!-- ============ FOR LEXI ============ -->
 <section>
   <div class="wrap">
-    <p class="kicker hot">Part 1 — for Lexi, please verify</p>
-    <h2>The five open questions</h2>
-    <p>Ticked box = what we'd do unless you say otherwise. Questions 1–3 affect behaviour that is <b>already live</b>, so they're the urgent ones. The panel on the right walks the <b>whole journey as we propose it should work</b> — every recommendation applied — so it's worth an end-to-end sanity check alongside the questions.</p>
+    <p class="kicker">Part 1 — answered by Lexi, 27 Jul</p>
+    <h2>The five questions, and what was decided</h2>
+    <p>Ticked box = what Lexi chose. Four matched the recommendation; <b>Q2 changed</b>. The panel on the right walks the <b>agreed journey end to end</b>, with every decision applied.</p>
 
     <div class="qgrid">
     <div class="qcol">
 
     <!-- Q1 -->
-    <div class="qcard">
-      <div class="qhead"><span class="qn">Q1</span><h3>Should "Check settlement status" ever stop showing?</h3><span class="tag">live now</span></div>
+    <div class="qcard answered">
+      <div class="qhead"><span class="qn">Q1</span><h3>Should "Check settlement status" ever stop showing?</h3><span class="tag ok">answered</span></div>
       <p class="qwhy"><b>Why it matters:</b> the pill appears once approval is given and currently has <b>no end condition</b> — it shows forever, including on matters that settled months ago.</p>
       <div class="qeg"><span class="lbl">Example</span>Matter settles 15 June. On 20 August the user opens it — the pill still says <b>"Check settlement status"</b> on a completed, closed matter.</div>
       <div class="opts">
-        <div class="opt rec"><span class="box"></span><span><span class="ot">Stop once settlement is complete<span class="recbadge">recommended</span></span><span class="od">We already capture "settlement complete" — it's a one-line change. A finished matter shows no pills.</span></span></div>
+        <div class="opt rec"><span class="box"></span><span><span class="ot">Stop once settlement is complete<span class="recbadge">Lexi's choice</span></span><span class="od">We already capture "settlement complete" — it's a one-line change. A finished matter shows no pills.</span></span></div>
         <div class="opt"><span class="box"></span><span><span class="ot">Keep it forever</span><span class="od">Current behaviour — the status stays reachable via pill for as long as the matter exists.</span></span></div>
         <div class="opt"><span class="box"></span><span><span class="ot">Stop at a different point</span><span class="od">e.g. once the user has opened it once, or a set number of days after settlement.</span></span></div>
       </div>
+      <div class="ans"><span class="lbl">Answered</span>Confirmed — after approval the only prompt left is "Check settlement status", and it <b>goes once settlement is complete</b>. Lexi also clarified the naming: <b>settlement status</b> is the final, near-settlement view (<i>"30 minutes before settlement, then it becomes valuable"</i>), distinct from <b>settlement booking status</b>, which is the workspace/party table.</div>
     </div>
 
     <!-- Q2 -->
-    <div class="qcard">
-      <div class="qhead"><span class="qn">Q2</span><h3>When adjustments arrive, should "Check Settlement booking status" disappear?</h3><span class="tag">live now</span></div>
+    <div class="qcard answered">
+      <div class="qhead"><span class="qn">Q2</span><h3>When adjustments arrive, should "Check Settlement booking status" disappear?</h3><span class="tag ok">answered · changed</span></div>
       <p class="qwhy"><b>Why it matters:</b> right now it vanishes the moment the first adjustments document exists, and the three financial pills replace it. If the Workspace invitation is <em>still pending</em> at that point, the user loses the prompt to chase it.</p>
       <div class="qeg"><span class="lbl">Example</span>Invitation still unaccepted, but the agent prepares adjustments on Tuesday. From Tuesday the user sees <b>View settlement adjustments · View Directions to pay · Check Trust account status</b> — and no longer sees the booking-status prompt.</div>
       <div class="opts">
-        <div class="opt rec"><span class="box"></span><span><span class="ot">Yes — it disappears<span class="recbadge">recommended</span></span><span class="od">Current behaviour. Once adjustments are ready, financial review is the live task; booking status is still reachable from the milestone list on the right.</span></span></div>
-        <div class="opt"><span class="box"></span><span><span class="ot">Keep it, but only while the invitation is still pending</span><span class="od">Most accurate, but needs an invitation-status signal we don't read yet — extra work.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">Yes — it disappears</span><span class="od">Was our recommendation. Once adjustments are ready, financial review is the live task; booking status still reachable from the milestone list.</span></span></div>
+        <div class="opt rec"><span class="box"></span><span><span class="ot">Keep it, but only while the invitation is still pending<span class="recbadge">Lexi's choice</span></span><span class="od">Needs an invitation-status signal — it exists (per-participant Sent / Accepted / Declined).</span></span></div>
         <div class="opt"><span class="box"></span><span><span class="ot">Keep it alongside the financial pills</span><span class="od">Simple, but with the 3-pill cap it would push a financial pill out.</span></span></div>
       </div>
+      <div class="ans"><span class="lbl">Answered — design changed</span>Booking status is <b>not</b> tied to adjustments at all: <i>"invitation and settlement adjustments have no correlation — some bank may decide to join one hour before settlement."</i> It stays while the invitation is pending, and stops <b>at approval</b> (after which the only prompt is "Check settlement status"). The gap Lexi worried about — the client never learning that everyone has joined — is covered instead by a <b>proactive system message</b>, not a pill. <b>"Pending" = not all parties Accepted.</b></div>
     </div>
 
     <!-- Q3 -->
-    <div class="qcard">
-      <div class="qhead"><span class="qn">Q3</span><h3>When should "Check Settlement booking status" first appear?</h3><span class="tag">live now</span></div>
+    <div class="qcard answered">
+      <div class="qhead"><span class="qn">Q3</span><h3>When should "Check Settlement booking status" first appear?</h3><span class="tag ok">answered</span></div>
       <p class="qwhy"><b>Why it matters:</b> your written flow says "as long as Provide documents had just been performed" (which is what we built), but on the call you said the agent can open the Workspace as soon as the order is placed, so there's no reason to make the client wait — and that it's fine for the card to show nothing.</p>
       <div class="qeg"><span class="lbl">Example</span>Order placed Monday, agent invites the Workspace Monday afternoon. The client hasn't uploaded any documents yet — should they be able to see the invitation status already, or only after they've done the documents step?</div>
       <div class="opts">
-        <div class="opt rec"><span class="box"></span><span><span class="ot">After the documents step — as written<span class="recbadge">recommended</span></span><span class="od">Matches your written flow and what's built. Keeps the early conversation focused on onboarding and documents.</span></span></div>
-        <div class="opt"><span class="box"></span><span><span class="ot">As soon as the order is placed</span><span class="od">Matches your comment on the call. Client can track the invitation from day one; the card shows nothing until there's something to show.</span></span></div>
+        <div class="opt rec"><span class="box"></span><span><span class="ot">After the documents step — as written<span class="recbadge">Lexi's choice</span></span><span class="od">Matches the written flow and what's built. Keeps the early conversation on onboarding and documents.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">As soon as the order is placed</span><span class="od">Client could track the invitation from day one; the card shows nothing until there's something to show.</span></span></div>
       </div>
-      <p class="qnow">Also confirm: is it acceptable for this pill to open a card with <b>nothing in it</b>? On the call you said "we're just showing nothing" — we want to be sure that's intended, since every other pill opens something real.</p>
+      <div class="ans"><span class="lbl">Answered</span><i>"After a first round of documents provided"</i> — that's when the client most cares: <b>"they've done what they can, now they're starting to check what the agents are doing for them."</b> Anyone wanting it earlier clicks the milestone instead. The prompts only need to cover the majority case, not every path.</div>
     </div>
 
     <!-- Q4 -->
-    <div class="qcard">
-      <div class="qhead"><span class="qn">Q4</span><h3>Purchase vs Sale — any differences in the flow?</h3><span class="tag">scope</span></div>
+    <div class="qcard answered">
+      <div class="qhead"><span class="qn">Q4</span><h3>Purchase vs Sale — any differences in the flow?</h3><span class="tag ok">answered</span></div>
       <p class="qwhy"><b>Why it matters:</b> both currently follow identical rules. If any step only applies to one, we need to know before wave 2.</p>
       <div class="qeg"><span class="lbl">Example</span>A Sale has no purchaser declaration and no shortfall calculation. Does that change which prompts appear, or is it handled automatically because the underlying task simply isn't there?</div>
       <div class="opts">
-        <div class="opt rec"><span class="box"></span><span><span class="ot">Identical — differences fall out naturally<span class="recbadge">recommended</span></span><span class="od">Where a task doesn't exist for that order type, its guard is false and the prompt just never appears.</span></span></div>
-        <div class="opt"><span class="box"></span><span><span class="ot">There are real differences</span><span class="od">Please list them — we'll add order-type conditions.</span></span></div>
+        <div class="opt rec"><span class="box"></span><span><span class="ot">Identical — differences fall out naturally<span class="recbadge">Lexi's choice</span></span><span class="od">Where a task doesn't exist for that order type, its guard is false and the prompt just never appears.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">There are real differences</span><span class="od">Would need order-type conditions on the rules.</span></span></div>
       </div>
+      <div class="ans"><span class="lbl">Answered</span><i>"No, same."</i> No order-type conditions needed.</div>
     </div>
 
     <!-- Q6 -->
-    <div class="qcard">
-      <div class="qhead"><span class="qn">Q5</span><h3>Non-LEAP clients — same document flow?</h3><span class="tag">scope</span></div>
+    <div class="qcard answered">
+      <div class="qhead"><span class="qn">Q5</span><h3>Non-LEAP clients — same document flow?</h3><span class="tag ok">answered</span></div>
       <p class="qwhy"><b>Why it matters:</b> the first Provide-documents step scans the LEAP correspondence list and bulk-loads what it finds. Clients not on LEAP don't get that scan — they upload manually. <b>Good news from the code review:</b> the missing-documents detection is <em>not</em> LEAP-specific, so the follow-up prompts work for everyone.</p>
       <div class="qeg"><span class="lbl">Example</span>A non-LEAP firm places an order. There's no correspondence list to scan, so the first documents step is an empty upload box rather than a pre-filled list — but "upload another batch" still works normally afterwards.</div>
       <div class="opts">
-        <div class="opt rec"><span class="box"></span><span><span class="ot">Same flow, no bulk scan<span class="recbadge">recommended</span></span><span class="od">Only the initial pre-fill differs; every prompt behaves identically.</span></span></div>
-        <div class="opt"><span class="box"></span><span><span class="ot">Non-LEAP needs different wording or steps</span><span class="od">Please describe what should change.</span></span></div>
+        <div class="opt rec"><span class="box"></span><span><span class="ot">Same flow, no bulk scan<span class="recbadge">Lexi's choice</span></span><span class="od">Only the initial pre-fill differs; every prompt behaves identically.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">Non-LEAP needs different wording or steps</span><span class="od">Would need separate copy or steps.</span></span></div>
+      </div>
+      <div class="ans"><span class="lbl">Answered — with a correction</span><i>"No difference from what you do. The difference will really be that rather than automatically loading the documents, we just give an area for the client to drag documents."</i> Important correction to our assumption: <b>non-LEAP clients can bulk upload too</b> — <i>"both support that"</i>. Only the automatic pre-load is LEAP-only. Which is why the prompt wording changes — see below.</div>
+    </div>
+
+    <!-- NEW CONFLICT -->
+    <div class="qcard">
+      <div class="qhead"><span class="qn">NEW</span><h3>Q2's answer collides with the 3-pill cap</h3><span class="tag">needs a decision</span></div>
+      <p class="qwhy"><b>Why it matters:</b> booking-status now lingers while the invitation is pending, and the three financial prompts appear as soon as adjustments exist. Those windows overlap — so <b>four prompts qualify at once</b>, but the cap is three. Something has to drop, and today's priority order picks the wrong one.</p>
+      <div class="qeg"><span class="lbl">Example</span>A bank hasn't accepted yet, and the adjustment sheet lands. Four qualify: <b>Check Settlement booking status</b> · View settlement adjustments · View Directions to pay · Check Trust account status. On current priorities booking-status wins and <b>"Check Trust account status" is silently dropped</b> — even though the financial three were meant to linger together.</div>
+      <div class="opts">
+        <div class="opt rec"><span class="box"></span><span><span class="ot">Booking-status drops first<span class="recbadge">recommended</span></span><span class="od">Give it a lower precedence than the financial three. They stay together as designed; the "meanwhile" prompt yields once real financial work arrives. One-line priority change.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">Keep current priorities</span><span class="od">Booking-status survives; Check Trust account status drops while the invitation is pending.</span></span></div>
+        <div class="opt"><span class="box"></span><span><span class="ot">Allow 4 in this window</span><span class="od">Everything shows, but breaks the "max 3" Lexi just confirmed.</span></span></div>
+      </div>
+      <p class="qnow">This only surfaced once Q2 changed — worth a one-line confirmation from Lexi rather than a meeting.</p>
+    </div>
+
+    <!-- ALSO DECIDED -->
+    <div class="qcard answered">
+      <div class="qhead"><span class="qn">＋</span><h3>Also decided on the call</h3><span class="tag ok">answered</span></div>
+      <div class="ans" style="margin-top:.2rem">
+        <span class="lbl">Wording change</span>
+        <b>"Upload another batch of docs" → "Upload more documents".</b> <i>"Don't do batch, just upload more documents — they'll figure out they can select more than one."</i> The prompt matters because it stops clients assuming a milestone is one-off: <i>"you go through it once and that's that."</i>
+      </div>
+      <div class="ans">
+        <span class="lbl">Financial prompts</span>
+        All three become clickable <b>as soon as one version of the settlement adjustment sheet exists</b> — versions can coexist, and any one of them is enough. Confirms the guard already built.
+      </div>
+      <div class="ans">
+        <span class="lbl">After Provide documents</span>
+        <b>No auto-navigate</b> — just prompts. <i>"Onboarding and provide documents is a bit of back and forth, it involves consumers, so they'll be here a while and then they're likely to want to check the booking status."</i>
+      </div>
+      <div class="ans">
+        <span class="lbl">Auto-navigate timing</span>
+        The move to Provide documents fires once <b>all manual onboarding documents are provided and every automatic task has been started</b> — not once consumers finish them.
+      </div>
+      <div class="ans">
+        <span class="lbl">Naming — two different things</span>
+        <b>Settlement booking status</b> = the booking milestone page: workspace ID and each party's invitation status (the coloured table). <b>Settlement status</b> = the final view near settlement — booked, ready to lodge, settled. <i>"30 minutes before settlement, then it becomes valuable."</i>
       </div>
     </div>
 
@@ -293,7 +348,7 @@
         <div class="sh"><span class="st">4 · Provide documents</span><span class="sp">planned</span><span class="sq">Q3</span></div>
         <div class="minichat">
           <div class="mline"><span class="mav">✦</span><span>I've pulled the documents off your matter and categorised them — adjust anything, then confirm.</span></div>
-          <div class="mpills"><span class="np">Upload missing Onboarding documents</span><span class="np alt">Upload another batch of docs</span><span class="np alt">Check Settlement booking status</span></div>
+          <div class="mpills"><span class="np">Upload missing Onboarding documents</span><span class="np alt">Upload more documents</span><span class="np alt">Check Settlement booking status</span></div>
           <div class="snote">Only the ones whose conditions are met, capped at 3.</div>
         </div>
       </div>
@@ -302,9 +357,15 @@
         <div class="sh"><span class="st">5 · Adjustments ready</span><span class="sq">Q2</span></div>
         <div class="minichat">
           <div class="mline"><span class="mav">✦</span><span>The adjustment statement is ready for you to review.</span></div>
-          <div class="mpills"><span class="np">View settlement adjustments</span><span class="np alt">View Directions to pay</span><span class="np alt">Check Trust account status</span></div>
-          <div class="snote">The booking-status prompt stops here — these three linger until approval.</div>
+          <div class="mpills"><span class="np">View settlement adjustments</span><span class="np alt">View Directions to pay</span><span class="np alt">Check Trust account status</span><span class="np drop">Check Settlement booking status</span></div>
+          <div class="snote warn">Booking-status <b>keeps showing while the invitation is pending</b> — so four qualify here but only three fit. See the conflict on the left.</div>
         </div>
+      </div>
+
+      <div class="stage">
+        <div class="sh"><span class="st">5b · All parties joined</span><span class="sp">separate ticket</span></div>
+        <div class="sysmsg"><span class="sysl">System message — not a prompt</span>"All parties have now joined the workspace." Covers the case Lexi raised: the client would otherwise never learn the invitation completed, because the prompt disappears at that moment.</div>
+        <div class="snote">Booking-status prompt stops here.</div>
       </div>
 
       <div class="stage">
@@ -312,6 +373,7 @@
         <div class="minichat">
           <div class="mline"><span class="mav">✦</span><span>Approval recorded — the financial prompts stop.</span></div>
           <div class="mpills"><span class="np">Check settlement status</span></div>
+          <div class="snote">One approval finalises adjustments, directions to pay, trust and the registry documents together — so everything else stops.</div>
         </div>
       </div>
 
@@ -351,6 +413,9 @@
           <tr><td class="num">11</td><td><b>Overarching status</b> ("what's the progress of my settlement?", "what else do I need to do?") → <b>separate ticket</b>, needs AI. Discuss effort with June; CB has asked for this.</td><td class="src">Connor</td></tr>
           <tr><td class="num">12</td><td><b>Settlement funds summary / "how much is the shortfall"</b> — out of scope until Jerol's task lands. Slot reserved.</td><td class="src">Lexi</td></tr>
           <tr><td class="num">13</td><td><b>Milestone-rail changes are out of scope</b> — pills only, inside the approved layout.</td><td class="src">Connor</td></tr>
+          <tr><td class="num">14</td><td><b>Booking-status window:</b> shows from the documents step, lingers <b>while the invitation is pending</b>, stops at approval. Not tied to adjustments — <i>"invitation and settlement adjustments have no correlation."</i></td><td class="src">Lexi · 27 Jul</td></tr>
+          <tr><td class="num">15</td><td><b>One approval finalises everything together</b> — adjustments, directions to pay, trust and the registry documents. <i>"You can't approve one without the other."</i></td><td class="src">Lexi · 27 Jul</td></tr>
+          <tr><td class="num">16</td><td><b>Prompts only need to cover the popular case.</b> <i>"It's just a few popular prompts... we should stop thinking about the edge cases."</i> Anything else is reachable from the milestone list.</td><td class="src">Lexi · 27 Jul</td></tr>
         </tbody>
       </table>
     </div>
@@ -392,14 +457,19 @@
           <tr><td><b>3a</b> Tasks submitted</td><td>Auto-navigate to Provide documents</td><td><b>No rule</b> — wave 2</td><td class="part">◐</td></tr>
           <tr><td><b>3b</b> Opted out</td><td>"Provide documents" pill</td><td><b>No rule</b> — wave 2. Today onboarding is still incomplete here, so rule 100 is the only signal and no pill shows</td><td class="part">◐</td></tr>
           <tr><td><b>4</b> Provide documents</td><td>Three prompts</td><td>Only <code>check-settlement-booking-status</code> exists; both upload prompts are wave 2. It also requires the documents milestone to be <b>complete</b>, whereas Lexi's wording was "just been performed" — see Q3</td><td class="part">◐</td></tr>
-          <tr><td><b>5</b> Adjustments ready</td><td>Three financial prompts; booking-status stops</td><td>Matches rules 300/310/320, and rule 200's "no adjustments yet" guard is what stops booking-status</td><td class="yes">✓</td></tr>
+          <tr><td><b>5</b> Adjustments ready</td><td>Financial three, plus booking-status while the invitation is pending</td><td><b>Misaligned</b> — rule 200 stops booking-status the moment adjustments exist. Lexi's answer needs that guard rebuilt on <b>invitation status</b> (the signal exists) and stopped at <b>approval</b> instead. The financial three themselves match rules 300/310/320</td><td class="no">✗</td></tr>
           <tr><td><b>6</b> Approval given</td><td>Check settlement status</td><td>Matches rule 400</td><td class="yes">✓</td></tr>
           <tr><td><b>7</b> Settled</td><td>No prompts</td><td><b>Misaligned</b> — rule 400 has no end condition, so the pill still fires forever. This is exactly <b>Q1</b>; the journey shows the recommended fix, not today's behaviour</td><td class="no">✗</td></tr>
           <tr><td><b>All</b> Pill cap</td><td>"capped at 3"</td><td><b>Misaligned</b> — neither the resolver nor the frontend caps; every matching pill renders</td><td class="no">✗</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="cmp-note" style="margin-top:.7rem;">The two ✗ rows are deliberate: the journey shows the proposed state. Both are already listed as code actions below. The ◐ rows are wave 2 and tagged <span class="sp">planned</span> in the journey.</p>
+    <p class="cmp-note" style="margin-top:.7rem;">The ✗ rows are the agreed changes not yet built — all three are listed as code actions below. The ◐ rows are wave 2 and tagged <span class="sp">planned</span> in the journey.</p>
+
+    <div class="dep">
+      <h3>⚠ External dependency — the "active action" lock</h3>
+      <p>Lexi raised that while an action is live in the chat (the documents card awaiting confirm), the client arguably shouldn't be able to start something else — <i>"grey out all the pills, and grey out the chat area until they click the buttons"</i> — unless they cancel and abandon the task. That cancel/abandon concept <b>doesn't exist yet</b> (June has raised it before). This flow assumes the current behaviour: <b>users can jump out at any time</b>, and if they do, the follow-up prompts are exactly what brings them back. If the lock is built later, it sits above next-step rather than inside it.</p>
+    </div>
 
     <h3 style="font-family:var(--serif); font-size:1.15rem; color:var(--ink); margin:2rem 0 .6rem;">Existing systems wave 2 can reuse</h3>
 
@@ -445,17 +515,20 @@
     <p class="kicker">Part 4</p>
     <h2>What changes in the code</h2>
 
-    <div class="action"><span class="an">1</span><div><p class="at">Exclude draft adjustment statements from the guard</p><p>Drafts currently create a document row, which would show the three financial pills before the client should see anything. Needs a draft flag in the resolver. <b>Do first — affects live behaviour.</b></p></div></div>
-    <div class="action"><span class="an">2</span><div><p class="at">Cap pills at 3, dropping lowest priority</p><p>No cap today. Existing rule priorities give the drop order: booking status → adjustments → directions to pay → trust → settlement status.</p></div></div>
-    <div class="action"><span class="an">3</span><div><p class="at">Wave 2 (10817) — wire guards to the existing services</p><p>Onboarding-docs guards from <code>ConsumerOnboardingStatusLogic</code>; missing-docs guard from the Outstanding Items evaluator; "first batch done" = the confirm action on the bulk-upload card. No new signals needed, which should shorten the estimate.</p></div></div>
-    <div class="action"><span class="an">4</span><div><p class="at">Pending Lexi</p><p>Q1 → add an end condition to "Check settlement status". Q2/Q3 → adjust the booking-status window. Q4 → possibly add a "Check onboarding progress" pill. All small once answered.</p></div></div>
+    <div class="action"><span class="an">1</span><div><p class="at">Rebuild the booking-status guard on invitation status</p><p>Replace "no adjustments yet" with <b>documents provided ∧ any party not yet Accepted ∧ approval not given</b>. The signal exists — <code>GetElnoWorkspaceParticipantsQuery</code> returns a per-participant <code>ElnoWorkspaceInvitationStatus</code> of Sent / Accepted / Declined. <b>From Q2 — the one design change.</b></p></div></div>
+    <div class="action"><span class="an">2</span><div><p class="at">Give "Check settlement status" an end condition</p><p>Add <b>∧ settlement not complete</b> to rule 400. <code>IsSettlementComplete</code> is already on the snapshot and unused. One line. <b>From Q1 — affects live behaviour.</b></p></div></div>
+    <div class="action"><span class="an">3</span><div><p class="at">Cap pills at 3 — and settle the drop order first</p><p>No cap exists in either the resolver or the frontend. Before adding one, resolve the new conflict: with booking-status now overlapping the financial three, today's priorities would drop "Check Trust account status". Recommended fix is a lower precedence for booking-status.</p></div></div>
+    <div class="action"><span class="an">4</span><div><p class="at">Relabel the upload prompt</p><p><code>pill.upload-another-batch-of-docs</code> → <b>"Upload more documents"</b>. Label only; the id stays. (The rule itself is wave 2.)</p></div></div>
+    <div class="action"><span class="an">5</span><div><p class="at">Exclude draft adjustment statements</p><p>Drafts create a document row, so the financial prompts would fire before the client should see anything. Needs a draft flag in the resolver — worth confirming a draft really does create a row before changing it.</p></div></div>
+    <div class="action"><span class="an">6</span><div><p class="at">Wave 2 (10817) — wire guards to the existing services</p><p>Onboarding-docs guards from <code>ConsumerOnboardingStatusLogic</code> (all tasks <b>started</b> ∧ all manual docs <b>provided</b>); missing-docs guard from the Outstanding Items evaluator; "first batch done" = the confirm on the bulk-upload card. No new signals needed.</p></div></div>
+    <div class="action"><span class="an">7</span><div><p class="at">Separate ticket — "all parties joined" system message</p><p>The mechanism already exists (<code>IChatNotificationService.NotifyElnoWorkspaceJoinedAsync</code> fires when the workspace is first joined). Lexi's Q2 answer depends on this covering the moment the prompt disappears, so it should be raised alongside, not inside, this ticket.</p></div></div>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    <span>SETTLEIT-10754 · next-step engine — decisions &amp; open questions · sources: Lexi's written flow, calls 21 &amp; 27 Jul, code review of develop</span>
-    <span>Please reply on Q1–Q5</span>
+    <span>SETTLEIT-10754 · next-step engine — agreed flow · sources: Lexi's written flow, calls 21 &amp; 27 Jul, code review of develop</span>
+    <span>Open: the 3-pill drop order</span>
   </div>
 </footer>
 

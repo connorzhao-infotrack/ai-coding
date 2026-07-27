@@ -7,8 +7,12 @@ Ticket: <https://infotrack.atlassian.net/browse/SETTLEIT-10754> — *"Automatic 
 Status as of 27 Jul 2026: **wave 1 built and merged.** The deterministic engine (PR
 [#9334](https://github.com/InfoTrackGlobal/SettleIT/pull/9334)) and the frontend pills + auto-advance
 (PR [#9339](https://github.com/InfoTrackGlobal/SettleIT/pull/9339)) are on `develop`. Wave 2 rules
-([SETTLEIT-10817](https://infotrack.atlassian.net/browse/SETTLEIT-10817)) are still open, and **five
-product questions are with Lexi** — see `next-step-decisions-and-questions.html` below.
+([SETTLEIT-10817](https://infotrack.atlassian.net/browse/SETTLEIT-10817)) are still open. **Lexi
+answered all five open questions on the 27 Jul call** — four confirmed the recommendation, one
+changed the design (booking-status now lingers while the workspace invitation is pending, rather
+than stopping when adjustments arrive). That change creates one new conflict with the 3-pill cap
+that still needs a call. See `next-step-decisions-and-questions.html` below for the agreed flow,
+the alignment audit against the shipped rules, and the resulting code actions.
 
 ---
 
