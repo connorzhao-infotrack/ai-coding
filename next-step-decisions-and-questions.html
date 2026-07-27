@@ -91,6 +91,34 @@
   .opt .recbadge { font-family:var(--mono); font-size:.58rem; letter-spacing:.07em; text-transform:uppercase; color:var(--good); font-weight:700; margin-left:.4rem; }
   .qnow { font-size:.8rem; color:var(--muted); margin:.7rem 0 0; font-style:italic; }
 
+  /* two-column: questions left, sticky end-to-end mock right */
+  .qgrid { display:grid; grid-template-columns:minmax(0,1fr) 23rem; gap:1.4rem; align-items:start; margin-top:1.2rem; }
+  .qcol { min-width:0; }
+  .mockcol { position:sticky; top:1rem; max-height:calc(100vh - 2rem); overflow-y:auto; background:var(--surface); border:1px solid var(--line); border-radius:.9rem; box-shadow:var(--shadow); padding:1rem 1.05rem 1.2rem; }
+  @media (max-width:1000px) {
+    .qgrid { grid-template-columns:1fr; }
+    .mockcol { order:-1; position:static; max-height:none; }
+  }
+  .mockcol h3 { margin:0 0 .2rem; font-family:var(--serif); font-size:1.05rem; color:var(--ink); }
+  .mockcol .mcsub { font-size:.76rem; color:var(--muted); margin:0 0 1rem; }
+  .stage { border-left:2px solid var(--line); padding:0 0 .95rem .85rem; margin-left:.35rem; position:relative; }
+  .stage:last-child { padding-bottom:0; border-left-color:transparent; }
+  .stage::before { content:""; position:absolute; left:-.44rem; top:.2rem; width:.72rem; height:.72rem; border-radius:50%; background:var(--accent); border:2px solid var(--surface); }
+  .stage.gap::before { background:var(--muted); }
+  .stage.issue::before { background:var(--warn); }
+  .sh { display:flex; align-items:baseline; gap:.4rem; margin-bottom:.35rem; flex-wrap:wrap; }
+  .sh .st { font-weight:700; color:var(--ink); font-size:.82rem; }
+  .sh .sq { font-family:var(--mono); font-size:.57rem; letter-spacing:.05em; color:var(--warn); background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:2rem; padding:.05rem .4rem; }
+  .minichat { background:var(--surface-2); border:1px solid var(--line-soft); border-radius:.5rem; padding:.45rem .55rem; }
+  .mline { display:flex; gap:.35rem; align-items:flex-start; font-size:.74rem; line-height:1.35; }
+  .mline .mav { width:.95rem; height:.95rem; border-radius:50%; background:linear-gradient(140deg,var(--accent),var(--brand)); color:#fff; display:grid; place-items:center; font-size:.48rem; flex:0 0 auto; margin-top:.1rem; }
+  .mpills { display:flex; flex-wrap:wrap; gap:.25rem; margin-top:.45rem; }
+  .np { font-size:.67rem; font-weight:650; background:var(--accent); color:#fff; border-radius:2rem; padding:.18rem .5rem; }
+  .np.alt { background:var(--surface); color:var(--accent-strong); border:1px solid var(--accent); font-weight:600; }
+  .nopill { font-size:.66rem; color:var(--muted); font-style:italic; }
+  .snote { font-size:.67rem; color:var(--muted); margin-top:.35rem; }
+  .snote.warn { color:var(--warn); }
+
   /* generic tables */
   .tablewrap { overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:.9rem; box-shadow:var(--shadow); margin-top:1.2rem; }
   table { border-collapse:collapse; width:100%; min-width:40rem; font-size:.87rem; }
@@ -129,12 +157,12 @@
 <header class="mast">
   <div class="wrap">
     <p class="eyebrow">Status as at 27 July 2026</p>
-    <h1>Six questions left for Lexi. Everything else is settled.</h1>
-    <p class="lede">The deterministic next-step engine is built and merged. Lexi's written flow plus the 27 Jul call resolved most of the spec, and a code review answered several more from existing systems. <b>What remains is six product calls</b> — each below has a concrete example and a recommended answer, so it's a tick-or-correct rather than a design exercise.</p>
+    <h1>Five questions left for Lexi. Everything else is settled.</h1>
+    <p class="lede">The deterministic next-step engine is built and merged. Lexi's written flow plus the 27 Jul call resolved most of the spec, and a code review answered several more from existing systems. <b>What remains is five product calls</b> — each below has a concrete example and a recommended answer, so it's a tick-or-correct rather than a design exercise.</p>
     <div class="statusrow">
       <span class="chip g">✓ BE engine merged · PR 9334</span>
       <span class="chip g">✓ FE pills + auto-advance merged · PR 9339</span>
-      <span class="chip w">⚠ 6 open questions</span>
+      <span class="chip w">⚠ 5 open questions</span>
       <span class="chip n">Wave 2 rules · 10817</span>
     </div>
   </div>
@@ -144,8 +172,11 @@
 <section>
   <div class="wrap">
     <p class="kicker hot">Part 1 — for Lexi, please verify</p>
-    <h2>The six open questions</h2>
-    <p>Ticked box = what we'd do unless you say otherwise. Questions 1–3 affect behaviour that is <b>already live</b>, so they're the urgent ones.</p>
+    <h2>The five open questions</h2>
+    <p>Ticked box = what we'd do unless you say otherwise. Questions 1–3 affect behaviour that is <b>already live</b>, so they're the urgent ones. The panel on the right walks the <b>whole journey as it behaves today</b> — worth an end-to-end sanity check alongside the questions.</p>
+
+    <div class="qgrid">
+    <div class="qcol">
 
     <!-- Q1 -->
     <div class="qcard">
@@ -185,19 +216,7 @@
 
     <!-- Q4 -->
     <div class="qcard">
-      <div class="qhead"><span class="qn">Q4</span><h3>Should anything show while we're waiting on the consumers?</h3><span class="tag">gap</span></div>
-      <p class="qwhy"><b>Why it matters:</b> after the agent opens onboarding, there are <b>no prompts at all</b> until the consumers finish their tasks. That can be several days — exactly when the user is most likely to wonder what's happening.</p>
-      <div class="qeg"><span class="lbl">Example</span>Monday: agent shows the onboarding card. The client takes five days to complete their VOI. Wednesday the user opens the matter — no suggestions at all, even though "chase the client" is the obvious action.</div>
-      <div class="opts">
-        <div class="opt rec"><span class="box"></span><span><span class="ot">Add a "Check onboarding progress" pill while anyone is outstanding<span class="recbadge">recommended</span></span><span class="od">The system already knows exactly which consumers are outstanding, so this is cheap. Fills the longest dead spot in the flow.</span></span></div>
-        <div class="opt"><span class="box"></span><span><span class="ot">Show nothing</span><span class="od">Current behaviour. The milestone list on the right still shows progress.</span></span></div>
-        <div class="opt"><span class="box"></span><span><span class="ot">Have the agent post a short update instead</span><span class="od">e.g. "Still waiting on John's VOI" — a message rather than a pill.</span></span></div>
-      </div>
-    </div>
-
-    <!-- Q5 -->
-    <div class="qcard">
-      <div class="qhead"><span class="qn">Q5</span><h3>Purchase vs Sale — any differences in the flow?</h3><span class="tag">scope</span></div>
+      <div class="qhead"><span class="qn">Q4</span><h3>Purchase vs Sale — any differences in the flow?</h3><span class="tag">scope</span></div>
       <p class="qwhy"><b>Why it matters:</b> both currently follow identical rules. If any step only applies to one, we need to know before wave 2.</p>
       <div class="qeg"><span class="lbl">Example</span>A Sale has no purchaser declaration and no shortfall calculation. Does that change which prompts appear, or is it handled automatically because the underlying task simply isn't there?</div>
       <div class="opts">
@@ -208,7 +227,7 @@
 
     <!-- Q6 -->
     <div class="qcard">
-      <div class="qhead"><span class="qn">Q6</span><h3>Non-LEAP clients — same document flow?</h3><span class="tag">scope</span></div>
+      <div class="qhead"><span class="qn">Q5</span><h3>Non-LEAP clients — same document flow?</h3><span class="tag">scope</span></div>
       <p class="qwhy"><b>Why it matters:</b> the first Provide-documents step scans the LEAP correspondence list and bulk-loads what it finds. Clients not on LEAP don't get that scan — they upload manually. <b>Good news from the code review:</b> the missing-documents detection is <em>not</em> LEAP-specific, so the follow-up prompts work for everyone.</p>
       <div class="qeg"><span class="lbl">Example</span>A non-LEAP firm places an order. There's no correspondence list to scan, so the first documents step is an empty upload box rather than a pre-filled list — but "upload another batch" still works normally afterwards.</div>
       <div class="opts">
@@ -216,6 +235,67 @@
         <div class="opt"><span class="box"></span><span><span class="ot">Non-LEAP needs different wording or steps</span><span class="od">Please describe what should change.</span></span></div>
       </div>
     </div>
+
+    </div><!-- /qcol -->
+
+    <aside class="mockcol">
+      <h3>End to end — what happens today</h3>
+      <p class="mcsub">Every prompt the client sees, in order, as currently built. Tags link a stage to its question.</p>
+
+      <div class="stage">
+        <div class="sh"><span class="st">1 · Order placed</span></div>
+        <div class="minichat">
+          <div class="mline"><span class="mav">✦</span><span>Order's placed. Onboarding is the only next step, so I've started it — I've emailed the tasks to your clients.</span></div>
+          <div class="mpills"><span class="nopill">no pills — the agent just proceeds</span></div>
+        </div>
+      </div>
+
+      <div class="stage gap">
+        <div class="sh"><span class="st">2 · Waiting on consumers</span></div>
+        <div class="minichat">
+          <div class="mline"><span class="mav">✦</span><span>Onboarding card stays on screen while consumers complete VOI, authorisations etc.</span></div>
+          <div class="mpills"><span class="nopill">no pills</span></div>
+          <div class="snote">Onboarding → Provide documents prompts are <b>wave 2</b> — not built yet.</div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="sh"><span class="st">3 · Documents provided</span><span class="sq">Q3</span></div>
+        <div class="minichat">
+          <div class="mline"><span class="mav">✦</span><span>First batch loaded from LEAP, categorised and confirmed.</span></div>
+          <div class="mpills"><span class="np">Check Settlement booking status</span></div>
+          <div class="snote">Appears only after this step — and may open an empty card.</div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="sh"><span class="st">4 · Adjustments ready</span><span class="sq">Q2</span></div>
+        <div class="minichat">
+          <div class="mline"><span class="mav">✦</span><span>The agent has prepared the adjustment statement.</span></div>
+          <div class="mpills"><span class="np">View settlement adjustments</span><span class="np alt">View Directions to pay</span><span class="np alt">Check Trust account status</span></div>
+          <div class="snote warn">Booking-status prompt disappears here — even if the invitation is still pending.</div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="sh"><span class="st">5 · Approval given</span></div>
+        <div class="minichat">
+          <div class="mline"><span class="mav">✦</span><span>Approval recorded — the financial prompts stop.</span></div>
+          <div class="mpills"><span class="np">Check settlement status</span></div>
+        </div>
+      </div>
+
+      <div class="stage issue">
+        <div class="sh"><span class="st">6 · Settled — months later</span><span class="sq">Q1</span></div>
+        <div class="minichat">
+          <div class="mline"><span class="mav">✦</span><span>Matter settled and closed.</span></div>
+          <div class="mpills"><span class="np">Check settlement status</span></div>
+          <div class="snote warn">Still showing — there is no end condition today.</div>
+        </div>
+      </div>
+    </aside>
+
+    </div><!-- /qgrid -->
   </div>
 </section>
 
@@ -265,7 +345,7 @@
         <li><code>MortgageDischargeAuthorityForm</code> → a draft MDA document exists</li>
         <li><code>TrustAccountAuthority</code> → a signed TAA exists</li>
       </ul>
-      <p>Three ready-made methods give wave 2 exactly the guards it needs: <code>IsConsumerOnboardingConfirmedForAllConsumers</code> (all started), <code>AllConsumersHaveSatisfiedOnboardingRequirements</code> (all provided), and <code>GetConsumersWithOutstandingOnboarding</code> (who's holding it up — also powers Q4's suggested pill).</p>
+      <p>Three ready-made methods give wave 2 exactly the guards it needs: <code>IsConsumerOnboardingConfirmedForAllConsumers</code> (all started), <code>AllConsumersHaveSatisfiedOnboardingRequirements</code> (all provided), and <code>GetConsumersWithOutstandingOnboarding</code> (which consumers are still outstanding).</p>
       <span class="path">src/api/InfoTrack.SettleIt.Application/Infrastructure/BusinessLogic/ConsumerOnboarding/ConsumerOnboardingStatusLogic.cs</span>
     </div>
 
@@ -307,7 +387,7 @@
 <footer>
   <div class="wrap">
     <span>SETTLEIT-10754 · next-step engine — decisions &amp; open questions · sources: Lexi's written flow, calls 21 &amp; 27 Jul, code review of develop</span>
-    <span>Please reply on Q1–Q6</span>
+    <span>Please reply on Q1–Q5</span>
   </div>
 </footer>
 

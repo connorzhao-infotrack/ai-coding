@@ -7,7 +7,7 @@ Ticket: <https://infotrack.atlassian.net/browse/SETTLEIT-10754> — *"Automatic 
 Status as of 27 Jul 2026: **wave 1 built and merged.** The deterministic engine (PR
 [#9334](https://github.com/InfoTrackGlobal/SettleIT/pull/9334)) and the frontend pills + auto-advance
 (PR [#9339](https://github.com/InfoTrackGlobal/SettleIT/pull/9339)) are on `develop`. Wave 2 rules
-([SETTLEIT-10817](https://infotrack.atlassian.net/browse/SETTLEIT-10817)) are still open, and **six
+([SETTLEIT-10817](https://infotrack.atlassian.net/browse/SETTLEIT-10817)) are still open, and **five
 product questions are with Lexi** — see `next-step-decisions-and-questions.html` below.
 
 ---
