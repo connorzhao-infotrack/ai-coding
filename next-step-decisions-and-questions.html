@@ -109,6 +109,10 @@
   .sh { display:flex; align-items:baseline; gap:.4rem; margin-bottom:.35rem; flex-wrap:wrap; }
   .sh .st { font-weight:700; color:var(--ink); font-size:.82rem; }
   .sh .sq { font-family:var(--mono); font-size:.57rem; letter-spacing:.05em; color:var(--warn); background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:2rem; padding:.05rem .4rem; }
+  .sh .sp { font-family:var(--mono); font-size:.55rem; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); background:var(--surface-2); border:1px solid var(--line); border-radius:2rem; padding:.05rem .38rem; }
+  .stage.br { border-left-style:dashed; }
+  .stage.done::before { background:var(--good); }
+  .branchnote { font-size:.66rem; color:var(--muted); font-style:italic; margin:0 0 .4rem .9rem; }
   .minichat { background:var(--surface-2); border:1px solid var(--line-soft); border-radius:.5rem; padding:.45rem .55rem; }
   .mline { display:flex; gap:.35rem; align-items:flex-start; font-size:.74rem; line-height:1.35; }
   .mline .mav { width:.95rem; height:.95rem; border-radius:50%; background:linear-gradient(140deg,var(--accent),var(--brand)); color:#fff; display:grid; place-items:center; font-size:.48rem; flex:0 0 auto; margin-top:.1rem; }
@@ -173,7 +177,7 @@
   <div class="wrap">
     <p class="kicker hot">Part 1 — for Lexi, please verify</p>
     <h2>The five open questions</h2>
-    <p>Ticked box = what we'd do unless you say otherwise. Questions 1–3 affect behaviour that is <b>already live</b>, so they're the urgent ones. The panel on the right walks the <b>whole journey as it behaves today</b> — worth an end-to-end sanity check alongside the questions.</p>
+    <p>Ticked box = what we'd do unless you say otherwise. Questions 1–3 affect behaviour that is <b>already live</b>, so they're the urgent ones. The panel on the right walks the <b>whole journey as we propose it should work</b> — every recommendation applied — so it's worth an end-to-end sanity check alongside the questions.</p>
 
     <div class="qgrid">
     <div class="qcol">
@@ -239,58 +243,76 @@
     </div><!-- /qcol -->
 
     <aside class="mockcol">
-      <h3>End to end — what happens today</h3>
-      <p class="mcsub">Every prompt the client sees, in order, as currently built. Tags link a stage to its question.</p>
+      <h3>End to end — the proposed experience</h3>
+      <p class="mcsub">Every prompt the client would see, in order, with the recommendations applied. <span class="sp">planned</span> = still to be built. Tags link a stage to its question.</p>
 
       <div class="stage">
         <div class="sh"><span class="st">1 · Order placed</span></div>
         <div class="minichat">
-          <div class="mline"><span class="mav">✦</span><span>Order's placed. Onboarding is the only next step, so I've started it — I've emailed the tasks to your clients.</span></div>
-          <div class="mpills"><span class="nopill">no pills — the agent just proceeds</span></div>
-        </div>
-      </div>
-
-      <div class="stage gap">
-        <div class="sh"><span class="st">2 · Waiting on consumers</span></div>
-        <div class="minichat">
-          <div class="mline"><span class="mav">✦</span><span>Onboarding card stays on screen while consumers complete VOI, authorisations etc.</span></div>
-          <div class="mpills"><span class="nopill">no pills</span></div>
-          <div class="snote">Onboarding → Provide documents prompts are <b>wave 2</b> — not built yet.</div>
+          <div class="mline"><span class="mav">✦</span><span>Order's placed. Onboarding is the only next step, so I've opened it for you.</span></div>
+          <div class="mpills"><span class="nopill">no prompt — the agent just proceeds</span></div>
         </div>
       </div>
 
       <div class="stage">
-        <div class="sh"><span class="st">3 · Documents provided</span><span class="sq">Q3</span></div>
+        <div class="sh"><span class="st">2 · Onboarding opened</span></div>
         <div class="minichat">
-          <div class="mline"><span class="mav">✦</span><span>First batch loaded from LEAP, categorised and confirmed.</span></div>
-          <div class="mpills"><span class="np">Check Settlement booking status</span></div>
-          <div class="snote">Appears only after this step — and may open an empty card.</div>
+          <div class="mline"><span class="mav">✦</span><span>Choose the onboarding tasks for each of your clients — or opt out and provide the documents yourself.</span></div>
+          <div class="mpills"><span class="nopill">no prompt — the card is already on screen</span></div>
+        </div>
+      </div>
+
+      <p class="branchnote">What the client does here decides the next prompt:</p>
+
+      <div class="stage br">
+        <div class="sh"><span class="st">3a · Tasks submitted</span><span class="sp">planned</span></div>
+        <div class="minichat">
+          <div class="mline"><span class="mav">✦</span><span>Onboarding started — I've emailed the tasks to your clients.</span></div>
+          <div class="mpills"><span class="nopill">no prompt — auto-advance</span></div>
+          <div class="snote">Once every task is resolved, the agent moves straight on to Provide documents.</div>
+        </div>
+      </div>
+
+      <div class="stage br">
+        <div class="sh"><span class="st">3b · Opted out</span><span class="sp">planned</span></div>
+        <div class="minichat">
+          <div class="mline"><span class="mav">✦</span><span>No problem — upload those onboarding documents on the card above whenever you're ready.</span></div>
+          <div class="mpills"><span class="np">Provide documents</span></div>
+          <div class="snote">The upload rows are already on the card, so no prompt for them — this one points at the next milestone so it isn't forgotten.</div>
         </div>
       </div>
 
       <div class="stage">
-        <div class="sh"><span class="st">4 · Adjustments ready</span><span class="sq">Q2</span></div>
+        <div class="sh"><span class="st">4 · Provide documents</span><span class="sp">planned</span><span class="sq">Q3</span></div>
         <div class="minichat">
-          <div class="mline"><span class="mav">✦</span><span>The agent has prepared the adjustment statement.</span></div>
+          <div class="mline"><span class="mav">✦</span><span>I've pulled the documents off your matter and categorised them — adjust anything, then confirm.</span></div>
+          <div class="mpills"><span class="np">Upload missing Onboarding documents</span><span class="np alt">Upload another batch of docs</span><span class="np alt">Check Settlement booking status</span></div>
+          <div class="snote">Only the ones whose conditions are met, capped at 3.</div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="sh"><span class="st">5 · Adjustments ready</span><span class="sq">Q2</span></div>
+        <div class="minichat">
+          <div class="mline"><span class="mav">✦</span><span>The adjustment statement is ready for you to review.</span></div>
           <div class="mpills"><span class="np">View settlement adjustments</span><span class="np alt">View Directions to pay</span><span class="np alt">Check Trust account status</span></div>
-          <div class="snote warn">Booking-status prompt disappears here — even if the invitation is still pending.</div>
+          <div class="snote">The booking-status prompt stops here — these three linger until approval.</div>
         </div>
       </div>
 
       <div class="stage">
-        <div class="sh"><span class="st">5 · Approval given</span></div>
+        <div class="sh"><span class="st">6 · Approval given</span></div>
         <div class="minichat">
           <div class="mline"><span class="mav">✦</span><span>Approval recorded — the financial prompts stop.</span></div>
           <div class="mpills"><span class="np">Check settlement status</span></div>
         </div>
       </div>
 
-      <div class="stage issue">
-        <div class="sh"><span class="st">6 · Settled — months later</span><span class="sq">Q1</span></div>
+      <div class="stage done">
+        <div class="sh"><span class="st">7 · Settled</span><span class="sq">Q1</span></div>
         <div class="minichat">
-          <div class="mline"><span class="mav">✦</span><span>Matter settled and closed.</span></div>
-          <div class="mpills"><span class="np">Check settlement status</span></div>
-          <div class="snote warn">Still showing — there is no end condition today.</div>
+          <div class="mline"><span class="mav">✦</span><span>Settlement complete.</span></div>
+          <div class="mpills"><span class="nopill">no prompts — they stop once the matter settles</span></div>
         </div>
       </div>
     </aside>
