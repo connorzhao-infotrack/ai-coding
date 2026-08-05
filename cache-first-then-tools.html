@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cache first, then tools — SettleIT chat</title>
+
+<style>
+  :root {
+    --paper:#f2f5f6; --card:#ffffff; --sunken:#e6ebed;
+    --ink:#0d1417; --ink2:#3d4c52; --muted:#64777e; --rule:#d3dbde;
+    --accent:#0e7c8a; --accent-wash:#dcf0f2;
+    --good:#2c6e52;  --good-wash:#dcece4;
+    --cost:#a8500f;  --cost-wash:#f6e7d9;
+    --sans:"Segoe UI Variable Display","Segoe UI",ui-sans-serif,-apple-system,system-ui,"Helvetica Neue",Arial,sans-serif;
+    --mono:"Cascadia Mono",ui-monospace,"SF Mono",Consolas,"Liberation Mono",monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:#0c1214; --card:#141c1f; --sunken:#1b2428;
+      --ink:#e4edef; --ink2:#b3c4c9; --muted:#86999f; --rule:#263237;
+      --accent:#43ccdb; --accent-wash:#0d2f35;
+      --good:#5cbb8e;  --good-wash:#122b21;
+      --cost:#dc9350;  --cost-wash:#2f2013;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:#0c1214; --card:#141c1f; --sunken:#1b2428;
+    --ink:#e4edef; --ink2:#b3c4c9; --muted:#86999f; --rule:#263237;
+    --accent:#43ccdb; --accent-wash:#0d2f35;
+    --good:#5cbb8e;  --good-wash:#122b21;
+    --cost:#dc9350;  --cost-wash:#2f2013;
+  }
+  :root[data-theme="light"] {
+    --paper:#f2f5f6; --card:#ffffff; --sunken:#e6ebed;
+    --ink:#0d1417; --ink2:#3d4c52; --muted:#64777e; --rule:#d3dbde;
+    --accent:#0e7c8a; --accent-wash:#dcf0f2;
+    --good:#2c6e52;  --good-wash:#dcece4;
+    --cost:#a8500f;  --cost-wash:#f6e7d9;
+  }
+
+  body {
+    margin:0; padding:0 1.25rem 6rem; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); font-size:1rem; line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page { max-width:60rem; margin:0 auto; }
+  .col  { max-width:40rem; }
+
+  h1 { font-size:clamp(2rem,5.5vw,3rem); line-height:1.04; letter-spacing:-0.03em;
+       font-weight:700; margin:0 0 0.75rem; text-wrap:balance; }
+  h2 { font-size:1.5rem; letter-spacing:-0.018em; font-weight:700; margin:0 0 0.4rem;
+       text-wrap:balance; }
+  h3 { font-size:1.0625rem; font-weight:700; margin:0 0 0.4rem; text-wrap:balance; }
+  p  { margin:0 0 1rem; text-wrap:pretty; color:var(--ink2); }
+  p.lead { color:var(--ink); }
+  strong { font-weight:700; color:var(--ink); }
+  a { color:var(--accent); }
+  a:focus-visible, summary:focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:2px; }
+
+  code { font-family:var(--mono); font-size:0.86em; background:var(--sunken);
+         border:1px solid var(--rule); border-radius:3px; padding:0.08em 0.32em; color:var(--ink); }
+
+  .eyebrow { font-family:var(--mono); font-size:0.6875rem; letter-spacing:0.14em;
+             text-transform:uppercase; color:var(--muted); margin:0 0 0.6rem; }
+
+  /* Section head with the prefix rule in the gutter */
+  section { margin:4.5rem 0 0; }
+  .shead { display:grid; grid-template-columns:2.25rem 1fr; gap:0 1rem; align-items:start;
+           border-top:1px solid var(--rule); padding-top:1.1rem; margin-bottom:1.5rem; }
+  .shead .mark { font-family:var(--mono); font-size:1rem; line-height:1.5; }
+  .shead .txt p { margin:0.3rem 0 0; font-size:0.9375rem; }
+
+  header.top { padding:4rem 0 0; }
+  .standfirst { font-size:1.1875rem; line-height:1.55; color:var(--muted);
+                max-width:36rem; margin:0 0 2rem; }
+
+  /* the three answers that reframed everything */
+  .answers { display:grid; grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));
+             gap:1px; background:var(--rule); border:1px solid var(--rule);
+             border-radius:5px; overflow:hidden; margin:0 0 1.25rem; }
+  .ans { background:var(--card); padding:1rem 1.1rem; }
+  .ans .q { font-family:var(--mono); font-size:0.6875rem; letter-spacing:0.08em;
+            text-transform:uppercase; color:var(--muted); display:block; margin-bottom:0.5rem; }
+  .ans .a { font-weight:700; font-size:1.0625rem; display:block; line-height:1.35; }
+  .ans .so { display:block; font-size:0.8125rem; color:var(--muted); margin-top:0.4rem; line-height:1.45; }
+
+  .banner { border:1px solid var(--rule); border-left:4px solid var(--accent);
+            background:var(--card); border-radius:4px; padding:1.15rem 1.3rem; margin:2rem 0; }
+  .banner.cost { border-left-color:var(--cost); }
+  .banner h3 { margin:0 0 0.45rem; }
+  .banner p:last-child { margin-bottom:0; }
+
+  /* tables */
+  .scroll { overflow-x:auto; margin:1.5rem 0; border:1px solid var(--rule);
+            border-radius:5px; background:var(--card); }
+  table { width:100%; border-collapse:collapse; font-size:0.9375rem;
+          font-variant-numeric:tabular-nums; min-width:38rem; }
+  th, td { text-align:left; padding:0.72rem 0.9rem; border-bottom:1px solid var(--rule);
+           vertical-align:top; }
+  thead th { font-family:var(--mono); font-size:0.6875rem; letter-spacing:0.09em;
+             text-transform:uppercase; color:var(--muted); font-weight:500;
+             white-space:nowrap; background:var(--sunken); }
+  tbody tr:last-child td { border-bottom:0; }
+  td.n { font-family:var(--mono); white-space:nowrap; }
+  td.rank { font-family:var(--mono); color:var(--muted); width:2.5rem; }
+  tr.hero td { background:var(--accent-wash); }
+  tr.hero td.rank, tr.hero td:first-child + td { color:var(--ink); }
+  tr.hero strong { color:var(--ink); }
+  .tag { font-family:var(--mono); font-size:0.625rem; letter-spacing:0.06em;
+         text-transform:uppercase; padding:0.16rem 0.42rem; border-radius:3px;
+         border:1px solid var(--rule); background:var(--sunken); color:var(--muted);
+         white-space:nowrap; display:inline-block; }
+  .tag.now  { background:var(--accent-wash); color:var(--accent);
+              border-color:color-mix(in srgb,var(--accent) 35%,transparent); }
+  .tag.safe { background:var(--good-wash); color:var(--good);
+              border-color:color-mix(in srgb,var(--good) 35%,transparent); }
+  .tag.risk { background:var(--cost-wash); color:var(--cost);
+              border-color:color-mix(in srgb,var(--cost) 35%,transparent); }
+
+  /* bar charts */
+  figure { margin:1.75rem 0; }
+  figcaption { font-size:0.8125rem; color:var(--muted); line-height:1.5; margin-top:0.85rem;
+               max-width:40rem; }
+  .bars { display:grid; gap:0.7rem; }
+  .bar { display:grid; grid-template-columns:minmax(8rem,13rem) 1fr auto; gap:0.9rem;
+         align-items:center; font-size:0.875rem; }
+  .bar .lb { color:var(--ink2); line-height:1.35; }
+  .bar .lb b { display:block; color:var(--ink); font-weight:700; }
+  .bar .track { display:block; background:var(--sunken); border-radius:3px; height:1.6rem;
+                border:1px solid var(--rule); overflow:hidden; }
+  .bar .fill { display:block; height:100%; background:var(--cost); }
+  .bar .fill.ok { background:var(--accent); }
+  .bar .fill.mid { background:color-mix(in srgb,var(--cost) 55%,var(--accent)); }
+  .bar .v { font-family:var(--mono); font-size:0.8125rem; white-space:nowrap;
+            font-variant-numeric:tabular-nums; color:var(--ink); min-width:5.5rem;
+            text-align:right; }
+
+  svg.fig { width:100%; height:auto; max-width:100%; display:block; color:var(--ink); }
+
+  /* ranked solutions */
+  .sol { border:1px solid var(--rule); background:var(--card); border-radius:5px;
+         margin:1.1rem 0; overflow:hidden; }
+  .solh { display:grid; grid-template-columns:2.5rem 1fr auto; gap:1rem; align-items:baseline;
+          padding:0.95rem 1.15rem; background:var(--sunken); border-bottom:1px solid var(--rule); }
+  .solh .r { font-family:var(--mono); font-size:1.25rem; font-weight:700; color:var(--muted); }
+  .solh .nm { font-weight:700; font-size:1.0625rem; }
+  .solh .nm span { display:block; font-weight:400; font-size:0.8125rem; color:var(--muted);
+                   margin-top:0.2rem; line-height:1.4; }
+  .solb { padding:1rem 1.15rem 1.15rem; }
+  .solb p { font-size:0.9375rem; }
+  .solb p:last-child { margin-bottom:0; }
+  .rates { display:grid; grid-template-columns:repeat(auto-fit,minmax(7.5rem,1fr));
+           gap:0.5rem 1rem; margin:0 0 0.9rem; }
+  .rate { font-size:0.8125rem; }
+  .rate .k { font-family:var(--mono); font-size:0.625rem; letter-spacing:0.07em;
+             text-transform:uppercase; color:var(--muted); display:block; margin-bottom:0.15rem; }
+  .dots { letter-spacing:0.12em; color:var(--accent); font-size:0.75rem; }
+  .dots i { color:var(--rule); font-style:normal; }
+
+  /* before / after listing pair */
+  .ba2 { display:grid; grid-template-columns:1fr 1fr; gap:0.7rem; margin:1.1rem 0 0.5rem; }
+  .ba2 .bcol { border:1px solid var(--rule); border-radius:4px; background:var(--paper);
+               overflow:hidden; min-width:0; }
+  .ba2 .ch2 { display:flex; justify-content:space-between; gap:0.5rem; align-items:baseline;
+              padding:0.42rem 0.65rem; font-family:var(--mono); font-size:0.625rem;
+              letter-spacing:0.07em; text-transform:uppercase; border-bottom:1px solid var(--rule); }
+  .ba2 .bcol.was .ch2 { background:var(--cost-wash); color:var(--cost); }
+  .ba2 .bcol.now .ch2 { background:var(--good-wash); color:var(--good); }
+  .ba2 pre { margin:0; padding:0.65rem 0.7rem; font-family:var(--mono); font-size:0.6875rem;
+             line-height:1.66; overflow-x:auto; white-space:pre-wrap; word-break:break-word;
+             color:var(--ink); }
+  .ba2 pre .c { color:var(--muted); }
+  .ba2 pre .x { color:var(--cost); }
+  .ba2 pre .v { color:var(--good); }
+  .bnote { font-size:0.8125rem; color:var(--muted); margin:0 0 0.9rem; line-height:1.5; }
+  @media (max-width:44rem) { .ba2 { grid-template-columns:1fr; } }
+
+  /* sequenced plan */
+  ol.plan { list-style:none; margin:1.5rem 0 0; padding:0; display:grid; gap:0; }
+  ol.plan li { display:grid; grid-template-columns:2.25rem 1fr; gap:0 1rem;
+               padding:0 0 1.6rem; position:relative; }
+  ol.plan li::before { content:""; position:absolute; left:1.06rem; top:1.9rem; bottom:0;
+                       width:1px; background:var(--rule); }
+  ol.plan li:last-child { padding-bottom:0; }
+  ol.plan li:last-child::before { display:none; }
+  ol.plan .step { font-family:var(--mono); font-size:0.75rem; font-weight:700;
+                  width:2.25rem; height:2.25rem; border-radius:50%; display:grid;
+                  place-items:center; border:1px solid var(--rule); background:var(--card);
+                  color:var(--muted); }
+  ol.plan li.key .step { border-color:var(--accent); color:var(--accent);
+                         background:var(--accent-wash); }
+  ol.plan .body h3 { margin:0.3rem 0 0.3rem; }
+  ol.plan .body p { font-size:0.9375rem; margin:0 0 0.4rem; }
+  ol.plan .body p:last-child { margin-bottom:0; }
+  ol.plan .when { font-family:var(--mono); font-size:0.6875rem; letter-spacing:0.07em;
+                  text-transform:uppercase; color:var(--muted); }
+
+  ul.q { list-style:none; margin:1.25rem 0 0; padding:0; display:grid; gap:0.85rem; }
+  ul.q li { display:grid; grid-template-columns:1.6rem 1fr; gap:0.7rem;
+            border:1px solid var(--rule); background:var(--card); border-radius:4px;
+            padding:0.85rem 1rem; font-size:0.9375rem; }
+  ul.q .why { display:block; color:var(--muted); font-size:0.8125rem; margin-top:0.3rem;
+              line-height:1.45; }
+
+  footer { border-top:1px solid var(--rule); margin-top:5rem; padding-top:1.25rem;
+           font-family:var(--mono); font-size:0.75rem; color:var(--muted); line-height:1.75; }
+
+  @media (max-width:40rem) {
+    .shead { grid-template-columns:1fr; }
+    .shead .mark { margin-bottom:0.2rem; }
+    .bar { grid-template-columns:1fr; gap:0.3rem; }
+    .bar .v { text-align:left; }
+    .solh { grid-template-columns:2rem 1fr; }
+    .solh .save { grid-column:2; }
+  }
+  @media (prefers-reduced-motion:reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="top">
+    <p class="eyebrow">SettleIT · AI chat · follow-up to “Cutting the token bill”</p>
+    <h1>Cache first, then tools</h1>
+    <p class="standfirst">
+      Four answers changed the plan — and the last one changed it twice. The biggest lever is not
+      deleting characters. It may not even be work you have to do.
+    </p>
+
+    <div class="answers">
+      <div class="ans">
+        <span class="q">🤖 Model actually in use</span>
+        <span class="a">Gemini 3.6 Flash</span>
+        <span class="so">Not the Anthropic or OpenAI deployments in <code>appsettings</code> — I guessed wrong from config.</span>
+      </div>
+      <div class="ans">
+        <span class="q">🧊 Prompt caching</span>
+        <span class="a">Never checked</span>
+        <span class="so">Which is different from off. On Gemini 2.5+ it is on by default.</span>
+      </div>
+      <div class="ans">
+        <span class="q">🧰 Tool count target</span>
+        <span class="a">&lt; 80, a rough guess</span>
+        <span class="so">A planning assumption, not a commitment. Design the invariant, not the number.</span>
+      </div>
+      <div class="ans">
+        <span class="q">🔓 Provider stance</span>
+        <span class="a">Able to switch</span>
+        <span class="so">Portability in principle — cheap, and mostly a design stance.</span>
+      </div>
+    </div>
+    <p style="font-size:0.8125rem;color:var(--muted);max-width:40rem">
+      Character counts here were measured from source on <code>develop</code>. Token figures assume
+      ~4 chars per token. Anything labelled <em>projected</em> is arithmetic from those measurements,
+      not a measurement. Gemini caching behaviour is from Google’s context-caching docs.
+    </p>
+  </header>
+
+  <section>
+    <div class="shead">
+      <span class="mark">⚡</span>
+      <div class="txt">
+        <h2>You may already have the win</h2>
+        <p>The first job is not to build anything. It is to run one query and find out.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <p class="lead">
+        <strong>Implicit caching is on by default for every Gemini 2.5 and newer model.</strong> It needs no
+        opt-in, no cache object, no config — it needs a stable prefix above a minimum size, and it gives you
+        the discount automatically when it hits.
+      </p>
+      <p>
+        You have both conditions. The fingerprint cache in <code>SingleAgentPromptProvider</code> makes your
+        prompt byte-identical call after call, and the minimum on the 3.x Flash tier is
+        <strong>4,096 input tokens</strong> — you are sending roughly <strong>17,300</strong>. Four times over
+        the line.
+      </p>
+      <p>
+        So the honest position is not “caching is off”. It is <strong>nobody has looked</strong>. And the two
+        possible answers lead to completely different plans.
+      </p>
+    </div>
+
+    <figure>
+      <div class="bars">
+        <div class="bar">
+          <span class="lb"><b>If it is not hitting</b>every byte re-processed</span>
+          <span class="track"><span class="fill" style="width:100%"></span></span>
+          <span class="v">~34,600</span>
+        </div>
+        <div class="bar">
+          <span class="lb"><b>If it is hitting</b>only the new tail is fresh</span>
+          <span class="track"><span class="fill ok" style="width:4.5%"></span></span>
+          <span class="v">~1,500</span>
+        </div>
+      </div>
+      <figcaption>
+        <strong>Input tokens processed fresh per turn</strong> — projected across the two model calls a single
+        card turn makes, on the measured 53,215-char prompt plus ~4k tokens of tool schema. This is the number
+        that drives time-to-first-token, which is the metric this whole project is measured on.
+        <strong>One field tells you which bar you are on: <code>usage.total_cached_tokens</code>.</strong>
+      </figcaption>
+    </figure>
+
+    <div class="banner">
+      <h3>🔎 Two answers, two different projects</h3>
+      <p>
+        <strong>If it is hitting</strong> — the token bill you set out to cut is already ~95% smaller than the
+        53.2k headline implies, and most of the trimming backlog is not a cost project any more. Re-price it
+        before anyone starts, and expect to delete items.
+      </p>
+      <p>
+        <strong>If it is not hitting</strong> — something is breaking the prefix, and that is a bug hunt, not a
+        feature build. First suspect: <strong>tool-array ordering</strong>. Tools render ahead of the system
+        prompt, so if the flattening in <code>SingleAgentFactory</code> iterates anything without a stable
+        order, the prefix differs every call and nothing downstream can ever cache. That would be a
+        one-line fix worth more than the entire build backlog.
+      </p>
+    </div>
+
+    <div class="banner cost">
+      <h3>⚠️ The trap this creates for the trimming programme</h3>
+      <p>
+        Trimming 9,000 characters saves ~4,500 tokens a turn if the cache is cold, and roughly
+        <strong>a tenth of that</strong> if it is warm. So the same edit is either the second-best item on the
+        list or barely worth scheduling — and you cannot tell which until you read that field.
+      </p>
+      <p>
+        There is a sharper edge to it. <strong>The cache has a floor of 4,096 tokens.</strong> Your stated
+        target of “about ten pages” is ~7,500 tokens, which still clears it — but a prompt trimmed
+        aggressively enough, on a turn with a short history, could fall under the line and
+        <strong>lose caching altogether</strong>. Trimming is not monotonically good here. Keep the floor in
+        view.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <span class="mark">🤖</span>
+      <div class="txt">
+        <h2>Flash changes the tool-count risk</h2>
+        <p>The size of the model matters more to tool selection than the size of the tool list.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <p class="lead">
+        I told you 23 tools was comfortably fine and that count was not your problem. That was calibrated
+        for a frontier model. <strong>On a small, fast model it is a weaker claim</strong> — Flash-tier models
+        degrade at picking between similar tools earlier than the top tier does, and your four
+        similarly-named trust tools are exactly the shape that goes wrong first.
+      </p>
+      <p>
+        It does not change the ranking below, but it sharpens two things: <strong>consolidation moves from
+        “good for extensibility” to “also a correctness fix”</strong>, and the evaluation gap gets serious.
+        You said tool-choice testing today is manual and ad-hoc. That is workable at 23 on a frontier model.
+        At 80 on Flash it means the failure you are trying to design against is one you cannot currently see.
+      </p>
+    </div>
+
+    <div class="banner cost">
+      <h3>📊 The gap I would close before any of the five steps</h3>
+      <p>
+        <strong>A tool-selection benchmark — twenty or thirty real utterances with the correct tool
+        recorded — is the cheapest safety net on this page</strong>, and it is a prerequisite for the rest.
+        Consolidation, scoping and description edits all change how the model chooses. Without a
+        before-and-after you are shipping behaviour changes blind, on the model tier least able to absorb
+        them.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <span class="mark">📋</span>
+      <div class="txt">
+        <h2>The priority table, with caching in it</h2>
+        <p>Re-ranked so the two unread numbers come first — and smart loading is <em>one</em> row, not two.</p>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col"></th><th scope="col">Work</th><th scope="col">At stake</th>
+            <th scope="col">Effort</th><th scope="col">Risk</th><th scope="col">Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="hero">
+            <td class="rank">1</td>
+            <td><strong>🧊 Find out if caching is already hitting</strong><br><span style="font-size:0.8125rem;color:var(--muted)">Read <code>usage.total_cached_tokens</code>. Nothing to build.</span></td>
+            <td class="n">~95% of input</td>
+            <td class="n">minutes</td>
+            <td><span class="tag safe">none</span></td>
+            <td><span class="tag now">do now</span></td>
+          </tr>
+          <tr class="hero">
+            <td class="rank">2</td>
+            <td><strong>📊 Build a tool-selection benchmark</strong><br><span style="font-size:0.8125rem;color:var(--muted)">20–30 real utterances, correct tool recorded. Gates everything below.</span></td>
+            <td class="n">unblocks 3–6</td>
+            <td class="n">~1 day</td>
+            <td><span class="tag safe">none</span></td>
+            <td><span class="tag now">do now</span></td>
+          </tr>
+          <tr>
+            <td class="rank">3</td>
+            <td>✂️ Hoist repeated rules out of the skills<br><span style="font-size:0.8125rem;color:var(--muted)">Includes the 3,842 chars of protocol restated in tool descriptions</span></td>
+            <td class="n">~9,000 ch</td>
+            <td class="n">~1 day</td>
+            <td><span class="tag safe">low</span></td>
+            <td><span class="tag">re-price</span></td>
+          </tr>
+          <tr>
+            <td class="rank">4</td>
+            <td>🔀 <strong>Smart loading — skills <em>and</em> tools, one key</strong><br><span style="font-size:0.8125rem;color:var(--muted)">Scope both to the activated milestone. One filter, or you get the incoherent case.</span></td>
+            <td class="n">39,543 ch<br><span style="font-size:0.75rem;color:var(--muted)">best case</span></td>
+            <td class="n">~1 day + fallback</td>
+            <td><span class="tag risk">medium</span></td>
+            <td><span class="tag now">design now</span></td>
+          </tr>
+          <tr>
+            <td class="rank">5</td>
+            <td>✂️ Mechanical trims — frontmatter, tool tables</td>
+            <td class="n">8,196 ch</td>
+            <td class="n">½ day</td>
+            <td><span class="tag safe">near-zero</span></td>
+            <td><span class="tag">re-price</span></td>
+          </tr>
+          <tr>
+            <td class="rank">6</td>
+            <td>✂️ Tighten the prose</td>
+            <td class="n">~10,000 ch</td>
+            <td class="n">1–2 days</td>
+            <td><span class="tag risk">medium</span></td>
+            <td><span class="tag">may drop</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col">
+      <p>
+        The two things now at the top are both <em>measurements</em>, and neither is a day’s work. That is not
+        a coincidence — you have a four-item build backlog sized against two numbers nobody has read yet.
+      </p>
+      <p>
+        <strong>Row 4 was two rows in the first draft</strong> — “smart tool loading” and “milestone-filter the
+        procedures”, four apart, on different schedules. That was incoherent with the section above: if
+        skills and tools must be filtered on the same key or not at all, they are one piece of work and one
+        decision. Merged, it is also the largest single build item on the page — <strong>39,543 characters
+        on a fresh order</strong>, of which skills are 31,197 and tools 8,346.
+      </p>
+      <p>
+        It stays at four rather than climbing, because that number is the <em>best</em> case and it shrinks to
+        almost nothing on a late-stage order — and because step 1 changes what a wrong answer costs. If the
+        cache is cold, filtering per request is free. If it is warm — and it probably is — that is the most
+        expensive mistake available to you.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <span class="mark">🧱</span>
+      <div class="txt">
+        <h2>Why tool loading and caching are the same decision</h2>
+        <p>Tools sit at position zero. Everything downstream of a change is re-processed.</p>
+      </div>
+    </div>
+
+    <figure>
+      <svg class="fig" viewBox="0 0 720 300" role="img"
+           aria-label="Diagram showing that a request is rendered as tools, then system, then messages; changing a message re-processes only the tail, while changing one tool re-processes the entire prompt.">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"></path>
+          </marker>
+        </defs>
+
+        <text x="0" y="14" font-family="var(--mono)" font-size="11" fill="var(--muted)" letter-spacing="1.2">RENDER ORDER →</text>
+
+        <rect x="0"   y="26" width="150" height="40" rx="3" fill="var(--sunken)" stroke="var(--rule)"></rect>
+        <rect x="152" y="26" width="470" height="40" rx="3" fill="var(--sunken)" stroke="var(--rule)"></rect>
+        <rect x="624" y="26" width="96"  height="40" rx="3" fill="var(--sunken)" stroke="var(--rule)"></rect>
+        <text x="75"  y="51" text-anchor="middle" font-size="12" fill="currentColor">tools ~4k</text>
+        <text x="387" y="51" text-anchor="middle" font-size="12" fill="currentColor">system prompt ~13.3k</text>
+        <text x="672" y="51" text-anchor="middle" font-size="11" fill="currentColor">messages</text>
+        <text x="0" y="82" font-size="11" fill="var(--muted)">position 0</text>
+
+        <text x="0" y="126" font-size="12" fill="currentColor">A user sends a message</text>
+        <rect x="0"   y="136" width="622" height="30" rx="3" fill="var(--good-wash)" stroke="var(--good)"></rect>
+        <rect x="624" y="136" width="96"  height="30" rx="3" fill="var(--cost-wash)" stroke="var(--cost)"></rect>
+        <text x="311" y="156" text-anchor="middle" font-size="11.5" fill="var(--good)">cache hit — not re-processed</text>
+        <text x="672" y="156" text-anchor="middle" font-size="11" fill="var(--cost)">fresh</text>
+
+        <text x="0" y="212" font-size="12" fill="currentColor">You add or remove one tool</text>
+        <rect x="0" y="222" width="720" height="30" rx="3" fill="var(--cost-wash)" stroke="var(--cost)"></rect>
+        <text x="360" y="242" text-anchor="middle" font-size="11.5" fill="var(--cost)">cache miss — all ~17.3k re-processed, every turn</text>
+
+        <line x1="60" y1="258" x2="60" y2="284" stroke="var(--cost)" stroke-width="1.5" marker-end="url(#ar)"></line>
+        <text x="72" y="281" font-size="11" fill="var(--cost)">a change at position 0 invalidates everything after it</text>
+      </svg>
+      <figcaption>
+        A request is assembled <code>tools</code> → <code>system</code> → <code>messages</code>, and the cache
+        matches on a prefix. Editing the tail is cheap. Editing the head is not — which is why
+        <strong>“pick the right tools for this request” is the one tool strategy that must never ship</strong>.
+        Scope tools to something that changes rarely (an activated milestone) rather than to the message,
+        and keep the array deterministically ordered so it does not shuffle itself.
+      </figcaption>
+    </figure>
+
+    <div class="banner">
+      <h3>🔒 The invariant worth writing down before anyone builds anything</h3>
+      <p>
+        <strong>The tool array is part of the cached prefix. Treat it as frozen per session, not per request.</strong>
+        Everything below is designed to respect that — and it is portable, because it is a property of your
+        own code rather than a provider feature.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <span class="mark">🧩</span>
+      <div class="txt">
+        <h2>Skills too — but not on a separate switch</h2>
+        <p>Yes to both. One key, applied to both, or you build something worse than no filtering.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <p class="lead">
+        Skills are the bigger prize by a distance — <strong>46,420 characters against 12,113</strong> — and
+        they are the safer thing to filter. But the two are not independent, and filtering them separately
+        is the one arrangement that is worse than doing nothing.
+      </p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th scope="col"></th><th scope="col">Skills</th><th scope="col">Tools</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Size on every call</td><td class="n">46,420 ch</td><td class="n">12,113 ch</td></tr>
+          <tr><td>Where it sits in the prefix</td><td>inside the system prompt</td><td><strong>position 0</strong>, ahead of everything</td></tr>
+          <tr><td>Filtering it invalidates</td><td>system + messages</td><td><strong>everything</strong></td></tr>
+          <tr><td>If the right one is missing</td><td>degraded — the model still has the tool and its description</td><td><strong>blocked</strong> — the capability does not exist</td></tr>
+          <tr><td>Fallback when it is missing</td><td>✅ <code>load_skill</code>, one round trip</td><td>❌ none — nothing to call</td></tr>
+          <tr><td>Verdict</td><td><span class="tag safe">filter freely</span></td><td><span class="tag risk">filter carefully</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="banner cost">
+      <h3>⚠️ The arrangement to avoid: filtering one and not the other</h3>
+      <p>
+        Filter <strong>tools but not skills</strong> and you ship eighteen procedures that instruct the model
+        to call tools which may not be in the request. That is not a degraded answer — it is a confidently
+        wrong one, and on Flash it is the likeliest thing to go wrong.
+      </p>
+      <p>
+        Filter <strong>skills but not tools</strong> and you get the milder version: tools present with no
+        procedure. Survivable, because the description carries some of the guidance — which is another
+        reason step 04 matters.
+      </p>
+      <p>
+        <strong>Filter both on the activated milestone and the failure mode mostly disappears</strong>, because
+        a tool is only ever absent when the procedure that would have called it is absent too. Two filters
+        on two different keys would also double how often the cache turns over. One key.
+      </p>
+    </div>
+
+    <div class="col">
+      <h3>One free thing while you are in there</h3>
+      <p>
+        The builder currently appends guardrails <em>after</em> the eighteen skills. Since the cache matches on
+        a prefix, anything stable that sits behind something filtered gets thrown away with it.
+      </p>
+    </div>
+
+    <div class="ba2">
+      <div class="bcol was"><span class="ch2"><span>Today’s build order</span><span>SingleAgentPromptProvider.Build()</span></span>
+<pre>base instruction         <span class="c">901   stable</span>
+areas&#39; rules           <span class="c">4,817   stable</span>
+conveyancing section     <span class="c">···   stable</span>
+<span class="x">skills (18)           46,420   filtered</span>
+<span class="x">guardrails               807   stable ← stranded</span></pre></div>
+      <div class="bcol now"><span class="ch2"><span>Stable first, filtered last</span><span>one-line reorder</span></span>
+<pre>base instruction         <span class="c">901   stable</span>
+areas&#39; rules           <span class="c">4,817   stable</span>
+conveyancing section     <span class="c">···   stable</span>
+<span class="v">guardrails               807   stable</span>
+<span class="v">skills (filtered)     ······   last</span></pre></div>
+    </div>
+    <p class="bnote" style="max-width:40rem">
+      Worth ~800 characters on its own, which is nothing. The <em>principle</em> is not nothing:
+      <strong>everything you filter goes after everything you don’t.</strong> Tools are the exception you
+      cannot fix — position 0 is fixed by the API — and that is precisely why they are the riskier of the
+      two to filter.
+    </p>
+  </section>
+
+  <section>
+    <div class="shead">
+      <span class="mark">📈</span>
+      <div class="txt">
+        <h2>What 80 tools would cost</h2>
+        <p>A planning assumption, not a commitment — priced at today’s measured 526 chars per description.</p>
+      </div>
+    </div>
+
+    <figure>
+      <div class="bars">
+        <div class="bar">
+          <span class="lb"><b>80 tools, as built today</b>526 ch each</span>
+          <span class="track"><span class="fill" style="width:100%"></span></span>
+          <span class="v">~10,520</span>
+        </div>
+        <div class="bar">
+          <span class="lb"><b>+ descriptions trimmed</b>drop the 32% protocol</span>
+          <span class="track"><span class="fill mid" style="width:68%"></span></span>
+          <span class="v">~7,200</span>
+        </div>
+        <div class="bar">
+          <span class="lb"><b>+ consolidated</b>80 capabilities ≈ 40 tools</span>
+          <span class="track"><span class="fill mid" style="width:34%"></span></span>
+          <span class="v">~3,600</span>
+        </div>
+        <div class="bar">
+          <span class="lb"><b>+ milestone-scoped</b>~40% loaded per call</span>
+          <span class="track"><span class="fill ok" style="width:14%"></span></span>
+          <span class="v">~1,440</span>
+        </div>
+        <div class="bar">
+          <span class="lb">for reference<b>23 tools today</b></span>
+          <span class="track"><span class="fill" style="width:29%"></span></span>
+          <span class="v">~3,030</span>
+        </div>
+      </div>
+      <figcaption>
+        <strong>Projected tool-description tokens per call</strong> (parameter schemas are extra on every bar).
+        Unmanaged, 80 tools costs about what your entire system prompt costs today. The three portable moves
+        compound to land <strong>below where you are now with 23</strong> — which is the actual definition of
+        “extensible”: adding the 57th tool should not cost more than the 23rd did.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="shead">
+      <span class="mark">🥇</span>
+      <div class="txt">
+        <h2>The top three, re-ranked for “not model-restricted”</h2>
+        <p>That constraint knocked out my previous number three. Here is what replaces it.</p>
+      </div>
+    </div>
+
+    <div class="sol">
+      <div class="solh">
+        <span class="r">1</span>
+        <span class="nm">Consolidate the tool surface
+          <span>Fewer, fatter tools with a discriminator — the only move that changes the slope</span></span>
+      </div>
+      <div class="solb">
+        <div class="rates">
+          <span class="rate"><span class="k">Token impact</span><span class="dots">●●●●<i>●</i></span></span>
+          <span class="rate"><span class="k">Accuracy</span><span class="dots">●●●●●</span></span>
+          <span class="rate"><span class="k">Effort</span><span class="dots">●●●<i>●●</i></span></span>
+          <span class="rate"><span class="k">Portable</span><span class="dots">✅ any model</span></span>
+          <span class="rate"><span class="k">Cache</span><span class="dots">✅ always safe</span></span>
+        </div>
+        <p>
+          One <code>get_order_view(section)</code> instead of a getter per section; the four trust tools behind
+          fewer entry points. <strong>You already ship this pattern</strong> — <code>view-order-details</code> says
+          in as many words: <em>“One fetch answers everything. There is no separate tool per section — do not
+          look for one.”</em> Generalise what already works.
+        </p>
+        <p>
+          It ranks first because 80 capabilities need not be 80 tools, and because it fixes your real accuracy
+          risk today: four similarly-named trust tools are more confusable than fifty well-separated ones.
+          The cost is a genuine refactor across the backend and the card-marker wiring, and you trade some
+          tool confusion for argument confusion — so the discriminator has to be tightly specified.
+        </p>
+
+        <div class="ba2">
+          <div class="bcol was"><span class="ch2"><span>Today · SettlementFinancials</span><span>2,214 ch</span></span>
+<pre><span class="x">get_trust_account_activities</span>          <span class="c">543</span>
+  <span class="c">deposits, withdrawals, transactions</span>
+<span class="x">get_consumer_trust_tasks</span>              <span class="c">660</span>
+  <span class="c">payment requests, who has signed</span>
+<span class="x">show_trust_request_form</span>               <span class="c">426</span>
+<span class="x">request_trust_payment</span>                 <span class="c">585</span>
+
+<span class="c">Four names beginning &quot;trust&quot;. Two of
+them are reads that differ only by
+which slice of the account they show
+— the choice the model gets wrong.</span></pre></div>
+          <div class="bcol now"><span class="ch2"><span>Consolidated</span><span>~1,460 ch</span></span>
+<pre><span class="v">get_trust_view(section)</span>               <span class="c">~450</span>
+  <span class="v">section: activity | tasks</span>
+  <span class="c">one read, one card, one choice</span>
+<span class="x">show_trust_request_form</span>               <span class="c">426</span>
+<span class="x">request_trust_payment</span>                 <span class="c">585</span>
+
+<span class="c">The two reads merge; render and write
+stay separate because they have
+different semantics, not just
+different data.</span></pre></div>
+        </div>
+        <p class="bnote">
+          <strong>−754 ch and one fewer near-identical pair to choose between.</strong> Apply the same test
+          across all six areas: two tools that differ only by <em>which slice of the same record</em> they
+          return are one tool with an argument.
+        </p>
+      </div>
+    </div>
+
+    <div class="sol">
+      <div class="solh">
+        <span class="r">2</span>
+        <span class="nm">Scope the tool set to activated milestones
+          <span>Biggest per-call cut, and the mechanism already half exists</span></span>
+      </div>
+      <div class="solb">
+        <div class="rates">
+          <span class="rate"><span class="k">Token impact</span><span class="dots">●●●●●</span></span>
+          <span class="rate"><span class="k">Accuracy</span><span class="dots">●●●●<i>●</i></span></span>
+          <span class="rate"><span class="k">Effort</span><span class="dots">●<i>●●●●</i></span></span>
+          <span class="rate"><span class="k">Portable</span><span class="dots">✅ any model</span></span>
+          <span class="rate"><span class="k">Cache</span><span class="dots">⚠️ if keyed right</span></span>
+        </div>
+        <p>
+          <code>SingleAgentFactory</code> already drops the Order tools once an order is open, and
+          <code>ActivatedMilestones</code> is already in session context. You would be generalising an
+          existing conditional, not inventing a mechanism.
+        </p>
+        <p>
+          <strong>The condition on the rating:</strong> key it to milestone activation — which happens a handful of
+          times across an order’s life — never to the message. Done that way you pay one cache invalidation
+          per milestone change and run warm in between. Done per-request it is a net loss. The gap to close
+          first: unlike skills, there is no <code>load_skill</code> equivalent for a tool, so a tool that is
+          needed but not loaded is a hard failure. Decide that fallback before shipping.
+        </p>
+
+        <div class="ba2">
+          <div class="bcol was"><span class="ch2"><span>Today · every call</span><span>23 tools · 12,113 ch</span></span>
+<pre><span class="x">Order</span>                    <span class="c">6 tools   2,792</span>
+<span class="x">Onboarding</span>               <span class="c">2 tools     975</span>
+<span class="x">ProvideDocuments</span>         <span class="c">4 tools   2,873</span>
+<span class="x">Settlement</span>               <span class="c">2 tools     764</span>
+<span class="x">SettlementBooking</span>        <span class="c">1 tool      661</span>
+<span class="x">SettlementFinancials</span>     <span class="c">8 tools   4,048</span>
+
+<span class="c">Order 1234 has reached PlaceOrder and
+ConsumerOnboarding. It is sent trust,
+booking and settlement tools anyway.</span></pre></div>
+          <div class="bcol now"><span class="ch2"><span>Scoped to activated milestones</span><span>8 tools · 3,767 ch</span></span>
+<pre><span class="v">Order</span>                    <span class="c">6 tools   2,792</span>
+<span class="v">Onboarding</span>               <span class="c">2 tools     975</span>
+<span class="c">ProvideDocuments         not activated
+Settlement               not activated
+SettlementBooking        not activated
+SettlementFinancials     not activated</span>
+
+<span class="v">−8,346 ch · 69% of the tool payload</span>
+<span class="c">Recomputed when a milestone activates
+— a handful of times per order — not
+per request.</span></pre></div>
+        </div>
+        <p class="bnote">
+          That is the <em>best</em> case, on a fresh order. A late-stage order with five milestones active saves
+          very little — quote this as a range, never as a single percentage. The saving shrinks exactly as
+          the order progresses.
+        </p>
+      </div>
+    </div>
+
+    <div class="sol">
+      <div class="solh">
+        <span class="r">3</span>
+        <span class="nm">Cut the protocol boilerplate out of tool descriptions
+          <span>Measured, portable, and finishable this week</span></span>
+      </div>
+      <div class="solb">
+        <div class="rates">
+          <span class="rate"><span class="k">Token impact</span><span class="dots">●●<i>●●●</i></span></span>
+          <span class="rate"><span class="k">Accuracy</span><span class="dots">●●●<i>●●</i></span></span>
+          <span class="rate"><span class="k">Effort</span><span class="dots">●<i>●●●●</i></span></span>
+          <span class="rate"><span class="k">Portable</span><span class="dots">✅ any model</span></span>
+          <span class="rate"><span class="k">Cache</span><span class="dots">✅ always safe</span></span>
+        </div>
+        <p>
+          <strong>3,842 of your 12,113 characters of tool description are card-and-marker protocol, not what the
+          tool does</strong> — about 32%. <code>get_post_settlement_documents</code> is 87% protocol.
+          Seventeen of the twenty-three restate it. That belongs stated once in the guardrails, leaving each
+          description to do its actual job: helping the model pick the right tool.
+        </p>
+        <div class="ba2">
+          <div class="bcol was"><span class="ch2"><span>Today · get_settlement_booking</span><span>661 ch</span></span>
+<pre>Show the settlement-booking card for the settlement order in the current session — the single way booking details are presented; it fetches the current booking itself: the settlement method (electronic/manual), the settlement date and its status, the funds (bank) readiness, the settlement agent&#39;s trust-account details, and — for an electronic (ELNO) settlement — the ELNO workspace participants with their acceptance statuses. <span class="x">Call it for any question about the settlement booking or its preconditions: the card is the answer. The card is shown to the user automatically — reply with at most one short lead-in sentence and do not restate its details in prose.</span></pre></div>
+          <div class="bcol now"><span class="ch2"><span>Schema-only</span><span>428 ch</span></span>
+<pre>Show the settlement-booking card for the settlement order in the current session — the single way booking details are presented; it fetches the current booking itself: the settlement method (electronic/manual), the settlement date and its status, the funds (bank) readiness, the settlement agent&#39;s trust-account details, and — for an electronic (ELNO) settlement — the ELNO workspace participants with their acceptance statuses.
+
+<span class="c">The deleted sentences are not lost —
+they move to the guardrails, stated
+once, and apply to all 23 tools
+instead of the 17 that happen to
+repeat them today.</span></pre></div>
+        </div>
+        <p class="bnote">
+          <strong>−233 ch on one tool.</strong> The description keeps doing its actual job — helping the model
+          pick this tool over another — and stops explaining a protocol that is identical everywhere.
+          <code>get_post_settlement_documents</code> is the extreme case at <strong>87% protocol</strong>.
+        </p>
+
+        <p>
+          Small on its own. It ranks here because it is the only one of the three you can finish this week,
+          it makes every later tool cheaper by default, and it is measured rather than projected.
+        </p>
+      </div>
+    </div>
+
+    <div class="banner cost">
+      <h3>❌ What is ruled out — and when to revisit</h3>
+      <p>
+        <strong>Tool search with deferred loading</strong> was my previous number three, and it is genuinely the
+        purpose-built answer: schemas are appended rather than swapped, so it preserves the cache by design.
+        It is also an <strong>Anthropic-API feature</strong>, and you are running <strong>Gemini 3.6
+        Flash</strong>. It is not available to you today, and building the extensibility story on it would
+        contradict “able to switch providers” even if it were.
+      </p>
+      <p>
+        Revisit only if two things become true together: tool count passes roughly 150 <em>after</em> moves 1–3,
+        and you accept a per-provider capability split. At 80 with all three done, the arithmetic above lands
+        you under today’s footprint — so it should not come up.
+      </p>
+      <p>
+        <strong>The good news in “able to switch”:</strong> the discipline that matters is portable. A stable
+        prefix with the volatile part last is what earns you implicit caching on Gemini, prefix caching on
+        OpenAI, and an explicit breakpoint on Anthropic. Only the <em>opt-in mechanism</em> differs, and on
+        your current model there isn’t one to write. Keep the invariant in your code; keep provider-specific
+        cache plumbing out of it.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <span class="mark">🗺️</span>
+      <div class="txt">
+        <h2>Sequence</h2>
+        <p>Ordered so each step tells you whether the next one is still worth doing.</p>
+      </div>
+    </div>
+
+    <ol class="plan">
+      <li class="key">
+        <span class="step">01</span>
+        <div class="body">
+          <span class="when">today · minutes</span>
+          <h3>🧊 Read <code>usage.total_cached_tokens</code></h3>
+          <p>
+            Send the same turn twice and look at the field on the second response. Non-zero means implicit
+            caching has been working all along and the backlog needs re-pricing before anyone starts. Zero
+            means something breaks the prefix — go to step 02 and treat it as a bug.
+          </p>
+          <p>
+            Cross-check in the <code>chat</code> span in the Aspire dashboard at
+            <code>localhost:17190</code> to confirm what the gateway client actually sent. Latency alone is
+            a bad proxy — you learned that one the hard way already.
+          </p>
+        </div>
+      </li>
+      <li class="key">
+        <span class="step">02</span>
+        <div class="body">
+          <span class="when">today · hours</span>
+          <h3>🔒 Make the stable prefix an invariant, with a test</h3>
+          <p>
+            Tool array frozen per session and deterministically ordered. If step 01 came back zero, the
+            flattening in <code>SingleAgentFactory</code> is the first place to look — an unstable iteration
+            order there silently costs you the entire cache, on every call, and nothing surfaces it.
+          </p>
+          <p>
+            Cheap now. Expensive after someone builds request-scoped tool selection on top of a cache that
+            was quietly working.
+          </p>
+        </div>
+      </li>
+      <li class="key">
+        <span class="step">03</span>
+        <div class="body">
+          <span class="when">this week · ~1 day</span>
+          <h3>📊 Build the tool-selection benchmark</h3>
+          <p>
+            Twenty to thirty real utterances with the correct tool recorded. Everything after this changes
+            how the model chooses, on the model tier least able to absorb a bad change. Without this you
+            cannot tell a consolidation win from a regression.
+          </p>
+        </div>
+      </li>
+      <li>
+        <span class="step">04</span>
+        <div class="body">
+          <span class="when">this week · half a day</span>
+          <h3>✂️ Strip the protocol from tool descriptions</h3>
+          <p>
+            The measured 3,842 characters, plus renaming the four trust tools so they stop competing.
+            Same pass as hoisting the skill rules — it is the same protocol in a different file. Run the
+            benchmark either side.
+          </p>
+        </div>
+      </li>
+      <li>
+        <span class="step">05</span>
+        <div class="body">
+          <span class="when">then · sized by what step 01 said</span>
+          <h3>🔀 Consolidate, then scope</h3>
+          <p>
+            Solutions 1 and 2, in that order — consolidating first means you scope a smaller, cleaner set.
+            How much of the trimming backlog survives alongside them depends entirely on the number from
+            step 01, which is why it is step 01.
+          </p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="shead">
+      <span class="mark">🎤</span>
+      <div class="txt">
+        <h2>What I still need from you</h2>
+        <p>Six questions, roughly in the order they would change what is written above.</p>
+      </div>
+    </div>
+
+    <ul class="q">
+      <li><span>1️⃣</span><div><strong>What does <code>usage.total_cached_tokens</code> actually say?</strong>
+        <span class="why">Everything on this page is provisional until someone reads it. It is the difference between a four-item build backlog and a one-line bug fix.</span></div></li>
+      <li><span>2️⃣</span><div><strong>Does the gateway surface Gemini’s usage metadata at all?</strong>
+        <span class="why">If <code>total_cached_tokens</code> is swallowed between Gemini and Microsoft.Extensions.AI, step 01 becomes a plumbing job first. That is the one thing that could turn minutes into a real piece of work.</span></div></li>
+      <li><span>3️⃣</span><div><strong>Is the tool array built in a deterministic order today?</strong>
+        <span class="why">Worth answering even before step 01 comes back. If it is not, that alone explains a cold cache — and it is a far cheaper fix than anything else here.</span></div></li>
+      <li><span>4️⃣</span><div><strong>Is Gemini 3.6 Flash the model in production, or just in dev?</strong>
+        <span class="why">The <code>appsettings</code> file carries Anthropic and OpenAI deployments too. If environments differ, the cache thresholds and behaviour differ with them — and I would be wrong about a different environment for the same reason I was wrong about this one.</span></div></li>
+      <li><span>5️⃣</span><div><strong>Is there appetite for the consolidation refactor at all?</strong>
+        <span class="why">Solution 1 is ranked first on merit, but it touches the backend and the card-marker wiring on both sides. If that is not fundable this half, solutions 2 and 3 stand alone and I would sequence them differently.</span></div></li>
+      <li><span>6️⃣</span><div><strong>Who signs off on trading behaviour for tokens?</strong>
+        <span class="why">Steps 04 and 05 edit instructions the agent follows. Prompts are behaviour — is that the dev on the ticket, or does it need product sign-off?</span></div></li>
+    </ul>
+  </section>
+
+  <footer>
+    Measured from source on <code>develop</code> · character counts exact, token figures at ~4 chars/token ·
+    projections labelled as such · follow-up to “Cutting the token bill” (SETTLEIT-10902)
+  </footer>
+
+</div>
+</body>
+</html>
