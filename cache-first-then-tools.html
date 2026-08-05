@@ -355,21 +355,41 @@
         similarly-named trust tools are exactly the shape that goes wrong first.
       </p>
       <p>
-        It does not change the ranking below, but it sharpens two things: <strong>consolidation moves from
-        “good for extensibility” to “also a correctness fix”</strong>, and the evaluation gap gets serious.
-        You said tool-choice testing today is manual and ad-hoc. That is workable at 23 on a frontier model.
-        At 80 on Flash it means the failure you are trying to design against is one you cannot currently see.
+        It sharpens one thing in particular: <strong>consolidation moves from “good for extensibility” to
+        “also a correctness fix”</strong>. It does not, on its own, justify stopping to build test
+        infrastructure — see below.
       </p>
     </div>
 
-    <div class="banner cost">
-      <h3>📊 The gap I would close before any of the five steps</h3>
+    <div class="banner">
+      <h3>📊 On the benchmark: a baseline, not a bug hunt</h3>
       <p>
-        <strong>A tool-selection benchmark — twenty or thirty real utterances with the correct tool
-        recorded — is the cheapest safety net on this page</strong>, and it is a prerequisite for the rest.
-        Consolidation, scoping and description edits all change how the model chooses. Without a
-        before-and-after you are shipping behaviour changes blind, on the model tier least able to absorb
-        them.
+        I originally ranked this second, arguing the gap was serious enough to close before anything else.
+        <strong>That over-weighted a hypothetical against an observation.</strong> You are not seeing
+        mis-selection at 23 tools, and “no reported problem” is real evidence in a way that “Flash is a
+        smaller model” is not. Building a harness for a failure you do not have is speculative work sitting
+        in front of two certain wins.
+      </p>
+      <p>
+        It sits at <strong>three</strong> instead — after the hoist, immediately before smart loading — and the
+        reason is the sequencing, not the risk. <strong>Its job there is to capture a
+        <em>before</em> reading while the tool surface is still known-good.</strong> Consolidation renames and
+        merges tools; scoping changes which ones are present. Build the baseline after those and there is
+        nothing clean left to compare against. The deadline was never “when it breaks” — it is “before you
+        change the tool surface”, which is exactly where you put it.
+      </p>
+      <p>
+        <strong>One caveat, then it is your call.</strong> With manual, ad-hoc testing, “we do not have
+        mis-selection” and “we have not seen mis-selection” are not the same statement. A wrong card renders
+        like a right one; the likeliest way a tool-choice error reaches you is as a vague bug report
+        attributed to something else. That is an argument for the baseline being genuinely informative when
+        you do build it — not for building it sooner.
+      </p>
+      <p>
+        Separately: <strong>the hoist at step 2 is not behaviour-neutral either.</strong> Moving an instruction
+        from eighteen local restatements to one global statement can change how strongly it lands. A
+        tool-selection benchmark would not catch that — it wants a handful of conversation-level smoke tests
+        instead. Cheaper, and a different artefact.
       </p>
     </div>
   </section>
@@ -400,21 +420,21 @@
             <td><span class="tag safe">none</span></td>
             <td><span class="tag now">do now</span></td>
           </tr>
-          <tr class="hero">
-            <td class="rank">2</td>
-            <td><strong>📊 Build a tool-selection benchmark</strong><br><span style="font-size:0.8125rem;color:var(--muted)">20–30 real utterances, correct tool recorded. Gates everything below.</span></td>
-            <td class="n">unblocks 3–6</td>
-            <td class="n">~1 day</td>
-            <td><span class="tag safe">none</span></td>
-            <td><span class="tag now">do now</span></td>
-          </tr>
           <tr>
-            <td class="rank">3</td>
+            <td class="rank">2</td>
             <td>✂️ Hoist repeated rules out of the skills<br><span style="font-size:0.8125rem;color:var(--muted)">Includes the 3,842 chars of protocol restated in tool descriptions</span></td>
             <td class="n">~9,000 ch</td>
             <td class="n">~1 day</td>
             <td><span class="tag safe">low</span></td>
             <td><span class="tag">re-price</span></td>
+          </tr>
+          <tr>
+            <td class="rank">3</td>
+            <td>📊 Build a tool-selection benchmark<br><span style="font-size:0.8125rem;color:var(--muted)">20–30 real utterances. A <em>baseline</em> to compare against — not a bug hunt.</span></td>
+            <td class="n">baselines 4</td>
+            <td class="n">~1 day</td>
+            <td><span class="tag safe">none</span></td>
+            <td><span class="tag">before 4</span></td>
           </tr>
           <tr>
             <td class="rank">4</td>
@@ -446,8 +466,8 @@
 
     <div class="col">
       <p>
-        The two things now at the top are both <em>measurements</em>, and neither is a day’s work. That is not
-        a coincidence — you have a four-item build backlog sized against two numbers nobody has read yet.
+        The thing at the top is a <em>measurement</em>, and it is minutes of work. That is not a coincidence —
+        you have a build backlog sized against a number nobody has read yet.
       </p>
       <p>
         <strong>Row 4 was two rows in the first draft</strong> — “smart tool loading” and “milestone-filter the
@@ -568,7 +588,7 @@
       <p>
         Filter <strong>skills but not tools</strong> and you get the milder version: tools present with no
         procedure. Survivable, because the description carries some of the guidance — which is another
-        reason step 04 matters.
+        reason step 03 matters.
       </p>
       <p>
         <strong>Filter both on the activated milestone and the failure mode mostly disappears</strong>, because
@@ -894,27 +914,28 @@ repeat them today.</span></pre></div>
           </p>
         </div>
       </li>
-      <li class="key">
+      <li>
         <span class="step">03</span>
         <div class="body">
           <span class="when">this week · ~1 day</span>
-          <h3>📊 Build the tool-selection benchmark</h3>
+          <h3>✂️ Hoist the rules, and strip the protocol from tool descriptions</h3>
           <p>
-            Twenty to thirty real utterances with the correct tool recorded. Everything after this changes
-            how the model chooses, on the model tier least able to absorb a bad change. Without this you
-            cannot tell a consolidation win from a regression.
+            One pass: the ~9,000 characters restated across the eighteen skills, plus the measured 3,842 in
+            the tool descriptions. It is the same protocol in two different files. Add a few
+            conversation-level smoke tests either side — this changes how strongly an instruction lands,
+            which a tool-selection benchmark would not catch.
           </p>
         </div>
       </li>
-      <li>
+      <li class="key">
         <span class="step">04</span>
         <div class="body">
-          <span class="when">this week · half a day</span>
-          <h3>✂️ Strip the protocol from tool descriptions</h3>
+          <span class="when">before you touch the tool surface · ~1 day</span>
+          <h3>📊 Build the tool-selection benchmark</h3>
           <p>
-            The measured 3,842 characters, plus renaming the four trust tools so they stop competing.
-            Same pass as hoisting the skill rules — it is the same protocol in a different file. Run the
-            benchmark either side.
+            Twenty to thirty real utterances with the correct tool recorded. Not because selection is
+            failing today — it is not — but because step 05 renames and merges tools, and afterwards there
+            is no clean <em>before</em> left to measure against.
           </p>
         </div>
       </li>
@@ -954,7 +975,7 @@ repeat them today.</span></pre></div>
       <li><span>5️⃣</span><div><strong>Is there appetite for the consolidation refactor at all?</strong>
         <span class="why">Solution 1 is ranked first on merit, but it touches the backend and the card-marker wiring on both sides. If that is not fundable this half, solutions 2 and 3 stand alone and I would sequence them differently.</span></div></li>
       <li><span>6️⃣</span><div><strong>Who signs off on trading behaviour for tokens?</strong>
-        <span class="why">Steps 04 and 05 edit instructions the agent follows. Prompts are behaviour — is that the dev on the ticket, or does it need product sign-off?</span></div></li>
+        <span class="why">Steps 03 and 05 edit instructions the agent follows. Prompts are behaviour — is that the dev on the ticket, or does it need product sign-off?</span></div></li>
     </ul>
   </section>
 
