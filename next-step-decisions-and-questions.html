@@ -301,19 +301,36 @@
 
       <div class="lane">
         <div class="spine"><span class="num">4</span><span class="rail"></span></div>
-        <div class="step">
-          <h3>Provide documents</h3>
-          <div class="says"><span class="av">✦</span><span>I've pulled the documents off your matter and categorised them — adjust anything, then confirm.</span></div>
-          <p class="note">Confirming <b>locks that batch</b>. Adding more needs a fresh prompt, which is why "upload more documents" stays available rather than appearing only when something is detected as missing.</p>
-        </div>
-        <div class="prompts">
-          <p class="plabel">What appears — only those that qualify</p>
-          <div class="chips">
-            <span class="chip2">Upload missing onboarding documents</span>
-            <span class="chip2">Upload more documents</span>
-            <span class="chip2">Check settlement booking status</span>
+        <div class="step" style="grid-column:2 / -1;">
+          <h3>Provide documents — the card branches on the matter</h3>
+          <p class="forklabel"><span class="ic">⑂</span><span>The agent always sends the same artifact. Whether the client is <b>integrated with a practice management system</b> decides which view renders from it — so the same milestone is two quite different experiences.</span></p>
+          <div class="branch">
+            <div class="arm a">
+              <span class="cond">If the matter is integrated (LEAP)</span>
+              <h4>Documents come off the matter</h4>
+              <div class="says"><span class="av">✦</span><span>I've pulled the documents off your matter and categorised them — adjust anything, then confirm.</span></div>
+              <p style="margin-top:.55rem;">The card lists what can be imported from the practice management system, with the outstanding checklist slotted into its intro. The client adjusts categories, confirms, and the import is queued.</p>
+              <p class="rulehint">integrated_document_list · items populated → document list</p>
+            </div>
+            <div class="arm b">
+              <span class="cond">If the matter is not integrated</span>
+              <h4>Nothing to pull — the client uploads</h4>
+              <div class="says"><span class="av">✦</span><span>Here's what's still needed for this settlement — upload them and I'll categorise them for you.</span></div>
+              <p style="margin-top:.55rem;">There is no matter to read from, so the artifact arrives with an <b>empty list</b> and the client is guided to provide the required documents through the Files panel. Same outstanding checklist, different way in.</p>
+              <p class="rulehint">integrated_document_list · items empty → required-documents view</p>
+            </div>
           </div>
-          <p class="rulehint">priorities 160 · 350 · 330 — three slots, exactly at the cap</p>
+          <p class="converge">↳ the prompts below are identical on both arms — no rule looks at integration status.</p>
+          <div class="prompts" style="padding-bottom:0;">
+            <p class="plabel">What appears — only those that qualify</p>
+            <div class="chips">
+              <span class="chip2">Upload missing onboarding documents</span>
+              <span class="chip2">Upload more documents</span>
+              <span class="chip2">Check settlement booking status</span>
+            </div>
+            <p class="rulehint">priorities 160 · 350 · 330 — three slots, exactly at the cap</p>
+            <p class="note">Confirming <b>locks that batch</b>. Adding more needs a fresh prompt, which is why "upload more documents" stays available rather than appearing only when something is detected as missing — and it is the prompt a non-integrated client leans on most.</p>
+          </div>
         </div>
       </div>
 
