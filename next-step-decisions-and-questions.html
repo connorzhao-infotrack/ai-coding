@@ -229,7 +229,7 @@
   <div class="wrap">
     <p class="eyebrow">Status as at 28 July 2026 · built</p>
     <h1>The next-step flow, end to end.</h1>
-    <p class="lede">Every prompt the client sees, in order, including the branch that decides whether the agent moves them on or waits. This is <b>what the code now does</b> — the decisions from the 21 and 27 July calls are implemented. Two judgement calls applied Lexi's intent rather than her explicit answer; both are flagged below.</p>
+    <p class="lede">Every prompt the client sees, in order, including the branch that decides whether the agent moves them on or waits. This is <b>what the code now does</b> — the decisions from the 21 and 27 July and 6 August calls are implemented. The two judgement calls that were open here are now confirmed; one question remains, flagged below.</p>
     <div class="statusrow">
       <span class="chip g">✓ engine + rules merged</span>
       <span class="chip g">✓ 3-prompt cap</span>
@@ -374,13 +374,22 @@
         <div class="spine"><span class="num">6</span><span class="rail"></span></div>
         <div class="step">
           <h3>Approval given</h3>
-          <div class="says"><span class="av">✦</span><span>Approval recorded — the financial prompts stop.</span></div>
-          <p class="note">One approval finalises adjustments, directions to pay, trust and the registry documents together, so everything else stops at once.</p>
+          <div class="says"><span class="av">✦</span><span>Approval recorded — I'll keep you posted on settlement.</span></div>
+          <p class="note">The approval finalises the adjustments and the direction to pay, so those two stop. <b>Trust account does not.</b> Trust money can be arranged right up to the point the matter is ready to settle, so that prompt runs on.</p>
         </div>
         <div class="prompts">
           <p class="plabel">What appears</p>
-          <div class="chips"><span class="chip2">Check settlement status</span></div>
-          <p class="rulehint">pill.check-settlement-status · priority 400</p>
+          <div class="chips">
+            <span class="chip2">Check settlement status</span>
+            <span class="chip2">Check trust account status</span>
+            <span class="chip2">Upload more documents</span>
+          </div>
+          <p class="plabel" style="margin-top:.75rem">Stopped by the approval</p>
+          <div class="chips">
+            <span class="chip2 dropped">View settlement adjustments</span>
+            <span class="chip2 dropped">View direction to pay</span>
+          </div>
+          <p class="rulehint">priorities 315 · 320 · 350 — settlement status leads once approval is in</p>
         </div>
       </div>
 
@@ -404,14 +413,13 @@
 <section>
   <div class="wrap">
     <p class="kicker hot">For Lexi</p>
-    <h2>Two judgement calls to confirm</h2>
-    <p>Everything else follows an answer Lexi gave directly. These two applied her intent where the sources did not settle it, so they are the ones worth a look.</p>
+    <h2>One gap the calls have not covered</h2>
+    <p>The 6 August call closed the two judgement calls that were open here — booking status yielding to the financial three under the cap, and "upload more documents" being a standing prompt rather than a detection-triggered one. Both are confirmed and built. One question is left, and it was never put to her because it only became visible while wiring the rules.</p>
     <div class="confirm">
-      <h3>Please confirm or correct</h3>
-      <ol>
-        <li><b>Booking status yields to the financial three under the cap.</b> Booking status and the financial cycle overlap — the invitation can still be open when adjustments land — so four prompts qualify and only three fit. The financial work is what the client is being asked to act on, so booking status drops. Lexi flagged this drop order as needing her decision; this is the recommendation, not her answer.</li>
-        <li><b>"Upload more documents" is unconditional after the documents step.</b> Her written flow gated it on missing documents still being detected; on the call she framed it as a standing reminder that a milestone is not one-off. It is built as the latter — no detection service needed, but the prompt is long-lived (until settlement).</li>
-      </ol>
+      <h3>The window between submitting and sign-off</h3>
+      <p>Three prompts wait for the documents milestone to be <b>complete</b>. That flag is not set when the client submits their documents — it is set when the <b>settlement agent approves</b> them, which can be much later. Client submission only moves the milestone to "in progress".</p>
+      <p>So there is a window — client has finished, agent has not signed off — where none of "upload missing onboarding documents", "upload more documents" or "check settlement booking status" appear. The client is not stranded (the agent keeps opening the documents card for them), but they get no prompts either.</p>
+      <p>The call answered the <i>before</i> submit case: no "upload more documents" while the client is mid-batch, which is right. This is the case just after. Leaving it as-is for now, because the milestone status alone cannot tell "client submitted" apart from "milestone opened" — closing it needs a different signal (the outstanding-documents checklist being empty), and that is a design decision rather than a fix.</p>
     </div>
     <p style="margin-top:1.2rem">Two smaller wording changes also went in and are easy to revert: labels are now <b>sentence case</b> throughout (so "Check settlement booking status", not "Check Settlement booking status"), and the directions prompt reads <b>"View direction to pay"</b> singular, matching the design frame rather than her written plural.</p>
   </div>
@@ -430,17 +438,19 @@
           <tr><td class="num">90</td><td><code>advance.provide-documents</code></td><td><b>Auto-navigate</b></td><td>Onboarding tasks created ∧ no manual upload owed ∧ documents step not done</td></tr>
           <tr><td class="num">100</td><td><code>advance.onboarding</code></td><td><b>Auto-navigate</b></td><td>Order placed ∧ onboarding not complete</td></tr>
           <tr><td class="num">150</td><td><code>pill.provide-documents</code></td><td>Prompt</td><td>Tasks created ∧ a manual upload still owed ∧ documents step not done</td></tr>
-          <tr><td class="num">160</td><td><code>pill.upload-missing-onboarding-documents</code></td><td>Prompt</td><td>Documents step done ∧ a manual upload still owed</td></tr>
+          <tr><td class="num">160</td><td><code>pill.upload-missing-onboarding-documents</code></td><td>Prompt</td><td>Documents step done ∧ a manual upload still owed ∧ not settled</td></tr>
           <tr><td class="num">300</td><td><code>pill.view-settlement-adjustments</code></td><td>Prompt</td><td>Statement issued ∧ approval not given</td></tr>
           <tr><td class="num">310</td><td><code>pill.view-directions-to-pay</code></td><td>Prompt</td><td>″</td></tr>
-          <tr><td class="num">320</td><td><code>pill.check-trust-account-status</code></td><td>Prompt</td><td>″</td></tr>
+          <tr><td class="num">315</td><td><code>pill.check-settlement-status</code></td><td>Prompt</td><td>Approval given ∧ not settled</td></tr>
+          <tr><td class="num">320</td><td><code>pill.check-trust-account-status</code></td><td>Prompt</td><td>Statement issued ∧ <b>not settled</b> — not tied to the approval</td></tr>
           <tr><td class="num">330</td><td><code>pill.check-settlement-booking-status</code></td><td>Prompt</td><td>Documents step done ∧ invitation still pending ∧ approval not given</td></tr>
           <tr><td class="num">350</td><td><code>pill.upload-another-batch-of-docs</code></td><td>Prompt</td><td>Documents step done ∧ not settled</td></tr>
-          <tr><td class="num">400</td><td><code>pill.check-settlement-status</code></td><td>Prompt</td><td>Approval given ∧ not settled</td></tr>
         </tbody>
       </table>
     </div>
     <p class="cmp-note">"Invitation still pending" means <b>not every workspace participant has accepted</b> — including where no workspace exists yet, since nothing has been accepted and there is still something to chase.</p>
+    <p class="cmp-note">Settlement status sits at <b>315</b>, above trust account, so it leads once approval is in. It cannot collide with the two prompts at 300/310 — those require approval <i>not</i> given and it requires the opposite, so the two sets never both match.</p>
+    <p class="cmp-note">"Documents step done" means the <b>settlement agent has approved</b> the documents, not that the client submitted them — see the open question above.</p>
   </div>
 </section>
 
@@ -459,12 +469,16 @@
           <tr><td class="num">4</td><td><b>Manual onboarding documents are five types</b> — VOI, client authorisation, purchaser declaration, mortgage discharge authority, trust account authority. "Manual" = the consumer opted out.</td><td class="src">code · confirmed</td></tr>
           <tr><td class="num">5</td><td><b>Booking status follows the invitation, not the financial cycle.</b> <i>"Invitation and settlement adjustments have no correlation — some bank may join one hour before settlement."</i></td><td class="src">Lexi · 27 Jul</td></tr>
           <tr><td class="num">6</td><td><b>Maximum three prompts</b> at once; lowest priority drops silently.</td><td class="src">Lexi · 27 Jul</td></tr>
-          <tr><td class="num">7</td><td><b>One approval finalises everything</b> — adjustments, directions to pay, trust and registry documents. <i>"You can't approve one without the other."</i></td><td class="src">Lexi · 27 Jul</td></tr>
+          <tr><td class="num">7</td><td><b>One approval finalises everything</b> — adjustments, directions to pay, trust and registry documents. <i>"You can't approve one without the other."</i> The <b>prompts</b> do not all stop with it, though — see 13.</td><td class="src">Lexi · 27 Jul</td></tr>
           <tr><td class="num">8</td><td><b>Settled matters show nothing.</b></td><td class="src">Lexi · 27 Jul</td></tr>
           <tr><td class="num">9</td><td><b>Purchase and Sale behave identically</b>; non-LEAP clients get the same flow, only without the automatic document pre-load.</td><td class="src">Lexi · 27 Jul</td></tr>
           <tr><td class="num">10</td><td><b>Prompts only need to cover the popular case.</b> <i>"We should stop thinking about the edge cases."</i> Anything else is reachable from the milestone list.</td><td class="src">Lexi · 27 Jul</td></tr>
           <tr><td class="num">11</td><td><b>Prompts render in the composer's controls row</b>, inline after the attachment button — this supersedes the earlier "docked above the input" decision.</td><td class="src">Connor · 28 Jul</td></tr>
           <tr><td class="num">12</td><td><b>Overarching status</b> ("what's the progress?", "what else do I need to do?") → <b>separate ticket</b>, needs AI. <b>Settlement funds summary</b> → out until Jerol's task lands.</td><td class="src">Lexi + Connor</td></tr>
+          <tr><td class="num">13</td><td><b>Trust account outlives the approval</b>, and stops only at settlement. <i>"After one approval, the first two is probably no longer relevant, but the trust account might still be relevant… just keep it, and once the order is completed, remove it."</i> Trust money can be arranged right up to ready-to-settle.</td><td class="src">Lexi · 6 Aug</td></tr>
+          <tr><td class="num">14</td><td><b>Clicking a prompt posts it into the chat as the client's own message</b>, using the prompt's exact label — so the card that follows reads as a reply. Display only: the click still fires one turn, never two.</td><td class="src">Lexi + Connor · 6 Aug</td></tr>
+          <tr><td class="num">15</td><td><b>Only the three financial prompts show once adjustments are issued</b> — booking status and "upload more documents" both yield under the cap. Confirmed directly, no longer a judgement call.</td><td class="src">Lexi · 6 Aug</td></tr>
+          <tr><td class="num">16</td><td><b>"Upload more documents" is absent while the client is mid-batch.</b> <i>"you are still doing work in that area. There's no point."</i> → <i>"Gotcha… makes sense."</i></td><td class="src">Lexi + Connor · 6 Aug</td></tr>
         </tbody>
       </table>
     </div>
@@ -472,14 +486,15 @@
     <div class="dep">
       <h3>⚠ External dependency — the "active action" lock</h3>
       <p>Lexi raised that while an action is live in the chat (the documents card awaiting confirm), the client arguably should not be able to start something else — <i>"grey out all the pills, and grey out the chat area until they click the buttons"</i> — unless they cancel and abandon the task. That cancel/abandon concept <b>does not exist yet</b>. This flow assumes the current behaviour: users can jump out at any time, and the follow-up prompts are what bring them back. If the lock is built later it sits above next-step, not inside it.</p>
+      <p><b>Revisited 6 Aug and parked.</b> Lexi asked whether the prompts stay interactive while the upload window is open. They do — the client is not blocked. In practice this is narrow: the only prompt that can appear at that moment is booking status, because "upload more documents" is already absent while the client is mid-batch (decision 16). Lexi accepted that and moved on, so no lock is being built for this project.</p>
     </div>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    <span>SETTLEIT-10754 / 10817 · next-step engine — the agreed flow, as built · sources: Lexi's written flow, calls 21 &amp; 27 Jul, code on develop</span>
-    <span>Open: 2 items to confirm</span>
+    <span>SETTLEIT-10754 / 10817 · next-step engine — the agreed flow, as built · sources: Lexi's written flow, calls 21 &amp; 27 Jul and 6 Aug, code on develop</span>
+    <span>Open: 1 item — the submit-to-sign-off window</span>
   </div>
 </footer>
 
